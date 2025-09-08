@@ -1,17 +1,14 @@
-// Janus VideoRoom 화상회의 WebSocket 핸들러
-// P2P 대신 Janus VideoRoom을 통한 중앙집중식 처리
-
-const janusService = require('../services/janusService');
+// P2P 화상회의 WebSocket 핸들러
 
 const handleVideoConference = (io, socket, connectedUsers) => {
-  console.log('📹 Janus 화상회의 핸들러 초기화:', socket.id);
+  console.log('📹 P2P 화상회의 핸들러 초기화:', socket.id);
 
-  // 화상회의 방 입장 (Janus VideoRoom 연동)
+  // 화상회의 방 입장 (P2P)
   socket.on('join-video-room', async ({ roomId, userId }) => {
-    console.log(`📹 Janus VideoRoom 입장 요청: 사용자 ${userId} → 방 ${roomId}`);
+    console.log(`📹 P2P VideoRoom 입장 요청: 사용자 ${userId} → 방 ${roomId}`);
     
     try {
-      // Socket.IO 방에 입장 (알림용)
+      // Socket.IO 방에 입장
       socket.join(`video-room-${roomId}`);
       socket.userId = userId;
       socket.videoRoomId = roomId;
@@ -22,7 +19,6 @@ const handleVideoConference = (io, socket, connectedUsers) => {
         socketId: socket.id
       });
 
-      // Janus 룸 참가 처리는 클라이언트가 직접 API 호출
       console.log(`✅ Socket.IO 방 입장 완료: ${roomId}`);
     } catch (error) {
       console.error('❌ VideoRoom 입장 실패:', error);
@@ -33,9 +29,9 @@ const handleVideoConference = (io, socket, connectedUsers) => {
     }
   });
 
-  // 화상회의 방 퇴장 (Janus VideoRoom 연동)
+  // 화상회의 방 퇴장 (P2P)
   socket.on('leave-video-room', async ({ roomId, userId }) => {
-    console.log(`📹 Janus VideoRoom 퇴장 요청: 사용자 ${userId} ← 방 ${roomId}`);
+    console.log(`📹 P2P VideoRoom 퇴장 요청: 사용자 ${userId} ← 방 ${roomId}`);
     
     try {
       // Socket.IO 방에서 퇴장
@@ -46,8 +42,6 @@ const handleVideoConference = (io, socket, connectedUsers) => {
         userId,
         socketId: socket.id
       });
-
-      // Janus 룸 퇴장 처리는 클라이언트가 직접 API 호출
       console.log(`✅ Socket.IO 방 퇴장 완료: ${roomId}`);
     } catch (error) {
       console.error('❌ VideoRoom 퇴장 실패:', error);
@@ -102,12 +96,12 @@ const handleVideoConference = (io, socket, connectedUsers) => {
     });
   });
 
-  // Janus 이벤트 전달 (필요시)
-  socket.on('janus-event', ({ roomId, event, data }) => {
-    console.log(`🔄 Janus 이벤트: ${event}`, data);
+  // P2P 이벤트 전달
+  socket.on('p2p-event', ({ roomId, event, data }) => {
+    console.log(`🔄 P2P 이벤트: ${event}`, data);
     
     // 룸의 다른 참가자들에게 이벤트 전달
-    socket.to(`video-room-${roomId}`).emit('janus-event', {
+    socket.to(`video-room-${roomId}`).emit('p2p-event', {
       userId: socket.userId,
       event,
       data
@@ -130,10 +124,9 @@ const handleVideoConference = (io, socket, connectedUsers) => {
       }
     });
 
-    // Janus 세션 정리는 janusService에서 처리
+    // P2P 세션 정리
     if (socket.userId && socket.videoRoomId) {
-      console.log(`🔚 Janus 세션 정리: 사용자 ${socket.userId}`);
-      // janusService가 세션을 관리하므로 여기서는 로그만
+      console.log(`🔚 P2P 세션 정리: 사용자 ${socket.userId}`);
     }
   });
 };
