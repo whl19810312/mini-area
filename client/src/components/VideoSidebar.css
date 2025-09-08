@@ -1,0 +1,269 @@
+.video-sidebar {
+  position: fixed;
+  width: auto;
+  max-width: 90vw;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.05); /* 거의 투명한 배경 (5% 불투명) */
+  backdrop-filter: blur(5px); /* 약간의 블러 효과 */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: row; /* 가로 레이아웃 */
+  z-index: 1000;
+  animation: slideInTop 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  padding: 8px;
+  gap: 8px;
+}
+
+/* 가로형 레이아웃 */
+.video-sidebar.horizontal-layout {
+  flex-direction: row;
+  align-items: center;
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.video-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  min-width: 60px;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-sidebar-header h3 {
+  margin: 0;
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.area-badge {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* 가로형 비디오 리스트 */
+.video-list.horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  padding: 0;
+  align-items: center;
+}
+
+/* 비디오 아이템 */
+.video-item {
+  position: relative;
+  width: 200px;
+  min-width: 200px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.video-item.local-video {
+  border-color: rgba(76, 175, 80, 0.5);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.video-item.remote-video {
+  border-color: rgba(33, 150, 243, 0.5);
+  background: rgba(33, 150, 243, 0.05);
+}
+
+.video-item:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.video-stream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  border-radius: 8px;
+}
+
+/* 비디오 라벨 - 하단에 표시 */
+.video-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+  color: white;
+  padding: 8px 12px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.no-video-message {
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  min-width: 200px;
+}
+
+/* 컴팩트 컨트롤 버튼 */
+.video-controls.compact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px;
+  justify-content: center;
+}
+
+.control-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.mic-btn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mic-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.screen-share-btn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.screen-share-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.screen-share-btn.active {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: #4CAF50;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+.end-call-btn {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+.end-call-btn:hover {
+  background: rgba(220, 53, 69, 0.4);
+  transform: scale(1.1);
+}
+
+/* 스크롤바 스타일 - 가로 스크롤용 */
+.video-list.horizontal::-webkit-scrollbar {
+  height: 4px;
+}
+
+.video-list.horizontal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2px;
+}
+
+.video-list.horizontal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.video-list.horizontal::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .video-sidebar {
+    width: 100%;
+    max-width: 100%;
+    height: 140px;
+    top: 0;
+    left: 0 !important;
+    border-radius: 0 0 12px 12px;
+    padding: 6px;
+  }
+  
+  .video-item {
+    width: 120px;
+    min-width: 120px;
+    height: 90px;
+  }
+  
+  .control-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .video-label {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* 드래그 중 스타일 */
+.video-sidebar.dragging {
+  opacity: 0.9;
+  transition: none;
+}

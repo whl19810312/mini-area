@@ -1,0 +1,455 @@
+.metaverse-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+.metaverse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  position: relative;
+}
+
+.metaverse-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.menu-btn,
+.popular-maps-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.menu-btn {
+  background: #667eea;
+  color: white;
+  font-size: 18px;
+  padding: 10px 15px;
+}
+
+.menu-btn:hover {
+  background: #5a6fd8;
+}
+
+.popular-maps-btn {
+  background: #28a745;
+  color: white;
+}
+
+.popular-maps-btn:hover {
+  background: #218838;
+}
+
+.metaverse-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 기존 스타일 유지 */
+.metaverse-main {
+  height: 100%;
+  position: relative;
+}
+
+
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-btn:hover {
+  background: #45a049;
+}
+
+.delete-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #f44336;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
+}
+
+.edit-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 카메라/마이크 스위치 스타일 */
+.media-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 10px;
+}
+
+.media-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #6c757d;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 36px;
+}
+
+.media-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.media-btn.active {
+  background: #28a745;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.media-btn.active:hover {
+  background: #218838;
+}
+
+.media-btn.disabled {
+  background: #6c757d;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.media-btn.disabled:hover {
+  background: #6c757d;
+  transform: none;
+  box-shadow: none;
+}
+
+.exit-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #f44336;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.exit-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.user-info {
+  color: #666;
+  font-weight: 500;
+}
+
+.logout-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .metaverse-header {
+    padding: 10px 15px;
+  }
+  
+  .metaverse-header h1 {
+    font-size: 1.2rem;
+  }
+  
+  .popular-maps-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+.metaverse-scene {
+  width: 100%;
+  height: 100%;
+}
+
+.no-map,
+.no-character {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: white;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.no-map h2,
+.no-character h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #ccc;
+}
+
+.no-map p,
+.no-character p {
+  color: #999;
+  font-size: 16px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* 로딩 스피너 */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f5f5f5;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 메뉴 토글 버튼 */
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+
+
+.edit-map-btn {
+  background: rgba(52, 152, 219, 0.8);
+  color: #f0f8ff;
+  border: 1px solid rgba(52, 152, 219, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.edit-map-btn:hover {
+  background: rgba(34, 153, 84, 1) !important;
+  transform: translateY(-1px) !important;
+}
+
+.fullscreen-btn {
+  background: rgba(52, 152, 219, 0.8);
+  color: #f0f8ff;
+  border: 1px solid rgba(52, 152, 219, 0.6);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2em;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  margin-right: 10px;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(52, 152, 219, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.fullscreen-btn:active {
+  transform: translateY(0);
+}
+
+.exit-btn {
+  background: rgba(231, 76, 60, 0.9);
+  color: #ffffff;
+  border: 2px solid rgba(231, 76, 60, 0.8);
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.exit-btn:hover {
+  background: rgba(231, 76, 60, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
+  border-color: rgba(231, 76, 60, 1);
+}
+
+.exit-btn:active {
+  transform: translateY(0);
+}
+
+.menu-toggle-btn {
+  background: rgba(52, 73, 94, 0.8);
+  color: #f0f8ff;
+  border: 1px solid rgba(52, 73, 94, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(52, 73, 94, 0.3);
+}
+
+.menu-toggle-btn:hover {
+  background: rgba(44, 62, 80, 0.9);
+  box-shadow: 0 4px 12px rgba(52, 73, 94, 0.5);
+  transform: translateY(-1px);
+}
+
+/* 사이드바 섹션 스타일 */
+.create-space-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.create-space-info p {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.create-space-info ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #666;
+}
+
+.create-space-info li {
+  margin-bottom: 5px;
+}
+
+.space-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.category-section h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.empty-text {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.create-btn.primary {
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  padding: 15px 20px;
+  font-size: 16px;
+}
+
+.create-btn.primary:hover {
+  background: #5a6fd8;
+} 

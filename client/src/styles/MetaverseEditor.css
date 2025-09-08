@@ -1,0 +1,726 @@
+/* 메타버스 에디터 스타일 */
+.metaverse-editor {
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 에디터 컨테이너 - 플렉스 레이아웃 */
+.editor-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 에디터 콘텐츠 */
+.editor-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 좌측 사이드바 */
+.editor-sidebar {
+  width: 280px;
+  height: 100%;
+  background: #1a1a1a;
+  border-right: 2px solid #00ff00;
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  order: -1;
+}
+
+.sidebar-section {
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+
+.sidebar-section h4 {
+  color: #00ff00;
+  font-size: 12px;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+}
+
+.editor-sidebar .tool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-sidebar .tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 12px;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.editor-sidebar .tool-btn:hover {
+  background: #3a3a3a;
+  border-color: #00ff00;
+}
+
+.editor-sidebar .tool-btn.active {
+  background: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+}
+
+.editor-sidebar .layer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor-sidebar .layer-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 11px;
+}
+
+.editor-sidebar .layer-controls label span:first-child {
+  width: 20px;
+}
+
+.editor-sidebar .layer-controls label span:nth-child(2) {
+  flex: 1;
+}
+
+.editor-sidebar .layer-controls input[type="range"] {
+  flex: 2;
+}
+
+.editor-sidebar .action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.editor-sidebar .save-btn,
+.editor-sidebar .cancel-btn,
+.editor-sidebar .list-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.editor-sidebar .save-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.editor-sidebar .save-btn:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.editor-sidebar .cancel-btn {
+  background: #f44336;
+  color: white;
+}
+
+.editor-sidebar .cancel-btn:hover {
+  background: #da190b;
+}
+
+.editor-sidebar .list-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.editor-sidebar .list-btn:hover {
+  background: #0b7dda;
+}
+
+/* 에디터 캔버스 컨테이너 */
+.editor-canvas-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow: auto;
+  background: #0a0a0a;
+  position: relative;
+  height: 100%;
+}
+
+.editor-canvas {
+  border: 2px solid #333;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+  display: block;
+}
+
+.canvas-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: #00ff00;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #333;
+  border-top-color: #00ff00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  color: #fff;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #00ff00;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.item-actions button {
+  background: transparent;
+  border: 1px solid #666;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.item-actions button:hover {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.modal-footer button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-footer .close-btn {
+  background: #666;
+  color: #fff;
+}
+
+.modal-footer .close-btn:hover {
+  background: #777;
+}
+
+/* 왼쪽 도구 패널 */
+.tools-panel {
+  width: 300px;
+  height: 100%;
+  background: #0a0a0a;
+  border-right: 2px solid #00ff00;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* 패널 헤더 */
+.panel-header {
+  background: #1a1a1a;
+  padding: 15px;
+  border-bottom: 2px solid #00ff00;
+  text-align: center;
+}
+
+.panel-header h3 {
+  margin: 0;
+  color: #00ff00;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* 도구 섹션 */
+.tool-section {
+  padding: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.tool-section h4 {
+  margin: 0 0 10px 0;
+  color: #00ffff;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+}
+
+/* 입력 필드 */
+.input-field {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  background: #1a1a1a;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* 레인지 슬라이더 스타일 */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #333;
+  outline: none;
+  margin: 5px 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #00ff00;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #00ff00;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.input-field:focus {
+  outline: none;
+  background: #222;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.input-field.small {
+  width: 60px;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+/* 체크박스 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 8px 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* 입력 행 */
+.input-row {
+  margin: 10px 0;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.input-row label {
+  display: flex;
+  align-items: center;
+}
+
+/* 도구 버튼 그리드 */
+.tool-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* 도구 버튼 */
+.tool-button {
+  padding: 10px;
+  background: #1a1a1a;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tool-button:hover {
+  background: rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.tool-button.active {
+  background: #00ff00;
+  color: #000;
+  font-weight: bold;
+}
+
+.tool-button.delete {
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.tool-button.delete:hover {
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.tool-button.delete.active {
+  background: #ff0000;
+  color: #fff;
+}
+
+/* 이미지 정보 */
+.image-info {
+  margin-top: 10px;
+  padding: 5px;
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  font-size: 12px;
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+}
+
+/* 투명도 컨트롤 */
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+  padding: 5px;
+  background: rgba(0, 255, 0, 0.05);
+  border-radius: 4px;
+}
+
+.opacity-control label {
+  width: 80px;
+  font-size: 12px;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+
+.opacity-control input[type="range"] {
+  flex: 1;
+  background: transparent;
+}
+
+.opacity-control span {
+  width: 40px;
+  text-align: right;
+  font-size: 12px;
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+}
+
+/* 아이템 리스트 */
+.item-list {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 10px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.list-item {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #222;
+  cursor: pointer;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.list-item:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.list-item.selected {
+  background: rgba(0, 255, 0, 0.2);
+  border-left: 3px solid #00ff00;
+}
+
+.delete-btn {
+  padding: 4px 8px;
+  background: #1a1a1a;
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+/* 캔버스 영역 */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  background: #222;
+  overflow: hidden;
+  width: calc(100% - 300px); /* 왼쪽 패널 너비 제외 */
+}
+
+/* 캔버스 컨테이너 */
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  cursor: crosshair;
+}
+
+
+/* 그리기 미리보기 */
+.drawing-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.preview-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-area {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* 시작점 마커 */
+.spawn-point-marker {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #00ff00;
+  border: 2px solid #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: #000;
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* 하단 컨트롤 */
+.bottom-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #0a0a0a;
+  border-top: 2px solid #00ff00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 30;
+}
+
+.control-button {
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.control-button:hover {
+  background: rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-button.reset-button {
+  border-color: #ffff00;
+  color: #ffff00;
+}
+
+.control-button.reset-button:hover {
+  background: rgba(255, 255, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+}
+
+.control-button.save-button {
+  border-color: #00ffff;
+  color: #00ffff;
+}
+
+.control-button.save-button:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.control-button.exit-button {
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.control-button.exit-button:hover {
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.control-buttons-right {
+  display: flex;
+  gap: 10px;
+}
+
+/* 스크롤바 스타일 */
+.tools-panel::-webkit-scrollbar,
+.item-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tools-panel::-webkit-scrollbar-track,
+.item-list::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.tools-panel::-webkit-scrollbar-thumb,
+.item-list::-webkit-scrollbar-thumb {
+  background: #00ff00;
+  border-radius: 4px;
+}
+
+.tools-panel::-webkit-scrollbar-thumb:hover,
+.item-list::-webkit-scrollbar-thumb:hover {
+  background: #00cc00;
+}
+
+/* 화면 전환 효과 */
+.split-screen-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  pointer-events: none;
+  display: none; /* 일단 숨김 */
+}
+
+/* CRT 효과 제거됨 */

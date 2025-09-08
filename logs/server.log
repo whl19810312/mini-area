@@ -1,0 +1,371 @@
+
+> metaverse-project@1.0.0 server
+> nodemon server/index.js
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server/index.js`[39m
+Gmail을 사용하여 이메일을 전송합니다.
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:7000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 7000
+}
+
+Node.js v22.17.1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server/index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server/index.js`[39m
+Gmail을 사용하여 이메일을 전송합니다.
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+🎥 화상통신 최적화 서버 시작!
+🔒 HTTPS 서버가 포트 7000에서 실행 중입니다.
+LAN 접속: https://192.168.200.106:7000
+WebSocket 접속: wss://192.168.200.106:7000
+WebRTC 화상통신: 지원됨
+카메라/마이크: HTTPS 환경에서 활성화
+✅ PostgreSQL 데이터베이스 연결 성공
+📊 데이터베이스에서 입실 중인 사용자 2명 로드
+📊 사용자 입실 상태 복원: test2 → 맵 3
+📊 사용자 입실 상태 복원: test1 → 맵 3
+✅ 데이터베이스 테이블 동기화 완료
+🏓 Ping 전송 완료: 0개 소켓
+2025-09-08T04:52:18.977Z - GET / from 127.0.0.1 (HTTPS: true)
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server/index.js`[39m
+Gmail을 사용하여 이메일을 전송합니다.
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:7000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 7000
+}
+
+Node.js v22.17.1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+ due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+Gmail을 사용하여 이메일을 전송합니다.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+[32m[nodemon] restarting due to changes...[39m
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:7000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/pr[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory,[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server/index.js`[39m
+Gmail을 사용하여 이메일을 전송합니다.
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:7000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -9✅ PostgreSQL 데이터베이스 연결 성공
+📊 데이터베이스에서 �[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+→ 맵 3
+📊 사용자 입실 상태 복원: test1 → 맵 3
+✅ 데이터베이스 테이블 동기화 완료
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓
+🏓 Ping 전송 완료: 0개 소켓

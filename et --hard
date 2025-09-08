@@ -1,0 +1,131 @@
+[33mcommit e709f034277287bf33f89b4a46e8aae5661e6ea8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Tue Aug 26 01:31:57 2025 +0900
+
+    server/e-mail
+
+[33mcommit 64b4c8f04c2ee48cea5af1bdba80cf6b14620bc2[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Sat Aug 23 23:30:59 2025 +0900
+
+    base
+
+[33mcommit c591dbeadb9523f09182b2288da038a2b1f34e3c[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 22 18:46:37 2025 +0900
+
+    stable more ..
+
+[33mcommit 641ab61b84237128bed561a53793a6a784063341[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 22 14:39:30 2025 +0900
+
+    character ok
+
+[33mcommit fea5b034cdb9c299fe9db1d57f430c225f71e72f[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 22 13:17:24 2025 +0900
+
+    login clean
+
+[33mcommit 0d52f9f1ac6a3b4e0188eba6de196176093e39d2[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 22 11:03:35 2025 +0900
+
+    1:1 complete
+
+[33mcommit a020a3a11a43d0a7dac8d981244da0eada111847[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 22 03:32:40 2025 +0900
+
+    1:1 making...
+
+[33mcommit 93e698aba86b32bdb11ae0998d7976ee1d2d9673[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 21 23:34:32 2025 +0900
+
+    clean
+
+[33mcommit 7fb5785c96f243dfcccf8e44f2ae83675e35ceb4[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Tue Aug 19 15:27:45 2025 +0900
+
+    client http
+
+[33mcommit 6f51af87e29f80da96a9c26cae72c10f5d92bb17[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Mon Aug 18 20:52:31 2025 +0900
+
+    마우스 클릭 이동 애니
+
+[33mcommit cecec1d5e8afd23f3c0c98ca63b786f024376b0a[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Sun Aug 17 09:10:43 2025 +0900
+
+    mouse click to move my man
+
+[33mcommit fada505239f89c974706fc17915ba28b4cb262c8[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 15 21:58:38 2025 +0900
+
+    meet the other man
+
+[33mcommit 16810030b0f40c68e4ad6673092638b62e6217dc[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Mon Aug 11 03:07:20 2025 +0900
+
+    ...
+
+[33mcommit 230e8ee7b6818ca06e6ee3d0df7cc8cf5a808339[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Sat Aug 9 22:13:51 2025 +0900
+
+    bug fix
+
+[33mcommit 513489a753e570387b5f54de8c66b32d28526f47[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Fri Aug 8 15:52:19 2025 +0900
+
+    ???
+
+[33mcommit 337b244ffc2e213c17fc129c1c3a739d0a0a4d5f[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 18:30:00 2025 +0900
+
+    landing page
+
+[33mcommit 3e4f768abff68a39c0ef697ca314b027ee8e3d9b[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 16:12:18 2025 +0900
+
+    new base
+
+[33mcommit 2bb1563cd72b16b237564b146e76ff3c128f308c[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 14:56:31 2025 +0900
+
+    base online
+
+[33mcommit b86b3b92b090aa7970060ef2b165e11046f4381e[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 14:37:33 2025 +0900
+
+    base
+
+[33mcommit db86928af6d6f6ff67101a1f82642e690dee7918[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 13:34:23 2025 +0900
+
+    clean
+
+[33mcommit f1d87ba9b63384bd92eb9225f0382c848da6c131[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 02:51:46 2025 +0900
+
+    stable code
+
+[33mcommit 21272eed48aba4ee0298f68761af12e92842ba13[m
+Author: Wonho Lee <whl19810312@gmail.com>
+Date:   Thu Aug 7 00:39:41 2025 +0900
+
+    start base

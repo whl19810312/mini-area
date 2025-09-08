@@ -1,0 +1,169 @@
+.metaverse-base-container {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* BBS 스타일 헤더 */
+.metaverse-bbs-header {
+  height: 40px;
+  background: #111;
+  border-bottom: 2px solid #00ff00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  z-index: 100;
+}
+
+.header-left,
+.header-center,
+.header-right {
+  flex: 1;
+  color: #00ff00;
+}
+
+.header-center {
+  text-align: center;
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.header-right {
+  text-align: right;
+  color: #00ffff;
+}
+
+/* 메인 캔버스 영역 */
+.metaverse-canvas-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+}
+
+/* UI 오버레이 */
+.metaverse-ui-overlay {
+  position: absolute;
+  top: 42px; /* 헤더 높이 + 보더 */
+  left: 0;
+  right: 0;
+  bottom: 40px; /* 푸터 높이 */
+  pointer-events: none;
+  z-index: 50;
+}
+
+.metaverse-ui-overlay > * {
+  pointer-events: auto;
+}
+
+/* BBS 스타일 푸터 */
+.metaverse-bbs-footer {
+  height: 40px;
+  background: #111;
+  border-top: 2px solid #00ff00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  z-index: 100;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1;
+  color: #00ff00;
+}
+
+.footer-center {
+  text-align: center;
+  color: #ffff00;
+}
+
+.footer-right {
+  text-align: right;
+  color: #00ffff;
+}
+
+/* 컨트롤 패널 */
+.metaverse-control-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #00ff00;
+  border-radius: 0;
+  padding: 0;
+  z-index: 200;
+  font-family: 'Courier New', monospace;
+}
+
+.control-header {
+  background: #00ff00;
+  color: #000;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.control-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-body button {
+  background: #111;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 10px;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.control-body button:hover {
+  background: #00ff00;
+  color: #000;
+}
+
+/* CRT 효과 */
+.metaverse-base-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 2px;
+  z-index: 999;
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}

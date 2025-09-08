@@ -1,0 +1,286 @@
+/* 비디오 오버레이 - 최상위 레이어 */
+.video-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999; /* 최상위 레이어 */
+  pointer-events: none; /* 배경 클릭 통과 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+  background: transparent; /* 완전 투명 배경 */
+}
+
+/* 비디오 컨테이너 - 하단 중앙 정렬 */
+.video-container {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: auto; /* 비디오는 클릭 가능 */
+  padding: 10px;
+  max-width: 90vw;
+  background: transparent; /* 완전 투명 배경 */
+}
+
+/* 하단 중앙 배치 */
+.video-container.bottom-center {
+  margin-bottom: 60px; /* 컨트롤 버튼 공간 */
+}
+
+/* 전체화면 컨테이너 */
+.video-container.fullscreen-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: 80vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: transparent; /* 완전 투명 배경 */
+  border-radius: 15px;
+  margin-bottom: 0;
+}
+
+/* 비디오 아이템 */
+.video-item {
+  position: relative;
+  width: 200px;
+  height: 150px;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  cursor: move;
+  user-select: none;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-item:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+}
+
+/* 전체화면 비디오 아이템 */
+.video-item.fullscreen-item {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  max-height: 450px;
+  justify-self: center;
+  align-self: center;
+}
+
+/* 비디오 스트림 */
+.video-stream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* 비디오 라벨 - 하단 표시 */
+.video-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  color: white;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.user-name {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.camera-off, .mic-off {
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+/* 컨트롤 버튼들 */
+.video-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  border-radius: 30px;
+  pointer-events: auto;
+  z-index: 10001;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.control-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.control-btn.active {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: #4CAF50;
+}
+
+.control-btn.inactive {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: #f44336;
+}
+
+.control-btn.sharing {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: #2196F3;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
+  }
+}
+
+.control-btn.end-call {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: #f44336;
+}
+
+.control-btn.end-call:hover {
+  background: rgba(244, 67, 54, 0.5);
+}
+
+.fullscreen-btn {
+  background: rgba(156, 39, 176, 0.3);
+  border-color: #9c27b0;
+}
+
+/* 영역 표시기 */
+.area-indicator {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 전체화면 모드 */
+.video-overlay.fullscreen {
+  background: transparent; /* 완전 투명 배경 */
+  top: 0;
+  bottom: 0;
+  padding: 0;
+}
+
+/* 드래그 중 스타일 */
+.video-item:active {
+  cursor: grabbing;
+  opacity: 0.9;
+  z-index: 10002 !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .video-item {
+    width: 120px;
+    height: 90px;
+  }
+  
+  .video-container {
+    gap: 8px;
+    padding: 5px;
+  }
+  
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .video-controls {
+    padding: 8px 15px;
+    gap: 8px;
+  }
+}
+
+/* 애니메이션 */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.video-item {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* 툴팁 */
+.control-btn::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.control-btn:hover::after {
+  opacity: 1;
+}
