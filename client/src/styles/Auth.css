@@ -1,0 +1,673 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #e94560 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  padding: 60px 50px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.auth-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #0a0a1a 0%, #533483 50%, #e94560 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-subtitle {
+  text-align: center;
+  margin-bottom: 50px;
+  color: #0a0a1a;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* 회원가입 폼 스타일 */
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin-bottom: 32px;
+  position: relative;
+  width: 100%;
+}
+
+/* 라벨 제거로 인해 form-group의 margin-bottom 조정 */
+.form-group {
+  margin-bottom: 24px;
+  position: relative;
+  width: 100%;
+}
+
+.form-input {
+  width: 100%;
+  padding: 20px 24px;
+  border: 2px solid rgba(10, 10, 26, 0.2);
+  border-radius: 16px;
+  font-size: 18px;
+  color: #0a0a1a !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #533483;
+  box-shadow: 
+    0 0 0 4px rgba(83, 52, 131, 0.1),
+    0 8px 32px rgba(83, 52, 131, 0.2);
+  color: #0a0a1a !important;
+  background: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+  color: #666 !important;
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 18px;
+}
+
+.form-input:hover {
+  border-color: #533483;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(83, 52, 131, 0.15);
+}
+
+/* 기존 input 스타일도 유지 */
+.form-group input {
+  width: 100%;
+  padding: 20px 24px;
+  border: 2px solid rgba(10, 10, 26, 0.2);
+  border-radius: 16px;
+  font-size: 18px;
+  color: #0a0a1a !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #533483;
+  box-shadow: 
+    0 0 0 4px rgba(83, 52, 131, 0.1),
+    0 8px 32px rgba(83, 52, 131, 0.2);
+  color: #0a0a1a !important;
+  background: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px);
+}
+
+.form-group input::placeholder {
+  color: #666 !important;
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 18px;
+}
+
+.form-group input:hover {
+  border-color: #533483;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(83, 52, 131, 0.15);
+}
+
+.auth-card button[type="submit"] {
+  width: 100%;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #533483 50%, #e94560 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 
+    0 8px 32px rgba(26, 26, 46, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.auth-card button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.auth-card button[type="submit"]:hover::before {
+  left: 100%;
+}
+
+.auth-card button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 40px rgba(26, 26, 46, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.auth-card button[type="submit"]:active {
+  transform: translateY(-1px);
+}
+
+.auth-card button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.divider {
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e1e5e9;
+}
+
+.divider span {
+  background: white;
+  padding: 0 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 14px;
+  background: white;
+  color: #333;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.google-btn:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 40px;
+  color: #0a0a1a;
+  font-size: 15px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-link a {
+  background: linear-gradient(135deg, #533483 0%, #e94560 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.auth-link a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #533483 0%, #e94560 100%);
+  transition: width 0.3s ease;
+}
+
+.auth-link a:hover::after {
+  width: 100%;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #0a0a1a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth-footer p {
+  color: #0a0a1a;
+  font-weight: 600;
+} 
+
+/* 이메일 인증 페이지 스타일 */
+.verifying {
+  text-align: center;
+  padding: 20px;
+  color: #0a0a1a;
+  font-weight: 600;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.success {
+  text-align: center;
+  padding: 20px;
+  color: #0a0a1a;
+  font-weight: 600;
+}
+
+.success-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: #4CAF50;
+}
+
+.success h3 {
+  color: #4CAF50;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.error h3 {
+  color: #f44336;
+  margin-bottom: 15px;
+}
+
+.resend-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.resend-section p {
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  background: white;
+  color: #333;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.auth-button:hover {
+  background: #45a049;
+}
+
+.auth-button.resend {
+  background: #2196F3;
+  margin-top: 10px;
+}
+
+.auth-button.resend:hover {
+  background: #1976D2;
+}
+
+.auth-button.secondary {
+  background: #6c757d;
+}
+
+.auth-button.secondary:hover {
+  background: #5a6268;
+}
+
+.auth-link-button {
+  background: none;
+  border: none;
+  color: #2196F3;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.auth-link-button:hover {
+  color: #1976D2;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.1);
+}
+
+.error-message::before {
+  content: "⚠️";
+  font-size: 18px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.warning-message {
+  background: rgba(255, 193, 7, 0.1);
+  color: #856404;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.1);
+}
+
+.resend-verification {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.resend-verification p {
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.resend-btn {
+  background: linear-gradient(135deg, #533483 0%, #e94560 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resend-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(83, 52, 131, 0.3);
+}
+
+.resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.info-message {
+  background: #d1ecf1;
+  color: #0c5460;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #bee5eb;
+}
+
+/* 이메일 재전송 옵션 */
+.resend-verification {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.resend-verification p {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.resend-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.resend-btn:hover {
+  background: #5a6268;
+}
+
+.resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 이메일 인증 페이지 추가 스타일 */
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.auth-card h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.auth-button.secondary {
+  background: #6c757d;
+  margin-top: 10px;
+}
+
+.auth-button.secondary:hover {
+  background: #5a6268;
+}
+
+/* 이메일 인증 성공 화면 */
+.email-verification-success {
+  text-align: center;
+  padding: 20px;
+}
+
+.email-verification-success h2 {
+  color: #4CAF50;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.email-verification-success p {
+  margin-bottom: 15px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.email-verification-success strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.verification-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.verification-actions .auth-button {
+  margin: 0;
+} 

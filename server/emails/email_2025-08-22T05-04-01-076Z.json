@@ -1,0 +1,9 @@
+{
+  "id": "email_1755839041076",
+  "from": "whl19810312@gmail.com",
+  "to": "wonholee1981@naver.com",
+  "subject": "mini area 이메일 인증",
+  "html": "\n      <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n        <h2 style=\"color: #333; text-align: center;\">이메일 인증</h2>\n        <p>안녕하세요, <strong>jack</strong>님!</p>\n        <p>mini area 계정을 완성하기 위해 이메일 인증이 필요합니다. 아래 버튼을 클릭하여 이메일을 인증해주세요.</p>\n        <div style=\"text-align: center; margin: 30px 0;\">\n          <a href=\"http://192.168.200.103:5173/verify-email?token=f58c019a6a165517be20ccfcf4ace3e63ebaea88751aba7cfcd962455cea2bb2\" \n             style=\"background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;\">\n            이메일 인증하기\n          </a>\n        </div>\n        <p>또는 아래 링크를 브라우저에 복사하여 붙여넣기 하세요:</p>\n        <p style=\"word-break: break-all; color: #666;\">http://192.168.200.103:5173/verify-email?token=f58c019a6a165517be20ccfcf4ace3e63ebaea88751aba7cfcd962455cea2bb2</p>\n        <p style=\"color: #999; font-size: 12px;\">\n          이 링크는 24시간 후에 만료됩니다.<br>\n          계정을 생성하지 않으셨다면 무시하셔도 됩니다.\n        </p>\n      </div>\n    ",
+  "timestamp": "2025-08-22T05:04:01.076Z",
+  "messageId": "local_1755839041076@localhost"
+}

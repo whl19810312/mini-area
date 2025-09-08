@@ -1,0 +1,425 @@
+
+> metaverse-project@1.0.0 dev
+> concurrently "npm run server" "npm run client"
+
+[1] 
+[1] > metaverse-project@1.0.0 client
+[1] > cd client && npm run dev
+[1] 
+[0] 
+[0] > metaverse-project@1.0.0 server
+[0] > nodemon server/index.js
+[0] 
+[1] 
+[1] > metaverse-client@0.0.0 dev
+[1] > vite --port 5173
+[1] 
+[0] [33m[nodemon] 3.1.10[39m
+[0] [33m[nodemon] to restart at any time, enter `rs`[39m
+[0] [33m[nodemon] watching path(s): *.*[39m
+[0] [33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[0] [32m[nodemon] starting `node server/index.js`[39m
+[0] [32m[nodemon] restarting due to changes...[39m
+[0] [32m[nodemon] starting `node server/index.js`[39m
+[1] 
+[1]   VITE v4.5.14  ready in 133 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: http://192.168.200.106:5173/
+[0] [32m[nodemon] restarting due to changes...[39m
+[0] [32m[nodemon] starting `node server/index.js`[39m
+[0] Gmail을 사용하여 이메일을 전송합니다.
+[0] 서버가 포트 7000에서 실행 중입니다.
+[0] LAN 접속: http://localhost:7000
+[0] WebSocket 접속: ws://localhost:7000
+[0] PostgreSQL 데이터베이스 연결 성공
+[1] /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1] 12:04:31 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[0] 데이터베이스 테이블 동기화 완료
+[1] 12:04:37 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:38 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:38 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:38 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:38 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:41 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1] 12:04:44 AM [vite] Internal server error: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx: Missing semicolon. (6:7)
+[1] 
+[1]   4 | import ChatWindow from './ChatWindow';
+[1]   5 | import PrivateVideoConference from './PrivateVideoConference';
+[1] > 6 | 햣import ShareLink from './ShareLink';
+[1]     |        ^
+[1]   7 | import UserList from './UserList';
+[1]   8 | import '../styles/MetaverseScene.css';
+[1]   9 |
+[1]   Plugin: vite:react-babel
+[1]   File: /home/wh/working/working/mini_area/client/src/components/MetaverseScene.jsx:6:7
+[1]   4  |  import ChatWindow from './ChatWindow';
+[1]   5  |  import PrivateVideoConference from './PrivateVideoConference';
+[1]   6  |  햣import ShareLink from './ShareLink';
+[1]      |         ^
+[1]   7  |  import UserList from './UserList';
+[1]   8  |  import '../styles/MetaverseScene.css';
+[1]       at constructor (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:367:19)
+[1]       at JSXParserMixin.raise (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+[1]       at JSXParserMixin.semicolon (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:6923:10)
+[1]       at JSXParserMixin.parseExpressionStatement (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13285:10)
+[1]       at JSXParserMixin.parseStatementContent (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12899:19)
+[1]       at JSXParserMixin.parseStatementLike (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+[1]       at JSXParserMixin.parseModuleItem (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12744:17)
+[1]       at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13316:36)
+[1]       at JSXParserMixin.parseBlockBody (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+[1]       at JSXParserMixin.parseProgram (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12625:10)
+[1]       at JSXParserMixin.parseTopLevel (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:12615:25)
+[1]       at JSXParserMixin.parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14492:10)
+[1]       at parse (/home/wh/working/working/mini_area/client/node_modules/@babel/parser/lib/index.js:14526:38)
+[1]       at parser (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+[1]       at parser.next (<anonymous>)
+[1]       at normalizeFile (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[1]       at normalizeFile.next (<anonymous>)
+[1]       at run (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[1]       at run.next (<anonymous>)
+[1]       at transform (/home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/transform.js:22:33)
+[1]       at transform.next (<anonymous>)
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:261:32)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:189:28
+[1]       at /home/wh/working/working/mini_area/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:113:33
+[1]       at step (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:287:14)
+[1]       at /home/wh/working/working/mini_area/client/node_modules/gensync/index.js:273:13
+[1]       at async.call.result.err.err (/home/wh/working/working/mini_area/client/node_modules/gensync/index.js:223:11)
+[0] Terminated
+[0] npm run server exited with code 143
+[1] Terminated
+[1] npm run client exited with code 143

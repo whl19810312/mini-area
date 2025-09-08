@@ -1,0 +1,178 @@
+/* 간단한 에디터 스타일 - 디버깅용 */
+.metaverse-editor {
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+
+.editor-container {
+  width: 100%;
+  height: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.tools-panel {
+  width: 300px !important;
+  min-width: 300px !important;
+  height: 100%;
+  background: #000 !important;
+  border-right: 2px solid #00ff00 !important;
+  padding: 0;
+  overflow-y: auto;
+  color: #00ff00 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.panel-header {
+  background: #0a0a0a;
+  padding: 15px;
+  border-bottom: 2px solid #00ff00;
+  text-align: center;
+}
+
+.panel-header h3 {
+  margin: 0;
+  color: #00ff00;
+  font-size: 18px;
+}
+
+.tool-section {
+  padding: 15px;
+  border-bottom: 1px solid #00ff00;
+}
+
+.tool-section h4 {
+  color: #00ffff;
+  margin: 0 0 10px 0;
+}
+
+.tool-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  background: #111;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  cursor: pointer;
+}
+
+.tool-button:hover {
+  background: #00ff00;
+  color: #000;
+}
+
+.tool-button.active {
+  background: #00ff00;
+  color: #000;
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  background: #111;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+.canvas-area {
+  flex: 1;
+  background: #222;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-container {
+  width: 100%;
+  height: calc(100% - 60px);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bottom-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #000;
+  border-top: 2px solid #00ff00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.control-button {
+  padding: 10px 20px;
+  background: #111;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.control-button:hover {
+  background: #00ff00;
+  color: #000;
+}
+
+.control-buttons-right {
+  display: flex;
+  gap: 10px;
+}
+
+/* 투명도 컨트롤 */
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.opacity-control label {
+  width: 80px;
+  font-size: 12px;
+}
+
+.opacity-control input[type="range"] {
+  flex: 1;
+}
+
+.opacity-control span {
+  width: 40px;
+  text-align: right;
+}
+
+/* 체크박스 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* 툴 버튼 그리드 */
+.tool-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* 스플릿 스크린 효과 숨김 */
+.split-screen-effect {
+  display: none;
+}

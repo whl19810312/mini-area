@@ -1,0 +1,24 @@
+# WebSocket Transport Configuration
+
+general: {
+    json = "indented"
+    ws = true
+    ws_port = 8188
+    ws_interface = "0.0.0.0"
+    ws_ip = "0.0.0.0"
+    
+    wss = false
+    # wss_port = 8989
+    # wss_interface = "0.0.0.0"
+    # wss_ip = "0.0.0.0"
+    
+    ws_logging = "err,warn"
+    ws_acl = ""
+    
+    max_ws_clients = 0
+    
+    # SSL/TLS 설정 (HTTPS를 사용할 경우)
+    # cert_pem = "/path/to/cert.pem"
+    # cert_key = "/path/to/key.pem"
+    # cert_pwd = ""
+}

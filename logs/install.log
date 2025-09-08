@@ -1,0 +1,39 @@
+npm warn config production Use `--omit=dev` instead.
+
+up to date, audited 390 packages in 642ms
+
+50 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @monogrid/gainmap-js@3.1.0
+npm warn Found: three@0.156.1
+npm warn node_modules/three
+npm warn   three@"^0.156.1" from the root project
+npm warn   10 more (@react-spring/three, @react-three/drei, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer three@">= 0.159.0" from @monogrid/gainmap-js@3.1.0
+npm warn node_modules/@react-three/drei/node_modules/@monogrid/gainmap-js
+npm warn   @monogrid/gainmap-js@"^3.0.6" from @react-three/drei@9.122.0
+npm warn   node_modules/@react-three/drei
+npm warn
+npm warn Conflicting peer dependency: three@0.180.0
+npm warn node_modules/three
+npm warn   peer three@">= 0.159.0" from @monogrid/gainmap-js@3.1.0
+npm warn   node_modules/@react-three/drei/node_modules/@monogrid/gainmap-js
+npm warn     @monogrid/gainmap-js@"^3.0.6" from @react-three/drei@9.122.0
+npm warn     node_modules/@react-three/drei
+
+up to date, audited 392 packages in 1s
+
+118 packages are looking for funding
+  run `npm fund` for details
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

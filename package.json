@@ -1,0 +1,81 @@
+{
+  "name": "metaverse-project",
+  "version": "1.0.0",
+  "description": "mini area 플랫폼 - 방 생성 및 상호작용",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm run dev",
+    "dev:https": "concurrently \"npm run server\" \"npm run client:https\"",
+    "client:https": "cd client && npm run dev:https",
+    "build": "cd client && npm run build",
+    "start": "node server/index.js",
+    "install-deps": "npm install && cd client && npm install",
+    "setup-db": "cd server && node init-db.js",
+    "status": "bash status.sh",
+    "restart": "bash restart.sh",
+    "stop": "bash stop.sh",
+    "update-env": "./update-client-env.sh",
+    "https-status": "echo '🔒 HTTPS/WSS 상태 확인' && echo '서버: https://localhost:7000' && echo '클라이언트: https://localhost:5173' && echo 'WebSocket: wss://localhost:7000'",
+    "logs": "sudo tail -f /var/log/mail.log",
+    "postgres-status": "sudo systemctl status postgresql",
+    "postfix-status": "sudo systemctl status postfix",
+    "test": "echo \"테스트 스크립트가 설정되지 않았습니다.\"",
+    "lint": "echo \"린트 스크립트가 설정되지 않았습니다.\"",
+    "clean": "rm -rf node_modules client/node_modules && npm run install-deps"
+  },
+  "keywords": [
+    "metaverse",
+    "3d",
+    "virtual-world",
+    "react",
+    "nodejs",
+    "postgresql"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bull": "^4.16.5",
+    "concurrently": "^8.2.0",
+    "connect-redis": "^9.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.0.1",
+    "express-session": "^1.18.2",
+    "helmet": "^7.0.0",
+    "ioredis": "^5.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "livekit-client": "^2.15.6",
+    "livekit-server-sdk": "^2.13.3",
+    "multer": "^2.0.2",
+    "nodemailer": "^6.9.4",
+    "nodemon": "^3.0.1",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "redis": "^5.8.2",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/metaverse-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/metaverse-project/issues"
+  },
+  "homepage": "https://github.com/yourusername/metaverse-project#readme"
+}
