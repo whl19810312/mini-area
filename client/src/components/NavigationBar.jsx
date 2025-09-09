@@ -66,13 +66,6 @@ const NavigationBar = ({ currentView, onViewChange, currentArea, onReturnToLobby
         >
           {isFullscreen ? '🔳' : '🔲'} 전체화면
         </button>
-        <button
-          className="nav-button"
-          onClick={() => onOpenUserList && onOpenUserList()}
-          title="1:1 화상통화"
-        >
-          🤝 1:1 통화
-        </button>
         <button 
           className="nav-button return-button"
           onClick={onReturnToLobby}

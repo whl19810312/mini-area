@@ -92,13 +92,6 @@ const VideoTopBar = ({
         </div>
         
         <div className="nav-right">
-          <button
-            className="nav-button"
-            onClick={() => onOpenUserList && onOpenUserList()}
-            title="1:1 화상통화"
-          >
-            🤝 1:1
-          </button>
           <button 
             className="nav-button"
             onClick={onReturnToLobby}

@@ -3,7 +3,6 @@ import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCharacterMovement } from '../hooks/useCharacterMovement';
 import { useWebRTC } from '../hooks/useWebRTC';
-import { useLiveKit } from '../hooks/useLiveKit';
 import CharacterCustomizer from './CharacterCustomizer';
 import VideoCallPanel from './VideoCallPanel';
 import UserList from './UserList';
@@ -42,7 +41,7 @@ const MetaverseSceneNew = forwardRef(({
   const [canvasSize, setCanvasSize] = useState({ width: 1000, height: 1000 });
   const [showCharacterCustomizer, setShowCharacterCustomizer] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
-  const [videoCallMode, setVideoCallMode] = useState(null); // '1on1', 'zone', 'global'
+  const [videoCallMode, setVideoCallMode] = useState(null); // 'zone', 'global'
   const [targetUser, setTargetUser] = useState(null);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
   const [currentZone, setCurrentZone] = useState('퍼블릭 영역'); // 현재 영역 표시
@@ -128,35 +127,14 @@ const MetaverseSceneNew = forwardRef(({
     setTargetUser(null);
   });
   
-  // LiveKit SFU hook 사용 (전체 통화용)
-  const liveKit = useLiveKit(user);
   
-  // 화상통화 요청 처리
-  const handleVideoCallRequest = (userId) => {
-    const targetUserData = otherUsers?.find(u => u.userId === userId);
-    if (targetUserData) {
-      setTargetUser(targetUserData);
-      setVideoCallMode('1on1');
-      setShowUserList(false);
-      
-      // Socket으로 화상통화 요청 전송
-      if (user?.socket) {
-        user.socket.emit('video-call-request', {
-          from: user.id,
-          to: userId,
-          username: user.username
-        });
-        toast.success(`${targetUserData.username}님에게 화상통화를 요청했습니다.`);
-      }
-    }
-  };
   
   // 화상통화 수락
   const acceptVideoCall = () => {
     if (incomingCall) {
-      // 퍼블릭 영역에서는 전체/영역 통화 수락 불가 (1:1 통화는 가능)
-      if (currentZone === '퍼블릭 영역' && incomingCall.type !== '1on1') {
-        toast.error('퍼블릭 영역에서는 전체/영역 화상통화를 수락할 수 없습니다. 프라이빗 영역으로 이동해주세요.');
+      // 퍼블릭 영역에서는 전체/영역 통화 수락 불가
+      if (currentZone === '퍼블릭 영역') {
+        toast.error('퍼블릭 영역에서는 화상통화를 수락할 수 없습니다. 프라이빗 영역으로 이동해주세요.');
         setIncomingCall(null);
         return;
       }
@@ -164,11 +142,6 @@ const MetaverseSceneNew = forwardRef(({
       // 전체 통화 요청인 경우
       if (incomingCall.type === 'global') {
         handleJoinGlobalCall(incomingCall.roomId);
-      } else {
-        // 1:1 통화
-        setTargetUser(incomingCall);
-        setVideoCallMode('1on1');
-        setShowVideoCall(true);
       }
       setIncomingCall(null);
       
@@ -212,8 +185,6 @@ const MetaverseSceneNew = forwardRef(({
           });
         }
         
-        // 본인도 LiveKit 방에 참가
-        await liveKit.join(roomId);
         setGlobalCallRoom(roomId);
         setActiveGlobalCall({ roomId, participants: [user.id] });
         setVideoCallMode('global');
@@ -236,7 +207,6 @@ const MetaverseSceneNew = forwardRef(({
     }
     
     try {
-      await liveKit.join(roomId);
       setGlobalCallRoom(roomId);
       setVideoCallMode('global');
       setShowVideoCall(true);
@@ -288,8 +258,6 @@ const MetaverseSceneNew = forwardRef(({
           });
         }
         
-        // 본인도 LiveKit 방에 참가
-        await liveKit.join(roomId);
         setZoneCallRoom(roomId);
         setActiveZoneCall({ roomId, zone: currentZone, participants: [user.id] });
         setVideoCallMode('zone');
@@ -312,7 +280,6 @@ const MetaverseSceneNew = forwardRef(({
     }
     
     try {
-      await liveKit.join(roomId);
       setZoneCallRoom(roomId);
       setVideoCallMode('zone');
       setShowVideoCall(true);
@@ -588,9 +555,6 @@ const MetaverseSceneNew = forwardRef(({
             setVideoCallMode(null);
             setZoneCallRoom(null);
             setActiveZoneCall(null);
-            if (liveKit.connected) {
-              liveKit.leave();
-            }
             toast.info('퍼블릭 영역에서는 영역 화상통화가 종료됩니다.');
           }
           
@@ -600,9 +564,6 @@ const MetaverseSceneNew = forwardRef(({
             setVideoCallMode(null);
             setGlobalCallRoom(null);
             setActiveGlobalCall(null);
-            if (liveKit.connected) {
-              liveKit.leave();
-            }
             toast.info('퍼블릭 영역에서는 전체 화상통화가 종료됩니다.');
           }
         }
@@ -628,7 +589,7 @@ const MetaverseSceneNew = forwardRef(({
     
     setPreviousMovingState(isMoving || navigationMode === 'navigating');
     setPreviousNavigationMode(navigationMode);
-  }, [isMoving, navigationMode, position, currentZone, videoCallMode, showVideoCall, liveKit, socket, user, currentMap]);
+  }, [isMoving, navigationMode, position, currentZone, videoCallMode, showVideoCall, socket, user, currentMap]);
   
   // 다른 사용자들의 위치 부드럽게 보간
   useEffect(() => {
@@ -1137,18 +1098,6 @@ const MetaverseSceneNew = forwardRef(({
           </button>
           <button 
             onClick={() => {
-              // 서버에서 방 사용자 목록 가져오기
-              if (socket) {
-                socket.emit('get-room-users');
-              }
-              setShowUserList(true); // 사용자 목록 표시
-            }} 
-            className="toolbar-btn"
-          >
-            📹 1:1 통화
-          </button>
-          <button 
-            onClick={() => {
               // 영역별 화상통화 - 진행 중이면 참가, 없으면 새로 시작
               handleZoneVideoCallRequest();
             }} 
@@ -1345,16 +1294,13 @@ const MetaverseSceneNew = forwardRef(({
           mode={videoCallMode}
           targetUser={targetUser}
           webRTC={webRTC}
-          livekit={liveKit}
           onClose={async () => {
             setShowVideoCall(false);
             setVideoCallMode(null);
             setTargetUser(null);
             
-            // 전체/영역 통화인 경우 LiveKit 연결 해제
-            if ((videoCallMode === 'global' || videoCallMode === 'zone') && liveKit.connected) {
-              await liveKit.leave();
-              
+            // 전체/영역 통화인 경우 연결 해제
+            if (videoCallMode === 'global' || videoCallMode === 'zone') {
               if (videoCallMode === 'global') {
                 setGlobalCallRoom(null);
                 setGlobalCallParticipants([]);

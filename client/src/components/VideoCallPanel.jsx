@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/VideoCallPanel.css';
 
-const VideoCallPanel = ({ mode, webRTC, livekit, onClose, targetUser }) => {
+const VideoCallPanel = ({ mode, webRTC, onClose, targetUser }) => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const [participants, setParticipants] = useState([]);
@@ -9,55 +9,32 @@ const VideoCallPanel = ({ mode, webRTC, livekit, onClose, targetUser }) => {
   const [isVideoOff, setIsVideoOff] = useState(false);
   
   useEffect(() => {
-    if (mode === '1on1' && webRTC) {
-      // 1:1 화상통화 설정
-      if (localVideoRef.current && webRTC.localStream) {
-        localVideoRef.current.srcObject = webRTC.localStream;
-      }
-      if (remoteVideoRef.current && webRTC.remoteStream) {
-        remoteVideoRef.current.srcObject = webRTC.remoteStream;
-      }
-    } else if ((mode === 'zone' || mode === 'global') && livekit) {
-      // 영역/전체 화상통화 설정 (LiveKit)
-      livekit.on('participantConnected', (participant) => {
-        setParticipants(prev => [...prev, participant]);
-      });
-      
-      livekit.on('participantDisconnected', (participant) => {
-        setParticipants(prev => prev.filter(p => p.sid !== participant.sid));
-      });
-      
-      // 로컬 비디오 설정
-      if (localVideoRef.current && livekit.localParticipant?.videoTrack) {
-        livekit.localParticipant.videoTrack.attach(localVideoRef.current);
-      }
+    if (mode === 'zone' || mode === 'global') {
+      // 영역/전체 화상통화 설정 (MediaSoup/P2P로 대체 예정)
+      console.log('Zone/Global video call mode - MediaSoup/P2P integration pending');
     }
     
     return () => {
       // 정리
-      if (mode === '1on1' && webRTC) {
-        webRTC.cleanup();
-      } else if ((mode === 'zone' || mode === 'global') && livekit) {
-        livekit.disconnect();
+      if (mode === 'zone' || mode === 'global') {
+        // MediaSoup/P2P 정리 로직 추가 예정
       }
     };
-  }, [mode, webRTC, livekit]);
+  }, [mode, webRTC]);
   
   const toggleMute = () => {
     setIsMuted(!isMuted);
-    if (mode === '1on1' && webRTC) {
-      webRTC.toggleAudio(!isMuted);
-    } else if (livekit) {
-      livekit.localParticipant?.setMicrophoneEnabled(isMuted);
+    if (mode === 'zone' || mode === 'global') {
+      // MediaSoup/P2P 음소거 로직 추가 예정
+      console.log('Mute toggle for zone/global mode - pending');
     }
   };
   
   const toggleVideo = () => {
     setIsVideoOff(!isVideoOff);
-    if (mode === '1on1' && webRTC) {
-      webRTC.toggleVideo(!isVideoOff);
-    } else if (livekit) {
-      livekit.localParticipant?.setCameraEnabled(isVideoOff);
+    if (mode === 'zone' || mode === 'global') {
+      // MediaSoup/P2P 비디오 토글 로직 추가 예정
+      console.log('Video toggle for zone/global mode - pending');
     }
   };
   
@@ -65,9 +42,7 @@ const VideoCallPanel = ({ mode, webRTC, livekit, onClose, targetUser }) => {
     <div className="video-call-panel">
       <div className="video-header">
         <h3>
-          {mode === '1on1' ? `1:1 통화 - ${targetUser?.username || ''}` : 
-           mode === 'zone' ? '영역 화상통화' : 
-           '전체 화상통화'}
+          {mode === 'zone' ? '영역 화상통화' : '전체 화상통화'}
         </h3>
         <button className="close-btn" onClick={onClose}>✕</button>
       </div>
@@ -86,13 +61,6 @@ const VideoCallPanel = ({ mode, webRTC, livekit, onClose, targetUser }) => {
           {isVideoOff && <div className="video-off-placeholder">📷 비디오 꺼짐</div>}
         </div>
         
-        {/* 1:1 통화 - 원격 비디오 */}
-        {mode === '1on1' && (
-          <div className="video-container remote">
-            <video ref={remoteVideoRef} autoPlay playsInline />
-            <div className="video-label">{targetUser?.username || '상대방'}</div>
-          </div>
-        )}
         
         {/* 그룹 통화 - 참가자들 */}
         {(mode === 'zone' || mode === 'global') && participants.map(participant => (

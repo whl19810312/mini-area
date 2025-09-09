@@ -8,15 +8,29 @@ const fs = require('fs'); // SSL 인증서 읽기용
 const socketIo = require('socket.io');
 require('dotenv').config();
 
+const logger = require('./utils/logger');
+const { validateWebRTCConfig } = require('./utils/validateConfig');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/auth');
 const mapRoutes = require('./routes/map');
 const characterRoutes = require('./routes/character');
 const userRoutes = require('./routes/user');
-const livekitRoutes = require('./routes/livekit');
-const videoCallRoutes = require('./routes/videoCallRoutes');
 const PrivateAreaHandler = require('./websocket/privateAreaHandler');
 const MetaverseHandler = require('./websocket/metaverseHandler');
+
+// WebRTC 모드에 따라 핸들러 선택
+const webrtcMode = process.env.WEBRTC_MODE || 'p2p';
+let videoHandler = null;
+
+if (webrtcMode === 'mediasoup') {
+  const MediaSoupHandler = require('./websocket/mediasoupHandler');
+  videoHandler = new MediaSoupHandler(null); // io는 나중에 설정
+} else {
+  const P2PHandler = require('./websocket/p2pHandler');
+  videoHandler = new P2PHandler(null); // io는 나중에 설정
+}
+
+logger.info(`WebRTC Mode: ${webrtcMode.toUpperCase()}`);
 
 const app = express();
 
@@ -49,7 +63,11 @@ const PORT = process.env.PORT || 7000;
 
 // 요청 로깅 미들웨어
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} from ${req.ip} (HTTPS: ${req.secure})`);
+  logger.http(`${req.method} ${req.path}`, {
+    ip: req.ip,
+    secure: req.secure,
+    userAgent: req.get('user-agent')
+  });
   next();
 });
 
@@ -88,6 +106,11 @@ app.use(passport.session());
 const privateAreaHandler = new PrivateAreaHandler(io);
 const metaverseHandler = new MetaverseHandler(io);
 
+// 비디오 핸들러에 io 설정
+if (videoHandler) {
+  videoHandler.io = io;
+}
+
 // WebSocket 핸들러를 req 객체에 주입하는 미들웨어
 app.use((req, res, next) => {
   req.io = io;
@@ -101,8 +124,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/maps', mapRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/livekit', livekitRoutes);
-app.use('/api/video-call', videoCallRoutes);
 
 // 클라이언트 호환성을 위한 추가 라우트 (api 접두사 없이)
 app.use('/maps', mapRoutes);
@@ -124,7 +145,7 @@ app.get('/api/webrtc/status', (req, res) => {
 
 // 에러 핸들링 미들웨어
 app.use((error, req, res, next) => {
-  console.error('서버 오류:', error);
+  logger.error('Server error:', error);
   res.status(500).json({
     success: false,
     message: '서버 내부 오류가 발생했습니다.',
@@ -134,8 +155,7 @@ app.use((error, req, res, next) => {
 
 // WebSocket 연결 처리 (화상통신 최적화)
 io.on('connection', (socket) => {
-  console.log('새로운 WebSocket 연결 (화상통신 준비):', socket.id);
-  console.log('연결 정보:', {
+  logger.info(`New WebSocket connection: ${socket.id}`, {
     id: socket.id,
     ip: socket.handshake.address,
     userAgent: socket.handshake.headers['user-agent'],
@@ -143,21 +163,26 @@ io.on('connection', (socket) => {
     secure: socket.handshake.secure
   });
   
-      // mini area 핸들러가 먼저 처리 (방 입장/퇴장, 위치 업데이트 등)
+  // 비디오 통화 핸들러 (P2P 또는 MediaSoup)
+  if (videoHandler) {
+    videoHandler.handleConnection(socket);
+  }
+  
+  // mini area 핸들러가 먼저 처리 (방 입장/퇴장, 위치 업데이트 등)
   metaverseHandler.handleConnection(socket);
   
-  // 프라이빗 영역 핸들러도 처리 (화상통화 등)
+  // 프라이빗 영역 핸들러도 처리
   privateAreaHandler.handleConnection(socket);
 });
 
 // WebSocket 연결 시도 로깅
 io.engine.on('connection_error', (err) => {
-  console.error('❌ WebSocket 연결 오류:', err);
+  logger.error('WebSocket connection error:', err);
 });
 
 io.engine.on('initial_headers', (headers, req) => {
-  console.log('WebSocket 초기 헤더:', headers);
-  console.log('WebSocket 요청 정보:', {
+  logger.debug('WebSocket headers:', headers);
+  logger.debug('WebSocket request info:', {
     method: req.method,
     url: req.url,
     headers: req.headers,
@@ -168,14 +193,20 @@ io.engine.on('initial_headers', (headers, req) => {
 // 데이터베이스 연결
 sequelize.authenticate()
   .then(() => {
-    console.log('✅ PostgreSQL 데이터베이스 연결 성공');
+    logger.info('PostgreSQL database connected successfully');
     return sequelize.sync({ alter: true });
   })
-  .then(() => {
-    console.log('✅ 데이터베이스 테이블 동기화 완료');
+  .then(async () => {
+    logger.info('Database tables synchronized');
+    
+    // 비디오 핸들러 초기화 (MediaSoup 또는 P2P)
+    if (videoHandler && videoHandler.initialize) {
+      await videoHandler.initialize();
+      logger.info(`${webrtcMode.toUpperCase()} video service initialized`);
+    }
   })
   .catch(err => {
-    console.error('❌ PostgreSQL 연결 실패:', err.message);
+    logger.error('PostgreSQL connection failed:', err);
   });
 
 // 서버 IP 자동 감지 함수
@@ -198,11 +229,17 @@ const getServerIP = () => {
 };
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log('🎥 화상통신 최적화 서버 시작!');
-  console.log(`🔒 HTTPS 서버가 포트 ${PORT}에서 실행 중입니다.`);
+  // WebRTC 설정 유효성 검사
+  validateWebRTCConfig();
+  
   const serverIP = getServerIP();
-  console.log(`LAN 접속: https://${serverIP}:${PORT}`);
-  console.log(`WebSocket 접속: wss://${serverIP}:${PORT}`);
-  console.log(`WebRTC 화상통신: 지원됨`);
-  console.log(`카메라/마이크: HTTPS 환경에서 활성화`);
+  logger.info('=================================');
+  logger.info('Server started successfully');
+  logger.info(`HTTPS Port: ${PORT}`);
+  logger.info(`WebRTC Mode: ${webrtcMode.toUpperCase()}`);
+  logger.info(`LAN Access: https://${serverIP}:${PORT}`);
+  logger.info(`WebSocket: wss://${serverIP}:${PORT}`);
+  logger.info('WebRTC video communication: Enabled');
+  logger.info('Camera/Microphone: Enabled in HTTPS');
+  logger.info('=================================');
 }); 

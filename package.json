@@ -49,8 +49,8 @@
     "helmet": "^7.0.0",
     "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
-    "livekit-client": "^2.15.6",
-    "livekit-server-sdk": "^2.13.3",
+    "mediasoup": "^3.14.0",
+    "mediasoup-client": "^3.7.0",
     "multer": "^2.0.2",
     "nodemailer": "^6.9.4",
     "nodemon": "^3.0.1",
@@ -61,7 +61,9 @@
     "redis": "^5.8.2",
     "sequelize": "^6.32.1",
     "socket.io": "^4.8.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.5.0"

@@ -3,7 +3,6 @@ import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebRTC } from '../hooks/useWebRTC';
 import { useCharacterMovement } from '../hooks/useCharacterMovement';
-import VideoCall from './VideoCall';
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
@@ -36,7 +35,7 @@ const MetaverseSceneWithVideoCall = forwardRef(({
   // Video Call 상태
   const [videoCallState, setVideoCallState] = useState({
     isActive: false,
-    roomType: null, // 'global', 'area', '1on1'
+    roomType: null, // 'global', 'area'
     areaId: null,
     callId: null,
     isMinimized: false,
@@ -102,34 +101,6 @@ const MetaverseSceneWithVideoCall = forwardRef(({
     toast.success('구역 화상통화에 참가했습니다');
   };
 
-  // 1:1 화상통화 시작
-  const startOneOnOneVideoCall = (targetUserId, targetUsername) => {
-    if (videoCallState.isActive) {
-      toast.error('이미 화상통화가 진행 중입니다');
-      return;
-    }
-
-    const callId = `${user.id}_${targetUserId}_${Date.now()}`;
-    
-    setVideoCallState({
-      isActive: true,
-      roomType: '1on1',
-      areaId: null,
-      callId: callId,
-      isMinimized: false,
-    });
-
-    // Socket으로 상대방에게 통화 초대 전송
-    if (socket) {
-      socket.emit('video_call_invite', {
-        targetUserId,
-        callId,
-        callerName: user.username,
-      });
-    }
-
-    toast.success(`${targetUsername}님과 화상통화를 시작합니다`);
-  };
 
   // 화상통화 종료
   const handleLeaveVideoCall = () => {
@@ -195,36 +166,11 @@ const MetaverseSceneWithVideoCall = forwardRef(({
     checkPrivateArea();
   }, [currentCharacter?.position, currentMap?.privateAreas]);
 
-  // Socket 이벤트 리스너 (화상통화 초대)
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleVideoCallInvite = ({ callId, callerName }) => {
-      const accept = window.confirm(`${callerName}님이 화상통화를 요청했습니다. 수락하시겠습니까?`);
-      
-      if (accept) {
-        setVideoCallState({
-          isActive: true,
-          roomType: '1on1',
-          areaId: null,
-          callId: callId,
-          isMinimized: false,
-        });
-      }
-    };
-
-    socket.on('video_call_invite', handleVideoCallInvite);
-
-    return () => {
-      socket.off('video_call_invite', handleVideoCallInvite);
-    };
-  }, [socket]);
 
   useImperativeHandle(ref, () => ({
     // 외부에서 호출 가능한 메서드들
     startGlobalVideoCall,
     startAreaVideoCall,
-    startOneOnOneVideoCall,
   }));
 
   return (
@@ -328,17 +274,7 @@ const MetaverseSceneWithVideoCall = forwardRef(({
           </div>
 
           {/* 화상통화 컴포넌트 */}
-          {videoCallState.isActive && (
-            <VideoCall
-              roomType={videoCallState.roomType}
-              metaverseId={currentMap?.id}
-              areaId={videoCallState.areaId}
-              callId={videoCallState.callId}
-              onLeave={handleLeaveVideoCall}
-              isMinimized={videoCallState.isMinimized}
-              onToggleMinimize={toggleVideoCallMinimize}
-            />
-          )}
+          {/* VideoCall component removed - video call functionality disabled */}
 
           {/* 채팅 윈도우 */}
           {isChatVisible && (

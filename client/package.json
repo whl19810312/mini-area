@@ -13,12 +13,10 @@
     "preview:https": "vite preview --port 4174 --host"
   },
   "dependencies": {
-    "@livekit/components-react": "^2.9.14",
-    "@livekit/components-styles": "^1.1.6",
     "@react-three/drei": "^9.88.13",
     "@react-three/fiber": "^8.15.11",
     "axios": "^1.5.0",
-    "livekit-client": "^2.15.5",
+    "mediasoup-client": "^3.7.0",
     "pathfinding": "^0.4.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

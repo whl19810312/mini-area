@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebRTC } from '../hooks/useWebRTC';
-import { useLiveKit } from '../hooks/useLiveKit';
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
 import { usePrivateAreaVideo } from '../hooks/usePrivateAreaVideo';
 import ChatWindow from './ChatWindow';
@@ -32,9 +31,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   // 줌 및 패닝 상태 (공간 생성과 동일하게)
   const [zoomScale, setZoomScale] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  // WebRTC & LiveKit SFU
+  // WebRTC
   const webRTC = useWebRTC(socket, user);
-  const livekit = useLiveKit(user);
 
   // SNS/채팅/통화 상태
   const [chatMessagesByArea, setChatMessagesByArea] = useState(new Map()); // 영역별 채팅 메시지
@@ -1492,20 +1490,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
   };
 
-  const LiveKitTile = ({ track }) => {
-    const ref = useRef(null);
-    useEffect(() => {
-      if (!track || !track.track) return;
-      // livekit-client Track publication -> mediaStreamTrack via attach()
-      try {
-        track.track.attach(ref.current);
-      } catch {}
-      return () => {
-        try { track.track.detach(ref.current); } catch {}
-      };
-    }, [track]);
-    return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
-  };
 
   return (
     <div className="metaverse-container">
@@ -1516,14 +1500,10 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         onReturnToLobby={onReturnToLobby}
         roomName={currentMap?.name}
         onToggleGroupCall={() => {
-          const roomName = `map-${currentMap?.id || 'default'}`;
-          if (livekit?.connected) {
-            livekit.leave();
-          } else {
-            livekit.join(roomName).catch(() => {});
-          }
+          // P2P/MediaSoup 그룹 통화 로직으로 대체 예정
+          console.log('Group call toggle - pending implementation');
         }}
-        groupCallActive={!!livekit?.connected}
+        groupCallActive={false}
         onOpenUserList={() => setIsUsersVisible(v => !v)}
       />
       
@@ -1839,21 +1819,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             ))}
             {mapImageProp && !backgroundLoaded && (<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0, 0, 0, 0.8)', color: 'white', padding: '20px', borderRadius: '10px', fontSize: '16px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>배경 이미지 로딩 중...</div>)}
 
-            {/* 방 전체 카메라 버튼 (우측 상단) - LiveKit SFU */}
+            {/* 방 전체 카메라 버튼 (우측 상단) */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const roomName = `map-${currentMap?.id || 'default'}`;
-                if (livekit.connected) {
-                  livekit.leave();
-                } else {
-                  livekit.join(roomName).catch(() => {});
-                }
+                // P2P/MediaSoup 그룹 통화 로직으로 대체 예정
+                console.log('Room-wide video call - pending implementation');
               }}
               title="방 전체 화상통화"
               style={{ position: 'absolute', right: 20, top: 20, zIndex: 4, padding: '10px 14px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer' }}
             >
-              {livekit.connected ? '통화 종료' : '카메라'}
+              카메라
             </button>
 
             {/* 사용자 리스트 버튼 (우측 상단) */}
@@ -1948,12 +1924,10 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
             {/* 1:1 통화는 VideoSidebar에서 처리 */}
 
-            {/* LiveKit SFU 그룹 통화 오버레이 */}
-            {livekit.connected && (
+            {/* 그룹 통화 오버레이 - P2P/MediaSoup로 대체 예정 */}
+            {false && (
               <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', display: 'grid', gap: 8, padding: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-                {livekit.tracks.map((t, idx) => (
-                  <LiveKitTile key={idx} track={t} />
-                ))}
+                {/* P2P/MediaSoup 비디오 타일 추가 예정 */}
               </div>
             )}
           </div>
