@@ -1,4 +1,4 @@
-이메일 환경변수가 설정되지 않았습니다. EMAIL_USER와 EMAIL_PASS를 설정해주세요.
+Postfix를 사용하여 이메일을 전송합니다.
 🎥 화상통신 최적화 서버 시작!
 🔒 HTTPS 서버가 포트 7000에서 실행 중입니다.
 LAN 접속: https://192.168.200.106:7000
@@ -7,59 +7,10 @@ WebRTC 화상통신: 지원됨
 카메라/마이크: HTTPS 환경에서 활성화
 ✅ PostgreSQL 데이터베이스 연결 성공
 📊 데이터베이스에서 입실 중인 사용자 3명 로드
-📊 사용자 입실 상태 복원: test1 → 맵 3
-📊 사용자 입실 상태 복원: test2 → 맵 3
 📊 사용자 입실 상태 복원: whl19810312 → 맵 3
+📊 사용자 입실 상태 복원: test2 → 맵 3
+📊 사용자 입실 상태 복원: test1 → 맵 3
 ✅ 데이터베이스 테이블 동기화 완료
-2025-09-08T18:39:49.866Z - OPTIONS /api/auth/user/me from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:49.876Z - OPTIONS /api/auth/user/me from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:49.876Z - GET /api/auth/user/me from 192.168.200.108 (HTTPS: true)
-👤 현재 사용자 정보 조회: { userId: 2, username: 'test1' }
-2025-09-08T18:39:49.892Z - GET /api/auth/user/me from 192.168.200.108 (HTTPS: true)
-👤 현재 사용자 정보 조회: { userId: 2, username: 'test1' }
-2025-09-08T18:39:49.956Z - OPTIONS /api/maps/3 from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:49.966Z - OPTIONS /api/maps from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:49.983Z - OPTIONS /api/characters from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:49.990Z - GET /api/maps/3 from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
-🔍 서버: 맵 조회 요청: { mapId: '3', userId: 2 }
-2025-09-08T18:39:49.999Z - OPTIONS /api/characters from 192.168.200.108 (HTTPS: true)
-🔍 서버: 맵 조회 결과: 성공
-✅ 서버: 맵 조회 성공: { id: 3, name: 'TEST ROOM', creatorId: 1 }
-2025-09-08T18:39:50.016Z - GET /api/maps from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
-2025-09-08T18:39:50.024Z - GET /api/characters from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
-2025-09-08T18:39:50.073Z - GET /api/maps from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-2025-09-08T18:39:50.076Z - GET /api/characters from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
-Auth 미들웨어 - 인증 성공, 사용자: test1
-2025-09-08T18:39:50.181Z - OPTIONS /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
-2025-09-08T18:39:50.188Z - GET /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
-2025-09-08T18:39:50.253Z - GET /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
-Auth 미들웨어 - Authorization 헤더: 존재
-Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
-Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
-Auth 미들웨어 - 인증 성공, 사용자: test1
 WebSocket 초기 헤더: {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': 'true'
@@ -78,21 +29,78 @@ WebSocket 요청 정보: {
     'sec-websocket-version': '13',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'sec-websocket-key': 'qqTU12z27MG4gyTUeulOtA==',
+    'sec-websocket-key': 'VIEEVdv6443wS1128kdWpg==',
     'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
   },
   secure: undefined
 }
-새로운 WebSocket 연결 (화상통신 준비): W2IgwTgvKzosyQQoAAAB
+2025-09-09T20:18:02.027Z - OPTIONS /api/auth/user/me from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.030Z - OPTIONS /api/auth/user/me from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.040Z - GET /api/auth/user/me from 192.168.200.108 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 2, username: 'test1' }
+2025-09-09T20:18:02.072Z - GET /api/auth/user/me from 192.168.200.108 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 2, username: 'test1' }
+2025-09-09T20:18:02.170Z - OPTIONS /api/maps/3 from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.190Z - OPTIONS /api/maps from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.242Z - OPTIONS /api/characters from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.242Z - OPTIONS /api/characters from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.264Z - OPTIONS /api/maps from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.268Z - GET /api/characters from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+Auth 미들웨어 - 인증 성공, 사용자: test1
+2025-09-09T20:18:02.282Z - GET /api/maps/3 from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+2025-09-09T20:18:02.284Z - GET /api/maps from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+2025-09-09T20:18:02.300Z - GET /api/characters from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+WebSocket 초기 헤더: {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true'
+}
+WebSocket 요청 정보: {
+  method: 'GET',
+  url: '/socket.io/?EIO=4&transport=websocket',
+  headers: {
+    host: '192.168.200.106:7000',
+    connection: 'Upgrade',
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+    upgrade: 'websocket',
+    origin: 'https://192.168.200.106:5173',
+    'sec-websocket-version': '13',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'sec-websocket-key': 'D146qCDiHjmvsxNeW4Rv4Q==',
+    'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
+  },
+  secure: undefined
+}
+Auth 미들웨어 - 인증 성공, 사용자: test1
+Auth 미들웨어 - 인증 성공, 사용자: test1
+🔍 서버: 맵 조회 요청: { mapId: '3', userId: 2 }
+Auth 미들웨어 - 인증 성공, 사용자: test1
+🔍 서버: 맵 조회 결과: 성공
+✅ 서버: 맵 조회 성공: { id: 3, name: 'TEST ROOM', creatorId: 1 }
+새로운 WebSocket 연결 (화상통신 준비): DOEvy0t3h6uFN5HkAAAC
 연결 정보: {
-  id: 'W2IgwTgvKzosyQQoAAAB',
+  id: 'DOEvy0t3h6uFN5HkAAAC',
   ip: '192.168.200.108',
   userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
   origin: 'https://192.168.200.106:5173',
   secure: true
 }
-새로운 mini area WebSocket 연결: W2IgwTgvKzosyQQoAAAB IP: 192.168.200.108
-새로운 WebSocket 연결: W2IgwTgvKzosyQQoAAAB
+새로운 mini area WebSocket 연결: DOEvy0t3h6uFN5HkAAAC IP: 192.168.200.108
+새로운 WebSocket 연결: DOEvy0t3h6uFN5HkAAAC
 WebSocket 초기 헤더: {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': 'true'
@@ -111,25 +119,1568 @@ WebSocket 요청 정보: {
     'sec-websocket-version': '13',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'sec-websocket-key': 'UFSgskXyMhuSxLdzisKztA==',
+    'sec-websocket-key': 'E1IM+mmXY3aTK3P7qTquog==',
     'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
   },
   secure: undefined
 }
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
+새로운 WebSocket 연결 (화상통신 준비): lmlWiYWhZsD_0P_QAAAE
+연결 정보: {
+  id: 'lmlWiYWhZsD_0P_QAAAE',
+  ip: '192.168.200.108',
+  userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  origin: 'https://192.168.200.106:5173',
+  secure: true
+}
+새로운 mini area WebSocket 연결: lmlWiYWhZsD_0P_QAAAE IP: 192.168.200.108
+새로운 WebSocket 연결: lmlWiYWhZsD_0P_QAAAE
+2025-09-09T20:18:02.373Z - GET /api/maps from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+Auth 미들웨어 - 인증 성공, 사용자: test1
+WebSocket 인증 성공: 2 test1
+✅ 인증 성공: test1 (2)
+🔄 [온라인] 사용자 이전 입실 상태 복원: test1 (ID: 2) → 맵 3
+   📍 이전 위치: (200, 200), 방향: down
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:02.402Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+✅ 인증 성공: test1 (2)
+🔄 [온라인] 사용자 이전 입실 상태 복원: test1 (ID: 2) → 맵 3
+   📍 이전 위치: (200, 200), 방향: down
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:02.405Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 1, mapsCount: 1 }
+📤 서버 상태 전송 to test1 (2)
+WebSocket 인증 성공: 2 test1
+2025-09-09T20:18:02.546Z - OPTIONS /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
+2025-09-09T20:18:02.556Z - GET /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: undefined,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:02.565Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+🚪 test1 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:02.571Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 wait (방 wait) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: test1 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: undefined,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:02.572Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+Auth 미들웨어 - 인증 성공, 사용자: test1
+2025-09-09T20:18:02.586Z - GET /api/user/logged-in-users from 192.168.200.108 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 2
+💾 사용자 입실 상태 DB 저장: 2 → 맵 null
+Auth 미들웨어 - 인증 성공, 사용자: test1
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+🚪 test1 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:02.624Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 wait (방 wait) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: test1 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: undefined,
+  position: { x: 808, y: 191 },
+  characterInfo: '없음',
+  userId: 2
+}
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:02.636Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 808, y: 191 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 808, y: 191 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 2 → 맵 null
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+🔄 자동 재입장 시도: test1 → 맵 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🚪 test1 leaving room 3 (다른맵:true, 연결끊김:false)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:03.407Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: null,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+🔄 자동 재입장 시도: test1 → 맵 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🚪 test1 leaving room 3 (다른맵:true, 연결끊김:false)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:03.412Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: null,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+🚪 test1 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:03.443Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 wait (방 wait) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: test1 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: undefined,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:03.450Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 2 → 맵 null
+🚪 test1 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:03.457Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 wait (방 wait) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: test1 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3에 소켓이 없음
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user test1 (2) left room 3
+🏠 test1 맵 입장 시작: {
+  mapId: 3,
+  characterId: undefined,
+  position: { x: 200, y: 200 },
+  characterInfo: '없음',
+  userId: 2
+}
+🏠 test1 맵 입장 - 초기 위치 설정: { x: 200, y: 200 }
+📊 로그인 사용자 정보 업데이트: test1 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 200, y: 200 },
+  '마지막활동': '2025-09-09T20:18:03.463Z'
+}
+✅ 방 정보 영구 보존: test1 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: test1 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 200, y: 200 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 test1 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 200, y: 200 }, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+💾 사용자 입실 상태 DB 저장: 2 → 맵 null
+💾 사용자 입실 상태 DB 저장: 2 → 맵 3
+2025-09-09T20:18:24.811Z - OPTIONS /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:24.812Z - OPTIONS /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:24.813Z - GET /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 1, username: 'whl19810312' }
+2025-09-09T20:18:24.851Z - GET /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 1, username: 'whl19810312' }
+2025-09-09T20:18:24.866Z - OPTIONS /api/maps from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:24.866Z - OPTIONS /api/characters from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:24.869Z - GET /api/maps from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+2025-09-09T20:18:24.870Z - GET /api/characters from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+WebSocket 초기 헤더: {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true'
+}
+WebSocket 요청 정보: {
+  method: 'GET',
+  url: '/socket.io/?EIO=4&transport=websocket',
+  headers: {
+    host: '192.168.200.106:7000',
+    connection: 'Upgrade',
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+    upgrade: 'websocket',
+    origin: 'https://192.168.200.106:5173',
+    'sec-websocket-version': '13',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'sec-websocket-key': 'oNI6bxiPNhjmuIU6MV8S8Q==',
+    'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
+  },
+  secure: undefined
+}
+새로운 WebSocket 연결 (화상통신 준비): JCb1byAuYC1n5ED4AAAG
+연결 정보: {
+  id: 'JCb1byAuYC1n5ED4AAAG',
+  ip: '192.168.200.106',
+  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  origin: 'https://192.168.200.106:5173',
+  secure: true
+}
+새로운 mini area WebSocket 연결: JCb1byAuYC1n5ED4AAAG IP: 192.168.200.106
+새로운 WebSocket 연결: JCb1byAuYC1n5ED4AAAG
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+WebSocket 초기 헤더: {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true'
+}
+WebSocket 요청 정보: {
+  method: 'GET',
+  url: '/socket.io/?EIO=4&transport=websocket',
+  headers: {
+    host: '192.168.200.106:7000',
+    connection: 'Upgrade',
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+    upgrade: 'websocket',
+    origin: 'https://192.168.200.106:5173',
+    'sec-websocket-version': '13',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'sec-websocket-key': '+EIe3DE7YGZO4dfzj0KkiA==',
+    'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
+  },
+  secure: undefined
+}
+2025-09-09T20:18:24.922Z - GET /api/characters from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+새로운 WebSocket 연결 (화상통신 준비): Q93LGTKwo36lMDLhAAAI
+연결 정보: {
+  id: 'Q93LGTKwo36lMDLhAAAI',
+  ip: '192.168.200.106',
+  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  origin: 'https://192.168.200.106:5173',
+  secure: true
+}
+새로운 mini area WebSocket 연결: Q93LGTKwo36lMDLhAAAI IP: 192.168.200.106
+새로운 WebSocket 연결: Q93LGTKwo36lMDLhAAAI
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+✅ 인증 성공: whl19810312 (1)
+🔄 [온라인] 사용자 이전 입실 상태 복원: whl19810312 (ID: 1) → 맵 3
+   📍 이전 위치: (310, 234.00000381469727), 방향: down
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 310, y: 234.00000381469727 },
+  '마지막활동': '2025-09-09T20:18:24.943Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+WebSocket 인증 성공: 1 whl19810312
+2025-09-09T20:18:24.945Z - GET /api/maps from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📤 서버 상태 전송 to whl19810312 (1)
+WebSocket 인증 성공: 1 whl19810312
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+✅ 인증 성공: whl19810312 (1)
+🔄 [온라인] 사용자 이전 입실 상태 복원: whl19810312 (ID: 1) → 맵 3
+   📍 이전 위치: (310, 234.00000381469727), 방향: down
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 310, y: 234.00000381469727 },
+  '마지막활동': '2025-09-09T20:18:24.964Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+2025-09-09T20:18:24.972Z - OPTIONS /api/user/logged-in-users from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:24.982Z - GET /api/user/logged-in-users from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+2025-09-09T20:18:24.993Z - GET /api/user/logged-in-users from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+🔄 자동 재입장 시도: whl19810312 → 맵 3
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 310, y: 234.00000381469727 },
+  characterInfo: '없음',
+  userId: 1
+}
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 310, y: 234.00000381469727 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 310, y: 234.00000381469727 },
+  '마지막활동': '2025-09-09T20:18:25.944Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 310, y: 234.00000381469727 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: null,
+    position: { x: 310, y: 234.00000381469727 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:24.963Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: {
+  mapId: 3,
+  position: { x: 310, y: 234.00000381469727 },
+  participants: 2
+}
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+🔄 자동 재입장 시도: whl19810312 → 맵 3
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 310, y: 234.00000381469727 },
+  characterInfo: '없음',
+  userId: 1
+}
+🚪 whl19810312 leaving room 3 (다른맵:true, 연결끊김:false)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 310, y: 234.00000381469727 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 310, y: 234.00000381469727 },
+  '마지막활동': '2025-09-09T20:18:25.966Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 310, y: 234.00000381469727 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: null,
+    position: { x: 310, y: 234.00000381469727 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:24.963Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: {
+  mapId: 3,
+  position: { x: 310, y: 234.00000381469727 },
+  participants: 2
+}
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
 🔌 [오프라인] mini area WebSocket 연결 해제: {
-  socketId: 'W2IgwTgvKzosyQQoAAAB',
+  socketId: 'JCb1byAuYC1n5ED4AAAG',
   userId: undefined,
   username: undefined,
   mapId: undefined,
   privateAreaId: undefined,
-  timestamp: '9/9/2025, 3:41:19 AM'
+  timestamp: '9/10/2025, 5:18:25 AM'
 }
-WebSocket 연결 해제: W2IgwTgvKzosyQQoAAAB
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
-🏓 Ping 전송 완료: 0개 소켓
+WebSocket 연결 해제: JCb1byAuYC1n5ED4AAAG
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+🔌 [오프라인] mini area WebSocket 연결 해제: {
+  socketId: 'Q93LGTKwo36lMDLhAAAI',
+  userId: 1,
+  username: 'whl19810312',
+  mapId: 3,
+  privateAreaId: undefined,
+  timestamp: '9/10/2025, 5:18:25 AM'
+}
+📊 [오프라인] 사용자 상태 변경: whl19810312 (ID: 1)
+   입실 상태: 맵 3에 입실 중 → 오프라인 (방 정보 유지)
+⚠️ mapId 삭제 시도 차단 - 유지: 3
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 310, y: 234.00000381469727 },
+  '마지막활동': '2025-09-09T20:18:25.997Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🚪 whl19810312 leaving room 3 (다른맵:false, 연결끊김:true)
+📊 연결 끊김 - 방 정보 유지: whl19810312 맵 3
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🧹 [시스템] 소켓 정리 완료: whl19810312 (1)
+📊 [시스템] 현재 사용자 상태:
+   온라인: 1명, 오프라인: 2명
+   활성 소켓: 1개
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+WebSocket 연결 해제: Q93LGTKwo36lMDLhAAAI
+2025-09-09T20:18:26.056Z - GET /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 1, username: 'whl19810312' }
+2025-09-09T20:18:26.067Z - GET /api/auth/user/me from 192.168.200.106 (HTTPS: true)
+👤 현재 사용자 정보 조회: { userId: 1, username: 'whl19810312' }
+2025-09-09T20:18:26.088Z - OPTIONS /api/maps/3 from 192.168.200.106 (HTTPS: true)
+2025-09-09T20:18:26.088Z - GET /api/maps from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+2025-09-09T20:18:26.091Z - GET /api/characters from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+2025-09-09T20:18:26.093Z - GET /api/maps/3 from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+🔍 서버: 맵 조회 요청: { mapId: '3', userId: 1 }
+🔍 서버: 맵 조회 결과: 성공
+✅ 서버: 맵 조회 성공: { id: 3, name: 'TEST ROOM', creatorId: 1 }
+2025-09-09T20:18:26.136Z - GET /api/characters from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+WebSocket 초기 헤더: {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true'
+}
+WebSocket 요청 정보: {
+  method: 'GET',
+  url: '/socket.io/?EIO=4&transport=websocket',
+  headers: {
+    host: '192.168.200.106:7000',
+    connection: 'Upgrade',
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+    upgrade: 'websocket',
+    origin: 'https://192.168.200.106:5173',
+    'sec-websocket-version': '13',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'sec-websocket-key': 'e4LZf8LWMWPPn3ClUqfXBQ==',
+    'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
+  },
+  secure: undefined
+}
+2025-09-09T20:18:26.141Z - GET /api/maps from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+WebSocket 초기 헤더: {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true'
+}
+WebSocket 요청 정보: {
+  method: 'GET',
+  url: '/socket.io/?EIO=4&transport=websocket',
+  headers: {
+    host: '192.168.200.106:7000',
+    connection: 'Upgrade',
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+    upgrade: 'websocket',
+    origin: 'https://192.168.200.106:5173',
+    'sec-websocket-version': '13',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'sec-websocket-key': 'arIGEXVcLIu0YEh93KFWuw==',
+    'sec-websocket-extensions': 'permessage-deflate; client_max_window_bits'
+  },
+  secure: undefined
+}
+2025-09-09T20:18:26.158Z - GET /api/user/logged-in-users from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+새로운 WebSocket 연결 (화상통신 준비): 8WSneinWdho4XhzEAAAL
+연결 정보: {
+  id: '8WSneinWdho4XhzEAAAL',
+  ip: '192.168.200.106',
+  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  origin: 'https://192.168.200.106:5173',
+  secure: true
+}
+새로운 mini area WebSocket 연결: 8WSneinWdho4XhzEAAAL IP: 192.168.200.106
+새로운 WebSocket 연결: 8WSneinWdho4XhzEAAAL
+새로운 WebSocket 연결 (화상통신 준비): j2exmsYaRxOa0e3pAAAM
+연결 정보: {
+  id: 'j2exmsYaRxOa0e3pAAAM',
+  ip: '192.168.200.106',
+  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  origin: 'https://192.168.200.106:5173',
+  secure: true
+}
+새로운 mini area WebSocket 연결: j2exmsYaRxOa0e3pAAAM IP: 192.168.200.106
+새로운 WebSocket 연결: j2exmsYaRxOa0e3pAAAM
+🏠 undefined 맵 입장 시작: {
+  mapId: 3,
+  characterId: 1,
+  position: { x: 808, y: 191 },
+  characterInfo: '있음',
+  userId: 1
+}
+🏠 undefined 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:26.169Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 1명, 오프라인: 2명)
+📊 [오프라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: undefined {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+🧟 좀비 사용자 제거: userId=undefined, username="undefined", socketId=j2exmsYaRxOa0e3pAAAM
+📋 맵 3의 최종 참가자 수: 1
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+🏠 undefined 맵 입장 완료 - 최종 상태: { mapId: 3, position: undefined, participants: 1 }
+🔄 서버 상태 업데이트: { totalUsers: 1, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+✅ 인증 성공: whl19810312 (1)
+🔄 [온라인] 사용자 이전 입실 상태 복원: whl19810312 (ID: 1) → 맵 3
+   📍 이전 위치: (808, 191), 방향: down
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:26.184Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+WebSocket 인증 성공: 1 whl19810312
+✅ 인증 성공: whl19810312 (1)
+🔄 [온라인] 사용자 이전 입실 상태 복원: whl19810312 (ID: 1) → 맵 3
+   📍 이전 위치: (808, 191), 방향: down
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:26.190Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+2025-09-09T20:18:26.192Z - GET /api/user/logged-in-users from 192.168.200.106 (HTTPS: true)
+Auth 미들웨어 - Authorization 헤더: 존재
+Auth 미들웨어 - 토큰 확인: eyJhbGciOiJIUzI1NiIs...
+Auth 미들웨어 - 토큰 디코딩 성공, userId: 1
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📤 서버 상태 전송 to whl19810312 (1)
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+WebSocket 인증 성공: 1 whl19810312
+Auth 미들웨어 - 인증 성공, 사용자: whl19810312
+🔄 자동 재입장 시도: whl19810312 → 맵 3
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 808, y: 191 },
+  characterInfo: '없음',
+  userId: 1
+}
+🚪 whl19810312 leaving room 3 (다른맵:true, 연결끊김:false)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 1, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: undefined,
+  '캐릭터': undefined,
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:27.185Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: null,
+    position: { x: 808, y: 191 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:26.190Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 808, y: 191 }, participants: 2 }
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+🚪 whl19810312 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:27.191Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 wait (방 wait) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: whl19810312 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🔄 자동 재입장 시도: whl19810312 → 맵 3
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: null,
+  position: { x: 808, y: 191 },
+  characterInfo: '없음',
+  userId: 1
+}
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': undefined,
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:27.194Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (undefined)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': '기본 캐릭터',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: null,
+    position: { x: 808, y: 191 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:26.190Z,
+    characterInfo: null,
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 808, y: 191 }, participants: 2 }
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: 1,
+  position: { x: 808, y: 191 },
+  characterInfo: '있음',
+  userId: 1
+}
+🚪 whl19810312 leaving room 3 (다른맵:true, 연결끊김:false)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:27.195Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: 1,
+    position: { x: 808, y: 191 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:26.190Z,
+    characterInfo: {
+      id: 1,
+      name: 'whl19810312',
+      appearance: [Object],
+      images: [Object],
+      size: 32,
+      position: [Object],
+      isActive: true,
+      currentMapId: null,
+      createdAt: '2025-09-09T17:47:54.277Z',
+      updatedAt: '2025-09-09T17:47:54.277Z',
+      userId: 1,
+      owner: [Object]
+    },
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 808, y: 191 }, participants: 2 }
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+🚪 whl19810312 leaving room 3 (다른맵:false, 연결끊김:false)
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': '대기실',
+  mapId: 'wait',
+  '현재영역': '대기실',
+  privateAreaId: null,
+  '캐릭터': 'whl19810312',
+  '위치': null,
+  '마지막활동': '2025-09-09T20:18:27.200Z'
+}
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 wait (방 wait) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 명시적 퇴실 - 대기실로 이동: whl19810312 → 대기실 (mapId: wait)
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 1
+📋 참가자 추가: test1 (2)
+📋 맵 3의 최종 참가자 수: 1
+📢 leaveMap: Broadcasted updated participant list to room 3.
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+user whl19810312 (1) left room 3
+🏠 whl19810312 맵 입장 시작: {
+  mapId: 3,
+  characterId: 1,
+  position: { x: 808, y: 191 },
+  characterInfo: '있음',
+  userId: 1
+}
+🏠 whl19810312 맵 입장 - 초기 위치 설정: { x: 808, y: 191 }
+📊 로그인 사용자 정보 업데이트: whl19810312 {
+  '입실공간': 'TEST ROOM',
+  mapId: 3,
+  '현재영역': '공용 영역',
+  privateAreaId: null,
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 },
+  '마지막활동': '2025-09-09T20:18:27.202Z'
+}
+✅ 방 정보 영구 보존: whl19810312 → 맵 3 (TEST ROOM)
+📊 [시스템] 전체 로그인 사용자 정보 브로드캐스트:
+   전체: 3명 (온라인: 2명, 오프라인: 1명)
+📊 [온라인] 입실 중인 사용자: whl19810312 → 맵 3 (TEST ROOM) (whl19810312)
+📊 [오프라인] 입실 중인 사용자: test2 → 맵 3 (TEST ROOM) (undefined)
+📊 [온라인] 입실 중인 사용자: test1 → 맵 3 (TEST ROOM) (undefined)
+📊 사용자 입실 정보 저장 완료: whl19810312 {
+  mapId: 3,
+  mapName: 'TEST ROOM',
+  '캐릭터': 'whl19810312',
+  '위치': { x: 808, y: 191 }
+}
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+👥 방 3의 참가자 목록: [
+  {
+    userId: 2,
+    username: 'test1',
+    characterId: undefined,
+    position: { x: 200, y: 200 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:02.405Z,
+    characterInfo: null,
+    privateAreaId: null
+  },
+  {
+    userId: 1,
+    username: 'whl19810312',
+    characterId: 1,
+    position: { x: 808, y: 191 },
+    direction: 'down',
+    status: 'online',
+    joinedAt: 2025-09-09T20:18:26.190Z,
+    characterInfo: {
+      id: 1,
+      name: 'whl19810312',
+      appearance: [Object],
+      images: [Object],
+      size: 32,
+      position: [Object],
+      isActive: true,
+      currentMapId: null,
+      createdAt: '2025-09-09T17:47:54.277Z',
+      updatedAt: '2025-09-09T17:47:54.277Z',
+      userId: 1,
+      owner: [Object]
+    },
+    privateAreaId: null
+  }
+]
+📢 Broadcasted updated participant list to room 3.
+📋 맵 3의 참가자 조회 시작
+📋 맵 3의 소켓 수: 2
+📋 참가자 추가: test1 (2)
+📋 참가자 추가: whl19810312 (1)
+📋 맵 3의 최종 참가자 수: 2
+🏠 whl19810312 맵 입장 완료 - 최종 상태: { mapId: 3, position: { x: 808, y: 191 }, participants: 2 }
+🔄 서버 상태 업데이트: { totalUsers: 2, lobbyUsers: 0, mapsCount: 1 }
+📡 서버 상태 브로드캐스트
+💾 사용자 입실 상태 DB 저장: 1 → 맵 null
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+💾 사용자 입실 상태 DB 저장: 1 → 맵 null
+💾 사용자 입실 상태 DB 저장: 1 → 맵 3
+🏓 Ping 전송 완료: 2개 소켓
+📡 WebRTC 시그널 수신: offer from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: offer from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from whl19810312(1) to test1
+🔍 userId로 찾기: test1 -> Not found
+🔍 username으로 찾기 성공: test1 -> userId: 2, socketId: lmlWiYWhZsD_0P_QAAAE
+📡 WebRTC 시그널 전달: ice-candidate from whl19810312 to test1
+대상 사용자 test1를 찾을 수 없음
+📡 WebRTC 시그널 수신: answer from test1(2) to whl19810312
+🔍 userId로 찾기: whl19810312 -> Not found
+🔍 username으로 찾기 성공: whl19810312 -> userId: 1, socketId: j2exmsYaRxOa0e3pAAAM
+📡 WebRTC 시그널 전달: answer from test1 to whl19810312
+대상 사용자 whl19810312를 찾을 수 없음
+📡 WebRTC 시그널 수신: ice-candidate from test1(2) to whl19810312
+🔍 userId로 찾기: whl19810312 -> Not found
+🔍 username으로 찾기 성공: whl19810312 -> userId: 1, socketId: j2exmsYaRxOa0e3pAAAM
+📡 WebRTC 시그널 전달: ice-candidate from test1 to whl19810312
+대상 사용자 whl19810312를 찾을 수 없음
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓
+🏓 Ping 전송 완료: 2개 소켓

@@ -3,12 +3,11 @@
 > vite --port 5173 --host
 
 
-  VITE v4.5.14  ready in 145 ms
+  VITE v4.5.14  ready in 142 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
-  ➜  Network: https://172.17.0.1:5173/
-3:39:48 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+5:18:00 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 148|              mapCreatorId: map.creatorId,
 149|              mapCreatedBy: map.createdBy,
 150|              mapCreatorId: map.creator?.id,
@@ -18,7 +17,7 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-3:39:48 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+5:18:00 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 162|                mapCreatorId: map.creatorId,
 163|                mapCreatedBy: map.createdBy,
 164|                mapCreatorId: map.creator?.id,
