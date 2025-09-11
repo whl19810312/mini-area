@@ -65,15 +65,49 @@ export const configureAxios = () => {
     axios.interceptors.request.use((config) => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        console.log('🔐 API 요청 인터셉터 - Token:', token ? `${token.substring(0, 20)}...` : '없음');
         if (token) {
           config.headers = config.headers || {};
           if (!config.headers.Authorization) {
             config.headers.Authorization = `Bearer ${token}`;
+            console.log('🔐 Authorization 헤더 추가됨');
           }
+        } else {
+          console.warn('⚠️ Token이 없습니다 - 로그인이 필요할 수 있습니다');
         }
-      } catch (_) {}
+      } catch (error) {
+        console.error('❌ API 요청 인터셉터 오류:', error);
+      }
       return config;
     });
+    
+    // 응답 인터셉터 추가 - 401 에러 처리
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          console.error('❌ 401 Unauthorized - Token이 유효하지 않거나 만료되었습니다');
+          
+          // 토큰 관련 정보 로그
+          const token = localStorage.getItem('token');
+          console.error('현재 저장된 Token:', token ? `${token.substring(0, 20)}...` : '없음');
+          
+          // 토큰이 만료되었으므로 로컬스토리지에서 제거
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          
+          // 로그인 페이지가 아닌 경우에만 리다이렉트
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+            console.log('🚪 토큰 만료로 인한 자동 로그아웃 - 로그인 페이지로 이동');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 1000); // 1초 후 리다이렉트 (에러 메시지를 볼 수 있도록)
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+    
     configureAxios._tokenInterceptorAttached = true;
   }
   

@@ -13,10 +13,9 @@ const authRoutes = require('./routes/auth');
 const mapRoutes = require('./routes/map');
 const characterRoutes = require('./routes/character');
 const userRoutes = require('./routes/user');
-const livekitRoutes = require('./routes/livekit');
-const videoCallRoutes = require('./routes/videoCallRoutes');
 const PrivateAreaHandler = require('./websocket/privateAreaHandler');
 const MetaverseHandler = require('./websocket/metaverseHandler');
+const DualSocketHandler = require('./websocket/dualSocketHandler');
 
 const app = express();
 
@@ -29,20 +28,17 @@ const server = https.createServer({
 // Socket.IO 설정 (WSS 지원)
 const io = socketIo(server, {
   cors: {
-    origin: "*", // 모든 origin 허용 (화상통신용)
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"]
   },
-  transports: ['websocket', 'polling'], // WebRTC와 호환성
+  transports: ['websocket', 'polling'],
   allowEIO3: true,
-  // 화상통신 최적화 설정
   pingTimeout: 60000,
   pingInterval: 25000,
   upgradeTimeout: 10000,
-  maxHttpBufferSize: 1e8, // 100MB (화상 데이터용)
-  allowUpgrades: true,
-  forceBase64: false
+  allowUpgrades: true
 });
 
 const PORT = process.env.PORT || 7000;
@@ -53,9 +49,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS 설정 (화상통신 최적화)
+// CORS 설정
 app.use(cors({
-  origin: true, // 모든 origin 허용 (화상통신용)
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
   credentials: true,
@@ -63,8 +59,8 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-app.use(express.json({ limit: '100mb' })); // 화상 데이터용 증가
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -88,6 +84,9 @@ app.use(passport.session());
 const privateAreaHandler = new PrivateAreaHandler(io);
 const metaverseHandler = new MetaverseHandler(io);
 
+// DualSocketHandler 초기화 (UDP/TCP 실시간 위치 업데이트용)
+const dualSocketHandler = new DualSocketHandler(io, metaverseHandler);
+
 // WebSocket 핸들러를 req 객체에 주입하는 미들웨어
 app.use((req, res, next) => {
   req.io = io;
@@ -101,26 +100,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/maps', mapRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/livekit', livekitRoutes);
-app.use('/api/video-call', videoCallRoutes);
 
 // 클라이언트 호환성을 위한 추가 라우트 (api 접두사 없이)
 app.use('/maps', mapRoutes);
 app.use('/characters', characterRoutes);
 app.use('/user', userRoutes);
 
-// 화상통신 상태 확인 엔드포인트
-app.get('/api/webrtc/status', (req, res) => {
-  res.json({
-    success: true,
-    message: 'WebRTC 서버 정상 작동',
-    timestamp: new Date().toISOString(),
-    https: true,
-    wss: true,
-    privateAreas: privateAreaHandler.getActiveAreasCount ? privateAreaHandler.getActiveAreasCount() : 0,
-    activeConnections: io.engine.clientsCount
-  });
-});
 
 // 에러 핸들링 미들웨어
 app.use((error, req, res, next) => {
@@ -132,9 +117,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-// WebSocket 연결 처리 (화상통신 최적화)
+// WebSocket 연결 처리
 io.on('connection', (socket) => {
-  console.log('새로운 WebSocket 연결 (화상통신 준비):', socket.id);
+  console.log('새로운 WebSocket 연결:', socket.id);
   console.log('연결 정보:', {
     id: socket.id,
     ip: socket.handshake.address,
@@ -143,10 +128,10 @@ io.on('connection', (socket) => {
     secure: socket.handshake.secure
   });
   
-      // mini area 핸들러가 먼저 처리 (방 입장/퇴장, 위치 업데이트 등)
+  // mini area 핸들러가 먼저 처리 (방 입장/퇴장, 위치 업데이트 등)
   metaverseHandler.handleConnection(socket);
   
-  // 프라이빗 영역 핸들러도 처리 (화상통화 등)
+  // 프라이빗 영역 핸들러도 처리
   privateAreaHandler.handleConnection(socket);
 });
 
@@ -198,11 +183,9 @@ const getServerIP = () => {
 };
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log('🎥 화상통신 최적화 서버 시작!');
+  console.log('🚀 Mini Area 서버 시작!');
   console.log(`🔒 HTTPS 서버가 포트 ${PORT}에서 실행 중입니다.`);
   const serverIP = getServerIP();
   console.log(`LAN 접속: https://${serverIP}:${PORT}`);
   console.log(`WebSocket 접속: wss://${serverIP}:${PORT}`);
-  console.log(`WebRTC 화상통신: 지원됨`);
-  console.log(`카메라/마이크: HTTPS 환경에서 활성화`);
 }); 

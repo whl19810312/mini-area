@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const AreaVideoCallManager = require('./areaVideoCallManager');
 
 class MetaverseHandler {
   constructor(io) {
@@ -10,6 +11,14 @@ class MetaverseHandler {
     this.userStatuses = new Map(); // userId -> { isOnline, lastSeen, currentMap, currentPrivateArea, username, status }
     this.loggedInUsers = new Map(); // userId -> { id, username, socketId, ... }
     this.mapsList = new Map(); // mapId -> { id, name, creatorId, ... }
+
+    // 영역 기반 화상통화 매니저 초기화
+    this.areaVideoCallManager = new AreaVideoCallManager();
+
+    // 🎯 영역 상태 관리 시스템
+    this.userAreaStates = new Map(); // userId -> { areaId, areaType, mapId, lastUpdate }
+    this.areaGroups = new Map(); // areaKey -> Set<userId> (실시간 영역별 사용자 그룹)
+    this.videoCallSessions = new Map(); // areaKey -> { participants, startTime, isActive }
 
     // 0.5초마다 각 맵의 모든 사용자 정보를 브로드캐스트
     this.startBroadcastInterval();
@@ -455,6 +464,68 @@ class MetaverseHandler {
       this.leavePrivateArea(socket);
     });
 
+    // 자동 화상통화 초대 이벤트 처리
+    socket.on('area-video-call-invite', async (data) => {
+      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
+      
+      const { targetUserId, areaKey, roomName, inviterInfo } = data;
+      console.log(`📞 화상통화 자동 초대 요청: ${socket.username} → 사용자 ${targetUserId} (${areaKey})`);
+      
+      // AreaVideoCallManager가 있는 경우 처리
+      if (this.areaVideoCallManager) {
+        const result = await this.areaVideoCallManager.handleAutoVideoInvite(
+          socket.userId, 
+          targetUserId, 
+          areaKey, 
+          roomName
+        );
+        
+        socket.emit('area-video-call-invite-result', {
+          success: result,
+          targetUserId,
+          areaKey,
+          reason: inviterInfo?.reason || 'unknown'
+        });
+      } else {
+        console.error('❌ AreaVideoCallManager가 설정되지 않음');
+        socket.emit('area-video-call-invite-result', {
+          success: false,
+          error: 'AreaVideoCallManager not available'
+        });
+      }
+    });
+
+    // 자동 화상통화 제거 이벤트 처리
+    socket.on('area-video-call-remove', async (data) => {
+      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
+      
+      const { targetUserId, areaKey, roomName, reason } = data;
+      console.log(`🚪 화상통화 자동 제거 요청: ${socket.username} → 사용자 ${targetUserId} (${areaKey})`);
+      
+      // AreaVideoCallManager가 있는 경우 처리
+      if (this.areaVideoCallManager) {
+        const result = await this.areaVideoCallManager.handleAutoVideoRemove(
+          socket.userId, 
+          targetUserId, 
+          areaKey, 
+          roomName
+        );
+        
+        socket.emit('area-video-call-remove-result', {
+          success: result,
+          targetUserId,
+          areaKey,
+          reason: reason || 'unknown'
+        });
+      } else {
+        console.error('❌ AreaVideoCallManager가 설정되지 않음');
+        socket.emit('area-video-call-remove-result', {
+          success: false,
+          error: 'AreaVideoCallManager not available'
+        });
+      }
+    });
+
     // 새로운 update-my-position 이벤트 처리 (0.2초마다 전송)
     socket.on('update-my-position', (data) => {
       if (!socket.userId) return;
@@ -466,6 +537,11 @@ class MetaverseHandler {
       userInfo.position = data.position;
       userInfo.direction = data.direction;
       userInfo.lastPositionUpdate = new Date();
+
+      // 영역 기반 위치 업데이트 처리 (다른 사용자들의 위치도 포함)
+      if (data.position && socket.mapId) {
+        this.updateUserAreaPosition(socket.userId, socket.mapId, data.position);
+      }
       
       // 맵 정보가 포함되어 있으면 사용자 입실 상태 업데이트
       if (data.mapId && data.mapName) {
@@ -494,6 +570,47 @@ class MetaverseHandler {
         } catch (error) {
             if (typeof callback === 'function') callback({ error: '맵 목록 조회 실패' });
         }
+    });
+
+    // 영역 기반 화상통화 이벤트 처리
+    socket.on('start-area-video-call', (data, callback) => {
+      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
+      
+      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
+      if (!userArea) {
+        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
+      }
+
+      const result = this.startAreaVideoCall(socket.userId, userArea.areaKey);
+      callback({ success: true, result });
+    });
+
+    socket.on('end-area-video-call', (data, callback) => {
+      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
+      
+      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
+      if (!userArea) {
+        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
+      }
+
+      const result = this.endAreaVideoCall(userArea.areaKey);
+      callback({ success: true, result });
+    });
+
+    socket.on('get-area-video-session', (data, callback) => {
+      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
+      
+      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
+      if (!userArea) {
+        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
+      }
+
+      const participants = this.areaVideoCallManager.getVideoSession(userArea.areaKey);
+      callback({ 
+        success: true, 
+        areaKey: userArea.areaKey,
+        participants: participants || []
+      });
     });
 
     socket.on('disconnect', () => this.handleDisconnect(socket));
@@ -558,6 +675,13 @@ class MetaverseHandler {
     
     // 채팅 메시지 처리
     socket.on('chat-message', (message, chatMode = 'area', targetUserId = null) => {
+      console.log(`📨 채팅 메시지 수신 from ${socket.username}:`, {
+        message,
+        chatMode,
+        targetUserId,
+        userId: socket.userId,
+        mapId: socket.mapId
+      });
       this.handleChatMessage(socket, message, chatMode, targetUserId);
     });
   }
@@ -2112,6 +2236,12 @@ class MetaverseHandler {
         status: 'offline'
       });
 
+      // 영역 기반 화상통화에서 사용자 제거
+      this.areaVideoCallManager.removeUser(socket.userId);
+
+      // 🎯 새로운 영역 상태 관리 시스템에서 사용자 제거
+      this.cleanupUserAreaState(socket.userId);
+
       // 소켓 매핑만 제거 (사용자 정보는 유지)
       this.userSockets.delete(socket.userId);
       this.socketUsers.delete(socket.id);
@@ -2292,6 +2422,445 @@ class MetaverseHandler {
       mapUsers,
       totalOnlineUsers: Array.from(this.socketUsers.values()).length
     };
+  }
+
+  // 영역 기반 위치 업데이트 처리
+  updateUserAreaPosition(userId, mapId, position) {
+    const mapData = this.mapsList.get(parseInt(mapId));
+    if (!mapData) return null;
+
+    // 🎯 효율적인 영역 상태 업데이트
+    const currentAreaState = this.updateUserAreaState(userId, mapId, position, mapData.privateAreas);
+    
+    if (currentAreaState.changed) {
+      console.log('🌍 [영역변경] 사용자 영역 이동:', {
+        userId,
+        from: currentAreaState.previousAreaId,
+        to: currentAreaState.currentAreaId,
+        areaType: currentAreaState.areaType
+      });
+
+      // 영역 그룹 업데이트 및 화상통화 처리
+      this.handleAreaStateChange(userId, currentAreaState);
+    }
+
+    return currentAreaState;
+  }
+
+  // 🎯 효율적인 영역 상태 업데이트
+  updateUserAreaState(userId, mapId, position, privateAreas) {
+    // 현재 위치의 영역 정보 계산
+    const { detectUserArea } = require('../utils/areaDetection');
+    const currentAreaInfo = detectUserArea(position, {
+      id: mapId,
+      privateAreas: privateAreas || [],
+      size: { width: 1000, height: 1000 }
+    });
+
+    const currentAreaId = currentAreaInfo.id || 'public';
+    const currentAreaType = currentAreaInfo.type || 'public';
+    const areaKey = `${mapId}_${currentAreaType}_${currentAreaId}`;
+
+    // 이전 영역 상태 조회
+    const previousState = this.userAreaStates.get(userId);
+    const previousAreaId = previousState?.areaId;
+    const previousAreaKey = previousState ? `${previousState.mapId}_${previousState.areaType}_${previousState.areaId}` : null;
+
+    // 영역 변경 여부 확인 (성능 최적화)
+    const changed = !previousState || 
+                   previousState.areaId !== currentAreaId || 
+                   previousState.mapId !== mapId;
+
+    // 현재 영역 상태 저장
+    this.userAreaStates.set(userId, {
+      areaId: currentAreaId,
+      areaType: currentAreaType,
+      mapId: mapId,
+      position: { ...position },
+      lastUpdate: Date.now()
+    });
+
+    // 로그인 사용자 정보에 영역 정보 추가 (요청하신 사항)
+    const loggedInUserInfo = this.loggedInUsers.get(userId);
+    if (loggedInUserInfo) {
+      this.loggedInUsers.set(userId, {
+        ...loggedInUserInfo,
+        현재영역ID: currentAreaId,
+        영역타입: currentAreaType,
+        영역정보: currentAreaInfo,
+        calculatedAreaInfo: {
+          areaInfo: {
+            area: {
+              id: currentAreaId,
+              type: currentAreaType,
+              name: currentAreaInfo.name
+            }
+          }
+        },
+        영역업데이트시간: new Date().toISOString()
+      });
+    }
+
+    return {
+      changed,
+      currentAreaId,
+      currentAreaType,
+      previousAreaId,
+      areaKey,
+      previousAreaKey,
+      areaInfo: currentAreaInfo,
+      mapId
+    };
+  }
+
+  // 🎯 영역 상태 변경 처리 (화상통화 관리)
+  handleAreaStateChange(userId, areaState) {
+    const { currentAreaId, previousAreaId, areaKey, previousAreaKey, mapId } = areaState;
+
+    // 이전 영역 그룹에서 제거
+    if (previousAreaKey) {
+      this.removeUserFromAreaGroup(userId, previousAreaKey);
+    }
+
+    // 새 영역 그룹에 추가
+    this.addUserToAreaGroup(userId, areaKey);
+
+    // 영역별 화상통화 세션 관리
+    this.manageAreaVideoCall(areaKey, currentAreaId, mapId);
+
+    // 클라이언트에게 영역 변경 알림
+    const userSocket = this.getUserSocket(userId);
+    if (userSocket) {
+      this.io.to(userSocket).emit('area-changed', {
+        oldAreaId: previousAreaId,
+        newAreaId: currentAreaId,
+        areaInfo: areaState.areaInfo,
+        usersInArea: Array.from(this.areaGroups.get(areaKey) || [])
+      });
+    }
+  }
+
+  // 영역 그룹 관리
+  addUserToAreaGroup(userId, areaKey) {
+    if (!this.areaGroups.has(areaKey)) {
+      this.areaGroups.set(areaKey, new Set());
+    }
+    this.areaGroups.get(areaKey).add(userId);
+  }
+
+  removeUserFromAreaGroup(userId, areaKey) {
+    const group = this.areaGroups.get(areaKey);
+    if (group) {
+      group.delete(userId);
+      if (group.size === 0) {
+        this.areaGroups.delete(areaKey);
+        // 빈 영역의 화상통화 세션도 정리
+        this.endAreaVideoCall(areaKey);
+      }
+    }
+  }
+
+  // 🎯 영역별 화상통화 관리 (효율적)
+  manageAreaVideoCall(areaKey, areaId, mapId) {
+    const usersInArea = this.areaGroups.get(areaKey);
+    if (!usersInArea || usersInArea.size < 2) {
+      // 사용자가 1명 이하면 화상통화 종료
+      this.endAreaVideoCall(areaKey);
+      return;
+    }
+
+    // 기존 세션이 있는지 확인
+    if (this.videoCallSessions.has(areaKey)) {
+      // 이미 진행중인 세션에 참가자 업데이트
+      const session = this.videoCallSessions.get(areaKey);
+      session.participants = Array.from(usersInArea);
+      
+      // 새 참가자에게 진행중인 화상통화 알림
+      usersInArea.forEach(participantId => {
+        const socket = this.getUserSocket(participantId);
+        if (socket) {
+          this.io.to(socket).emit('area-video-call-update', {
+            areaKey,
+            areaId,
+            participants: session.participants,
+            isActive: session.isActive
+          });
+        }
+      });
+    } else {
+      // 새로운 화상통화 세션 시작
+      this.startAreaVideoCall(areaKey, areaId, Array.from(usersInArea));
+    }
+  }
+
+  // 영역 화상통화 시작
+  startAreaVideoCall(areaKey, areaId, participants) {
+    console.log('📹 [영역화상통화] 자동 시작:', { areaKey, areaId, participantCount: participants.length });
+
+    this.videoCallSessions.set(areaKey, {
+      areaId,
+      participants,
+      startTime: Date.now(),
+      isActive: true
+    });
+
+    // 모든 참가자에게 자동 화상통화 시작 알림
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('auto-video-call-started', {
+          areaKey,
+          areaId,
+          participants,
+          message: `영역 "${areaId}"에서 화상통화가 자동으로 시작되었습니다.`
+        });
+      }
+    });
+  }
+
+  // 영역 화상통화 종료
+  endAreaVideoCall(areaKey) {
+    const session = this.videoCallSessions.get(areaKey);
+    if (session) {
+      console.log('📹 [영역화상통화] 자동 종료:', { areaKey, duration: Date.now() - session.startTime });
+
+      // 참가자들에게 종료 알림
+      session.participants.forEach(participantId => {
+        const socket = this.getUserSocket(participantId);
+        if (socket) {
+          this.io.to(socket).emit('area-video-call-ended', {
+            areaKey,
+            reason: '영역 참가자 부족'
+          });
+        }
+      });
+
+      this.videoCallSessions.delete(areaKey);
+    }
+  }
+
+  // 🎯 사용자 영역 상태 정리 (연결 해제 시)
+  cleanupUserAreaState(userId) {
+    console.log('🧹 [영역정리] 사용자 영역 상태 정리:', userId);
+
+    // 현재 사용자의 영역 상태 조회
+    const userAreaState = this.userAreaStates.get(userId);
+    if (userAreaState) {
+      const { areaId, areaType, mapId } = userAreaState;
+      const areaKey = `${mapId}_${areaType}_${areaId}`;
+
+      // 영역 그룹에서 제거
+      this.removeUserFromAreaGroup(userId, areaKey);
+
+      // 사용자 영역 상태 제거
+      this.userAreaStates.delete(userId);
+
+      console.log('🧹 [영역정리] 완료:', { userId, areaId, areaType, mapId });
+    }
+
+    // 로그인 사용자 정보에서 영역 정보 정리
+    const loggedInUserInfo = this.loggedInUsers.get(userId);
+    if (loggedInUserInfo) {
+      this.loggedInUsers.set(userId, {
+        ...loggedInUserInfo,
+        현재영역ID: null,
+        영역타입: null,
+        영역정보: null,
+        calculatedAreaInfo: null,
+        영역업데이트시간: new Date().toISOString()
+      });
+    }
+  }
+
+  // 🎯 영역 상태 디버그 정보 조회
+  getAreaStateDebugInfo() {
+    const areaGroupsObj = {};
+    this.areaGroups.forEach((users, areaKey) => {
+      areaGroupsObj[areaKey] = Array.from(users);
+    });
+
+    const videoCallSessionsObj = {};
+    this.videoCallSessions.forEach((session, areaKey) => {
+      videoCallSessionsObj[areaKey] = {
+        ...session,
+        duration: Date.now() - session.startTime
+      };
+    });
+
+    const userAreaStatesObj = {};
+    this.userAreaStates.forEach((state, userId) => {
+      userAreaStatesObj[userId] = state;
+    });
+
+    return {
+      areaGroups: areaGroupsObj,
+      videoCallSessions: videoCallSessionsObj,
+      userAreaStates: userAreaStatesObj,
+      totalUsers: this.userAreaStates.size
+    };
+  }
+
+  // 영역 전환 처리 (화상통화 관리)
+  handleAreaTransition(userId, result) {
+    const { oldAreaKey, newAreaKey, usersInNewArea } = result;
+
+    // 이전 영역에서 화상통화 세션 퇴장
+    if (oldAreaKey) {
+      const leaveResult = this.areaVideoCallManager.handleUserLeaveArea(userId, oldAreaKey);
+      if (leaveResult.left) {
+        // 이전 영역 참가자들에게 알림
+        this.notifyAreaVideoCallChange(oldAreaKey, leaveResult.remainingParticipants, 'user-left');
+      }
+    }
+
+    // 새 영역 진입 시 같은 영역 ID의 사용자들과 화상통화 시작
+    if (newAreaKey && result.areaInfo) {
+      // 현재 사용자의 영역 ID 추출
+      const currentAreaId = result.areaInfo.id || result.areaInfo.areaId || 'public';
+      
+      // 맵의 모든 참가자 중에서 같은 영역 ID에 있는 사용자 찾기
+      const sameAreaUsers = this.getUsersInSameAreaId(userId, currentAreaId, result.mapId);
+      
+      console.log('🎯 [영역그룹] 같은 영역 ID 사용자 검색:', {
+        userId,
+        areaId: currentAreaId,
+        sameAreaUsers: sameAreaUsers.map(u => ({ id: u.userId, area: u.areaId }))
+      });
+
+      if (sameAreaUsers.length > 1) { // 본인 포함 2명 이상일 때
+        // 영역 ID 기반 세션 키 생성
+        const areaSessionKey = `${result.mapId}_area_${currentAreaId}`;
+        
+        // 기존 화상통화 세션이 있는지 확인
+        const existingSession = this.areaVideoCallManager.getVideoSession(areaSessionKey);
+        
+        if (existingSession) {
+          // 기존 세션에 자동 참여
+          const joinResult = this.areaVideoCallManager.handleUserEnterArea(userId, areaSessionKey);
+          if (joinResult.joined) {
+            console.log('📹 [자동참여] 영역 ID 기반 화상통화에 참여:', { userId, areaId: currentAreaId });
+            this.notifyAreaVideoCallChange(areaSessionKey, joinResult.participants, 'user-joined');
+          }
+        } else {
+          // 새로운 영역 ID 기반 화상통화 세션 자동 시작
+          console.log('📹 [자동시작] 같은 영역 ID 사용자들과 화상통화 시작:', { 
+            userId, 
+            areaId: currentAreaId,
+            usersCount: sameAreaUsers.length 
+          });
+          
+          // 세션에 같은 영역의 모든 사용자 추가
+          const sessionResult = this.areaVideoCallManager.startVideoSessionWithUsers(
+            areaSessionKey, 
+            sameAreaUsers.map(u => u.userId)
+          );
+          
+          this.notifyAreaVideoCallChange(areaSessionKey, sessionResult.participants, 'session-started');
+          
+          // 같은 영역의 모든 사용자에게 자동 화상통화 시작 알림
+          sameAreaUsers.forEach(user => {
+            const participantSocket = this.getUserSocket(user.userId);
+            if (participantSocket) {
+              this.io.to(participantSocket).emit('auto-video-call-started', {
+                areaKey: areaSessionKey,
+                areaId: currentAreaId,
+                participants: sessionResult.participants,
+                initiator: userId
+              });
+            }
+          });
+        }
+      }
+    }
+
+    // 클라이언트에게 영역 변경 알림
+    const userSocket = this.getUserSocket(userId);
+    if (userSocket) {
+      this.io.to(userSocket).emit('area-changed', {
+        oldAreaKey,
+        newAreaKey,
+        areaInfo: result.areaInfo,
+        usersInArea: usersInNewArea
+      });
+    }
+  }
+
+  // 같은 영역 ID에 있는 사용자들 찾기
+  getUsersInSameAreaId(currentUserId, areaId, mapId) {
+    const sameAreaUsers = [];
+    
+    // 해당 맵의 모든 사용자 확인
+    const mapSockets = this.maps.get(parseInt(mapId));
+    if (mapSockets) {
+      for (const socketId of mapSockets) {
+        const userInfo = this.socketUsers.get(socketId);
+        if (userInfo && userInfo.position) {
+          // 사용자 위치로 영역 계산 (updateUserArea 대신 detectUserArea 사용)
+          const mapData = this.mapsList.get(parseInt(mapId));
+          if (mapData) {
+            const { detectUserArea } = require('../utils/areaDetection');
+            const userAreaInfo = detectUserArea(userInfo.position, {
+              id: mapId,
+              privateAreas: mapData.privateAreas || [],
+              size: { width: 1000, height: 1000 }
+            });
+            
+            const userAreaId = userAreaInfo.id || 'public';
+            
+            // 같은 영역 ID인 사용자 추가
+            if (userAreaId === areaId) {
+              sameAreaUsers.push({
+                userId: userInfo.userId,
+                socketId: socketId,
+                areaId: userAreaId,
+                position: userInfo.position
+              });
+            }
+          }
+        }
+      }
+    }
+    
+    return sameAreaUsers;
+  }
+
+  // 영역 화상통화 변경 알림
+  notifyAreaVideoCallChange(areaKey, participants, eventType) {
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('area-video-call-changed', {
+          areaKey,
+          participants,
+          eventType
+        });
+      }
+    });
+  }
+
+  // 사용자 소켓 ID 조회
+  getUserSocket(userId) {
+    return this.userSockets.get(parseInt(userId));
+  }
+
+  // 영역 화상통화 세션 시작
+  startAreaVideoCall(userId, areaKey) {
+    const result = this.areaVideoCallManager.startVideoSession(areaKey, userId);
+    if (result) {
+      this.notifyAreaVideoCallChange(areaKey, result.participants, 'session-started');
+      return result;
+    }
+    return null;
+  }
+
+  // 영역 화상통화 세션 종료
+  endAreaVideoCall(areaKey) {
+    const result = this.areaVideoCallManager.endVideoSession(areaKey);
+    if (result) {
+      this.notifyAreaVideoCallChange(areaKey, result.participants, 'session-ended');
+      return result;
+    }
+    return null;
   }
 }
 

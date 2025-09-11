@@ -83,7 +83,16 @@ const UserList = ({ onlineUsers = [], onSendMessage, onInviteUser, onRequestUser
             <div className="user-info">
               <div className="username">{user.username}</div>
               <div className="status">{getStatusText(user.status)}</div>
-              {user.currentArea && (
+              {/* 계산된 영역 정보 표시 */}
+              {user.calculatedAreaInfo && (
+                <div className="area-info">
+                  {user.calculatedAreaType === 'public' && '🌍 퍼블릭 영역'}
+                  {user.calculatedAreaType === 'private' && `🔒 프라이빗 영역 ${user.calculatedAreaIndex}`}
+                  {user.calculatedAreaType === 'lobby' && '🏠 로비'}
+                </div>
+              )}
+              {/* 기존 currentArea는 fallback으로 유지 */}
+              {!user.calculatedAreaInfo && user.currentArea && (
                 <div className="area-info">
                   {user.currentArea === 'map' && '🗺️ Room'}
                   {user.currentArea === 'private' && '🔒 프라이빗 영역'}

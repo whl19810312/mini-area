@@ -3,12 +3,12 @@
 > vite --port 5173 --host
 
 
-  VITE v4.5.14  ready in 145 ms
+  VITE v4.5.14  ready in 167 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-3:39:48 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+9:05:52 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 148|              mapCreatorId: map.creatorId,
 149|              mapCreatedBy: map.createdBy,
 150|              mapCreatorId: map.creator?.id,
@@ -18,7 +18,7 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-3:39:48 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+9:05:52 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 162|                mapCreatorId: map.creatorId,
 163|                mapCreatedBy: map.createdBy,
 164|                mapCreatorId: map.creator?.id,
@@ -28,3 +28,249 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+(node:268315) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+9:14:59 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:15:23 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:16:03 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:16:18 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:16:37 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:16:52 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:17:05 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:18:57 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:19:12 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:21:07 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:21:15 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:22:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:22:43 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:22:59 PM [vite] hmr update /src/components/MetaverseScene.jsx
+9:59:51 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:00:03 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:00:15 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:00:31 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:00:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:01:01 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:03:01 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:03:35 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:32:10 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:32:31 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:32:50 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:33:00 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:33:06 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:36:23 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:36:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:37:29 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:37:29 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx: Unexpected token, expected "," (1167:9)
+
+  1165 |             }} />
+  1166 |           </div>
+> 1167 |         )}
+       |          ^
+  1168 |         <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
+  1169 |           <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
+  1170 |           <TorsoRow body={parts.body} arms={parts.arms} direction={direction} />
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx:1167:9
+  1165|              }} />
+  1166|            </div>
+  1167|          )}
+     |           ^
+  1168|          <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
+  1169|            <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.unexpected (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6647:16)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6927:12)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11660:14)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOpBaseRightExpr (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10981:34)
+      at JSXParserMixin.parseExprOpRightExpr (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10976:21)
+      at JSXParserMixin.parseExprOp (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10942:27)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10903:17)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.jsxParseExpressionContainer (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4662:31)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4741:36)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+10:37:29 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx: Unexpected token, expected "," (1167:9)
+
+  1165 |             }} />
+  1166 |           </div>
+> 1167 |         )}
+       |          ^
+  1168 |         <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
+  1169 |           <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
+  1170 |           <TorsoRow body={parts.body} arms={parts.arms} direction={direction} />
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx:1167:9
+  1165|              }} />
+  1166|            </div>
+  1167|          )}
+     |           ^
+  1168|          <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
+  1169|            <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.unexpected (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6647:16)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6927:12)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11660:14)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOpBaseRightExpr (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10981:34)
+      at JSXParserMixin.parseExprOpRightExpr (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10976:21)
+      at JSXParserMixin.parseExprOp (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10942:27)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10903:17)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.jsxParseExpressionContainer (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4662:31)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4741:36)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+Vim: Warning: Output is not to a terminal
+Vim: Warning: Input is not from a terminal
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[?1004h[1;24r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?25l[24;1H<a/client/node_modules/@babel/parser/lib/index.js"[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m<odules/@babel/parser/lib/index.js" 14586L, 508518B[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[1;1H[31m'use strict'[m;
+
+[32mObject[m.defineProperty(exports, [31m'__esModule'[m, [36m{[m
+  value: [31mtrue[?2004l[>4;m[?2004h[>4;2m[m
+[36m}[m);
+[36mfunction[m _objectWithoutPropertiesLoose(r, e) [36m{[?2004l[>4;m[?2004h[>4;2m[m
+  [38;5;130mif[m ([38;5;130mnull[m == r) [38;5;130mreturn[m [36m{}[m;
+  [36mvar[m t = [36m{}[m;[?2004l[>4;m[?2004h[>4;2m
+  [38;5;130mfor[m ([36mvar[m n [38;5;130min[m r) [38;5;130mif[m ([36m{}[m.hasOwnProperty.call(r, n)) [36m{[?2004l[>4;m[?2004h[>4;2m[m
+    [38;5;130mif[m (-[31m1[m !== e.indexOf(n)) [38;5;130mcontinue[m;
+    t[36m[[mn[36m][m = r[36m[[mn[36m][m;
+  [36m}[m
+  [38;5;130mreturn[m t;
+[36m}[m
+[38;5;130mclass[m Position [36m{[?2004l[>4;m[?2004h[>4;2m[m
+  constructor(line, col, index) [36m{
+[m    [36mthis[m.line = void [31m0[m;[?2004l[>4;m[?2004h[>4;2m
+    [36mthis[m.column = void [31m0[m;
+    [36mthis[m.index = void [31m0[m;
+    [36mthis[m.line = line;[?2004l[>4;m[?2004h[>4;2m
+    [36mthis[m.column = col;
+    [36mthis[m.index = index;
+  [36m}[m[24;63H1,1[11CTop[1;1H[?25h[?4m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[?2004l[>4;m[?2004h[>4;2m[24;1H[?2004l[>4;m[?1004l[?2004l[?1l>[?1049l[23;0;0t[>4;mVim: Error reading input, exiting...
+Vim: Finished.
+[24;1H[23;2t[23;1t
+
+Could not open index.js in the editor.
+The editor process exited with an error: (code 1).
+
+10:37:41 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:38:25 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:39:27 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:40:50 PM [vite] hmr update /src/components/AreaIndicatorPanel.css
+10:43:35 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:44:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:44:58 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:45:18 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:45:22 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:45:34 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:45:42 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:45:49 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:45:59 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:46:11 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:46:52 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:46:59 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:47:04 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:47:10 PM [vite] hmr update /src/components/AreaVideoCallUI.css
+10:47:15 PM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+10:49:38 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:50:37 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:52:01 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:52:38 PM [vite] hmr update /src/components/MetaverseScene.jsx
+10:52:56 PM [vite] hmr update /src/components/ChatButton.css
+10:53:03 PM [vite] hmr update /src/components/ChatButton.css
+10:53:09 PM [vite] hmr update /src/components/ChatButton.css
+10:53:17 PM [vite] hmr update /src/components/ChatButton.css
+10:54:13 PM [vite] hmr update /src/components/AreaIndicatorPanel.css
+10:54:19 PM [vite] hmr update /src/components/AreaIndicatorPanel.css
+11:00:48 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:01:27 PM [vite] hmr update /src/components/UserList.jsx
+11:01:44 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:01:55 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:02:22 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:03:21 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:03:30 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:05:28 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:06:23 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:08:32 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:09:29 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:09:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:09:47 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:09:55 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:10:07 PM [vite] hmr update /src/components/MetaverseScene.jsx
+11:11:05 PM [vite] hmr update /src/components/MetaverseScene.jsx
+1:20:39 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+1:28:40 AM [vite] hmr update /src/components/MetaverseScene.jsx
+1:34:00 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
+1:34:06 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx

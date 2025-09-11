@@ -36,16 +36,24 @@ export const MetaverseProvider = ({ children }) => {
 
   // 방 목록 가져오기 (로그인 사용자 정보로 참가자 수 계산)
   const fetchMaps = async () => {
-    if (!token) return;
+    const storedToken = localStorage.getItem('token');
+    if (!token && !storedToken) {
+      console.log('❌ fetchMaps: Token 없음');
+      setError('로그인이 필요합니다.');
+      return;
+    }
     
     try {
       setLoading(true);
+      console.log('📡 방 목록 조회 시작');
       
       // 1. 방 목록 가져오기
       const mapsResponse = await axios.get('/api/maps');
+      console.log('📡 방 목록 응답:', mapsResponse.data.success ? '성공' : '실패');
       
       // 2. 로그인 사용자 정보 가져오기
       const usersResponse = await axios.get('/api/user/logged-in-users');
+      console.log('📡 사용자 정보 응답:', usersResponse.data.success ? '성공' : '실패');
       
       if (mapsResponse.data.success && usersResponse.data.success) {
         const mapsData = mapsResponse.data.maps || [];
@@ -67,14 +75,20 @@ export const MetaverseProvider = ({ children }) => {
         setMaps(mapsWithCounts);
         setError(null);
         
+        console.log('✅ 방 목록 조회 성공 - 맵 개수:', mapsData.length);
         console.log('맵별 사용자 수:', mapUserCounts);
         console.log('대기실 사용자 수:', userData.lobbyCount);
       } else {
+        console.error('❌ API 응답 실패');
         setError('방 목록을 불러오는데 실패했습니다.');
       }
     } catch (error) {
-      console.error('방 목록 조회 오류:', error);
-      setError('방 목록을 불러오는데 실패했습니다.');
+      console.error('❌ 방 목록 조회 오류:', error);
+      if (error.response?.status === 401) {
+        setError('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else {
+        setError('방 목록을 불러오는데 실패했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -125,14 +139,21 @@ export const MetaverseProvider = ({ children }) => {
 
   // 캐릭터 목록 가져오기
   const fetchCharacters = async () => {
-    if (!token) return;
+    const storedToken = localStorage.getItem('token');
+    if (!token && !storedToken) {
+      console.log('❌ fetchCharacters: Token 없음');
+      return;
+    }
     
     try {
+      console.log('📡 캐릭터 목록 조회 시작');
       const response = await axios.get('/api/characters');
+      console.log('📡 캐릭터 목록 응답:', response.data.success ? '성공' : '실패');
       
       if (response.data.success) {
         const charactersData = response.data.characters || [];
         setCharacters(charactersData);
+        console.log('✅ 캐릭터 목록 조회 성공 - 캐릭터 개수:', charactersData.length);
         
         // 첫 번째 캐릭터 자동 선택
         if (charactersData.length > 0 && !currentCharacter) {
@@ -140,7 +161,10 @@ export const MetaverseProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('캐릭터 목록 조회 오류:', error);
+      console.error('❌ 캐릭터 목록 조회 오류:', error);
+      if (error.response?.status === 401) {
+        setError('로그인이 필요합니다. 다시 로그인해주세요.');
+      }
     }
   };
 
@@ -292,9 +316,11 @@ export const MetaverseProvider = ({ children }) => {
 
   // 사용자 로그인 시 데이터 로드
   useEffect(() => {
+    const storedToken = localStorage.getItem('token');
     console.log('🔍 MetaverseContext useEffect:', { 
       user: !!user, 
       token: !!token, 
+      storedToken: !!storedToken,
       authLoading: authLoading
     })
     
@@ -303,6 +329,9 @@ export const MetaverseProvider = ({ children }) => {
       fetchMaps();
       fetchCharacters();
       // 대시보드에서는 활성 방 목록 호출 불필요하여 제거
+    } else if (!authLoading && !user && !token && !storedToken) {
+      console.log('❌ 인증되지 않은 사용자 - 로그인 필요')
+      setError('로그인이 필요합니다.');
     } else {
       console.log('⏳ 사용자 인증 대기 중 또는 로딩 중')
     }

@@ -1,0 +1,131 @@
+/* 이동 컨트롤 컨테이너 */
+.movement-controls {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  z-index: 1000;
+  user-select: none;
+}
+
+/* 채팅 버튼 */
+.chat-button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.5);
+}
+
+.chat-button:active {
+  transform: translateY(0);
+}
+
+/* 화살표 컨트롤 그룹 */
+.movement-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.arrow-middle {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* 화살표 버튼 공통 스타일 */
+.arrow-button {
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.arrow-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.arrow-button:active {
+  transform: translateY(0);
+  background: rgba(240, 240, 240, 1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .movement-controls {
+    bottom: 20px;
+    right: 20px;
+    gap: 15px;
+  }
+  
+  .chat-button {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+  
+  .arrow-button {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .arrow-middle {
+    gap: 3px;
+  }
+  
+  .movement-arrows {
+    gap: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movement-controls {
+    bottom: 15px;
+    right: 15px;
+    gap: 10px;
+  }
+  
+  .chat-button {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .arrow-button {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+}

@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useWebRTC } from '../hooks/useWebRTC';
-import { useLiveKit } from '../hooks/useLiveKit';
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
+import useAreaDetection from '../hooks/useAreaDetection';
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
-import VideoSidebar from './VideoSidebar';
-import DraggableVideoPanel from './DraggableVideoPanel';
-import VideoOverlay from './VideoOverlay';
 import UserList from './UserList';
+import AreaVideoCallUI from './AreaVideoCallUI';
+import QuickChatInput from './QuickChatInput';
+import SpeechBubble from './SpeechBubble';
+import AreaIndicatorPanel from './AreaIndicatorPanel';
+import ChatButton from './ChatButton';
+import { detectAreaByPosition, getAreaIndex, getAreaType } from '../utils/areaDetector';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -28,9 +30,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   // 줌 및 패닝 상태 (공간 생성과 동일하게)
   const [zoomScale, setZoomScale] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  // WebRTC & LiveKit SFU
-  const webRTC = useWebRTC(socket, user);
-  const livekit = useLiveKit(user);
 
   // SNS/채팅/통화 상태
   const [globalChatMessages, setGlobalChatMessages] = useState([]); // 전체 채팅 메시지
@@ -39,12 +38,34 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0); // 읽지 않은 메시지 수
   const [isUsersVisible, setIsUsersVisible] = useState(false);
-  const [isCallVisible, setIsCallVisible] = useState(false);
+  const [isQuickChatVisible, setIsQuickChatVisible] = useState(false);
   const [roomParticipants, setRoomParticipants] = useState([]); // 현재 맵의 참가자 목록
-  const [isVideoSidebarVisible, setIsVideoSidebarVisible] = useState(false); // 화상통화 사이드바
   const [chatBubbles, setChatBubbles] = useState(new Map()); // 사용자별 채팅 풍선말
   
-  // Area state (simplified - private area logic removed)
+  // 영역 모니터링 상태
+  const [currentAreaIndex, setCurrentAreaIndex] = useState(0); // 0: 퍼블릭, 1~n: 프라이빗
+  const [currentAreaType, setCurrentAreaType] = useState('public'); // 'public' | 'private'
+  const [currentAreaInfo, setCurrentAreaInfo] = useState(null); // 현재 영역 상세 정보
+  const [previousAreaIndex, setPreviousAreaIndex] = useState(0); // 이전 영역 (변화 감지용)
+  const [storedPrivateAreas, setStoredPrivateAreas] = useState([]); // 방 진입 시 저장된 프라이빗 영역
+  const [areaIndicatorVisible, setAreaIndicatorVisible] = useState(true); // 영역 표시 패널 가시성
+
+  // 참가자 영역 정보 계산 유틸리티 함수
+  const calculateParticipantArea = useCallback((participant) => {
+    if (participant.position && storedPrivateAreas.length > 0) {
+      const areaInfo = detectAreaByPosition(participant.position, storedPrivateAreas);
+      const areaIndex = getAreaIndex(participant.position, storedPrivateAreas);
+      const areaType = getAreaType(participant.position, storedPrivateAreas);
+      
+      return {
+        ...participant,
+        calculatedAreaIndex: areaIndex,
+        calculatedAreaType: areaType,
+        calculatedAreaInfo: areaInfo,
+      };
+    }
+    return participant;
+  }, [storedPrivateAreas]);
   
   // 마우스 드래그 상태 관리
   const [isDragging, setIsDragging] = useState(false);
@@ -55,8 +76,313 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   // 커스텀 훅 사용
   const viewportRef = useRef(null);
   const sceneContainerRef = useRef(null);
+  // 완전한 맵 데이터 (프라이빗 영역 포함)
+  const [fullMapData, setFullMapData] = useState(null);
+  // 🎯 초기 영역 설정 플래그
+  const hasInitialAreaSet = useRef(false);
   // 실시간 캐릭터 동기화 시스템
   const charSync = useRealtimeCharacterSync(socket, currentMap);
+  // 영역 감지 시스템 (완전한 맵 데이터 사용)
+  const areaDetection = useAreaDetection(fullMapData || currentMap, charSync.myPosition, socket, user);
+  
+  // 입실 시 완전한 맵 데이터 로드 (프라이빗 영역 정보 포함)
+  useEffect(() => {
+    // 🎯 새로운 맵에 입실할 때 초기 영역 설정 플래그 리셋
+    hasInitialAreaSet.current = false;
+    console.log('🎯 [초기영역설정] 새 맵 진입으로 초기화 플래그 리셋');
+
+    const loadFullMapData = async () => {
+      if (!currentMap || !currentMap.id) return;
+      
+      console.log('🗺️ [맵로드] 완전한 맵 데이터 로딩 시작:', currentMap.id);
+      
+      try {
+        const response = await fetch(`/api/maps/${currentMap.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const apiResponse = await response.json();
+          console.log('🗺️ [맵로드] API 응답 전체:', apiResponse);
+          
+          // API 응답에서 실제 맵 데이터 추출
+          const mapData = apiResponse.success ? apiResponse.map : apiResponse;
+          
+          console.log('🗺️ [맵로드] 완전한 맵 데이터 로드 완료:', {
+            id: mapData?.id,
+            name: mapData?.name,
+            hasPrivateAreas: !!(mapData?.data?.privateAreas),
+            privateAreasCount: mapData?.data?.privateAreas?.length || 0,
+            privateAreas: mapData?.data?.privateAreas,
+            fullMapData: mapData // 전체 데이터 구조 확인용
+          });
+          
+          // 편집 모드와 동일한 방식으로 privateAreas 추출
+          const privateAreas = Array.isArray(mapData?.private_boxes) ? mapData.private_boxes : 
+                              Array.isArray(mapData?.data?.privateAreas) ? mapData.data.privateAreas : 
+                              Array.isArray(mapData?.privateAreas) ? mapData.privateAreas : [];
+          
+          // 프라이빗 영역 좌표 유효성 검사 및 처리
+          const processedPrivateAreas = privateAreas.map((area, index) => {
+            console.log(`🔍 [영역검증] 프라이빗 영역 ${index + 1} 원본 데이터:`, area);
+            
+            // 좌표 추출: position(시작점)과 size(크기)에서 시작점/끝점 계산
+            const startX = area.x ?? area.position?.x ?? area.startX;
+            const startY = area.y ?? area.position?.y ?? area.startY;
+            const width = area.width ?? area.size?.width;
+            const height = area.height ?? area.size?.height;
+            
+            // 시작점과 끝점 계산
+            const endX = startX !== undefined && width ? startX + width : undefined;
+            const endY = startY !== undefined && height ? startY + height : undefined;
+            
+            console.log(`📐 [영역검증] 시작점/끝점 계산:`, {
+              startX, startY, width, height,
+              endX, endY,
+              startPoint: { x: startX, y: startY },
+              endPoint: { x: endX, y: endY },
+              areaSize: width && height ? `${width} x ${height}` : 'unknown'
+            });
+            
+            // 좌표 정보가 없으면 경고 알람
+            if (startX === undefined || startY === undefined || !width || !height) {
+              const errorMessage = `⚠️ 프라이빗 영역 "${area.name || `영역 ${area.id}`}"의 좌표 정보가 없습니다!\n` +
+                `시작점(x,y): (${startX}, ${startY})\n` +
+                `크기(width,height): (${width}, ${height})\n` +
+                `끝점(x,y): (${endX}, ${endY})\n\n` +
+                `모든 영역이 퍼블릭 영역으로 처리됩니다.`;
+              
+              console.error('❌ [영역검증]', errorMessage);
+              alert(errorMessage);
+              
+              return {
+                ...area,
+                isValid: false,
+                error: '좌표 정보 부족'
+              };
+            }
+            
+            // 유효한 좌표 정보가 있으면 정규화 (시작점/끝점 방식으로 저장)
+            const normalizedArea = {
+              ...area,
+              x: startX,
+              y: startY,
+              width,
+              height,
+              startX,
+              startY,
+              endX,
+              endY,
+              startPoint: { x: startX, y: startY },
+              endPoint: { x: endX, y: endY },
+              isValid: true
+            };
+            
+            console.log(`✅ [영역검증] 프라이빗 영역 "${area.name}" 좌표 검증 완료:`, normalizedArea);
+            return normalizedArea;
+          });
+          
+          // 영역 검증 결과 알람
+          const validAreas = processedPrivateAreas.filter(area => area.isValid);
+          const invalidAreas = processedPrivateAreas.filter(area => !area.isValid);
+          
+          if (privateAreas.length === 0) {
+            const noAreaMessage = `📍 프라이빗 영역 정보 없음\n\n이 맵에는 프라이빗 영역이 설정되지 않았습니다.\n모든 영역이 퍼블릭 영역으로 처리됩니다.`;
+            console.log('📍 [영역검증] 프라이빗 영역 없음');
+            alert(noAreaMessage);
+          } else if (validAreas.length > 0) {
+            console.log('✅ [영역검증] 프라이빗 영역 구하기 성공:', validAreas);
+          }
+          
+          if (invalidAreas.length > 0) {
+            const warningMessage = `⚠️ ${invalidAreas.length}개의 프라이빗 영역에 좌표 문제가 있습니다.\n영역 감지가 정상적으로 작동하지 않을 수 있습니다.`;
+            console.warn('⚠️ [영역검증]', warningMessage);
+            alert(warningMessage);
+          }
+          
+          // 맵 데이터를 완전한 형태로 저장 (useAreaDetection이 기대하는 구조로)
+          setFullMapData({
+            ...currentMap,
+            ...mapData,
+            // 처리된 privateAreas를 최상위 레벨에 배치 (useAreaDetection 호환)
+            privateAreas: processedPrivateAreas,
+            // 기존 data 구조도 유지 (다른 곳에서 사용할 수 있음)
+            data: {
+              ...mapData?.data,
+              privateAreas: processedPrivateAreas
+            }
+          });
+
+          // 🎯 영역 모니터링을 위해 프라이빗 영역 저장
+          console.log('🎯 [영역모니터링] 프라이빗 영역 저장:', processedPrivateAreas.length, '개');
+          setStoredPrivateAreas(processedPrivateAreas);
+        } else {
+          console.error('🗺️ [맵로드] 맵 데이터 로드 실패:', response.status);
+          // 기본 맵 데이터 사용 (편집 모드와 동일한 방식으로 privateAreas 추출)
+          const fallbackPrivateAreas = Array.isArray(currentMap?.private_boxes) ? currentMap.private_boxes : 
+                                      Array.isArray(currentMap?.data?.privateAreas) ? currentMap.data.privateAreas : 
+                                      Array.isArray(currentMap?.privateAreas) ? currentMap.privateAreas : [];
+          setFullMapData({
+            ...currentMap,
+            privateAreas: fallbackPrivateAreas
+          });
+          // 🎯 영역 모니터링을 위해 프라이빗 영역 저장 (fallback)
+          console.log('🎯 [영역모니터링] 프라이빗 영역 저장 (fallback):', fallbackPrivateAreas.length, '개');
+          setStoredPrivateAreas(fallbackPrivateAreas); 
+        }
+      } catch (error) {
+        console.error('🗺️ [맵로드] 맵 데이터 로드 에러:', error);
+        // 기본 맵 데이터 사용 (편집 모드와 동일한 방식으로 privateAreas 추출)
+        const fallbackPrivateAreas = Array.isArray(currentMap?.private_boxes) ? currentMap.private_boxes : 
+                                    Array.isArray(currentMap?.data?.privateAreas) ? currentMap.data.privateAreas : 
+                                    Array.isArray(currentMap?.privateAreas) ? currentMap.privateAreas : [];
+        setFullMapData({
+          ...currentMap,
+          privateAreas: fallbackPrivateAreas
+        });
+        // 🎯 영역 모니터링을 위해 프라이빗 영역 저장 (error fallback)
+        console.log('🎯 [영역모니터링] 프라이빗 영역 저장 (error fallback):', fallbackPrivateAreas.length, '개');
+        setStoredPrivateAreas(fallbackPrivateAreas);
+      }
+    };
+    
+    loadFullMapData();
+  }, [currentMap?.id]);
+  
+  // 🎯 실시간 영역 감지 시스템
+  useEffect(() => {
+    if (charSync.setOnPositionChange) {
+      charSync.setOnPositionChange((position) => {
+        console.log('🌍 거리 기반 위치 변경 감지:', position);
+        // useAreaDetection 훅이 자동으로 위치 변경을 감지하여 처리하므로 
+        // 별도의 처리가 필요하지 않습니다.
+      });
+    }
+  }, [charSync.setOnPositionChange]);
+
+  // 🎯 사용자 위치 변경 시 실시간 영역 감지
+  useEffect(() => {
+    if (!charSync.myPosition || !storedPrivateAreas || storedPrivateAreas.length === 0) {
+      // 위치 정보가 없거나 프라이빗 영역이 없으면 퍼블릭으로 설정
+      if (currentAreaType !== 'public') {
+        console.log('🎯 [영역감지] 위치/영역 정보 부족 - 퍼블릭으로 설정');
+        setCurrentAreaType('public');
+        setCurrentAreaIndex(0);
+        setCurrentAreaInfo(null);
+      }
+      return;
+    }
+
+    try {
+      // 영역 판별 수행
+      const areaResult = detectAreaByPosition(charSync.myPosition, storedPrivateAreas);
+
+      // 이전 영역과 다른 경우에만 업데이트
+      if (areaResult.areaIndex !== currentAreaIndex) {
+        console.log('🔄 [영역변경] 영역 전환:', {
+          from: { type: currentAreaType, index: currentAreaIndex },
+          to: { type: areaResult.areaType, index: areaResult.areaIndex }
+        });
+
+        // 영역 변경 애니메이션 트리거를 위해 이전 영역 저장
+        setPreviousAreaIndex(currentAreaIndex);
+
+        // 새로운 영역 정보 업데이트
+        setCurrentAreaType(areaResult.areaType);
+        setCurrentAreaIndex(areaResult.areaIndex);
+        setCurrentAreaInfo(areaResult.areaInfo);
+
+        // 내 위치 영역 찾음 로그
+        if (areaResult.areaType === 'private') {
+          const areaName = areaResult.areaInfo?.name || `프라이빗 영역 ${areaResult.areaIndex}`;
+          console.log(`🎯 내 위치 영역: ${areaName} 진입`);
+        } else {
+          console.log(`🎯 내 위치 영역: 퍼블릭 영역 진입`);
+        }
+      }
+    } catch (error) {
+      console.error('🎯 [영역감지] 오류:', error);
+    }
+  }, [charSync.myPosition, storedPrivateAreas]);
+
+  // 참가자들의 영역 정보를 주기적으로 업데이트 (실시간 동기화용)
+  useEffect(() => {
+    if (!storedPrivateAreas.length || !roomParticipants.length) return;
+
+    const updateParticipantsAreas = () => {
+      setRoomParticipants(prevParticipants => {
+        const updated = prevParticipants.map(calculateParticipantArea);
+        // 영역 정보가 변경된 참가자만 로그 출력
+        const changedUsers = updated.filter((user, index) => {
+          const prev = prevParticipants[index];
+          return prev && (prev.calculatedAreaIndex !== user.calculatedAreaIndex || 
+                         prev.calculatedAreaType !== user.calculatedAreaType);
+        });
+        
+        if (changedUsers.length > 0) {
+          console.log(`👥 참가자 영역 변경:`, changedUsers.map(u => 
+            `${u.username} → ${u.calculatedAreaType} ${u.calculatedAreaIndex}`
+          ));
+        }
+        
+        return updated;
+      });
+    };
+
+    // 3초마다 참가자들의 영역 정보 업데이트
+    const intervalId = setInterval(updateParticipantsAreas, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [storedPrivateAreas, calculateParticipantArea, roomParticipants.length]);
+
+  // 🎯 시작점 기반 초기 영역 설정 (입실 직후 한 번만 실행)
+  
+  useEffect(() => {
+    // 조건: 위치 정보와 프라이빗 영역 정보가 모두 준비되었고, 아직 초기 영역을 설정하지 않았을 때
+    if (charSync.myPosition && storedPrivateAreas !== null && !hasInitialAreaSet.current) {
+      
+      console.log('🎯 [초기영역설정] 시작점 영역 감지 시작 (최초 1회):', {
+        startPosition: charSync.myPosition,
+        privateAreasCount: storedPrivateAreas.length,
+        currentArea: { type: currentAreaType, index: currentAreaIndex }
+      });
+
+      try {
+        // 시작점에서의 영역 판별
+        const startAreaResult = detectAreaByPosition(charSync.myPosition, storedPrivateAreas);
+        
+        console.log('🎯 [초기영역설정] 시작점 영역 감지 결과:', startAreaResult);
+
+        // 초기 영역 상태 설정
+        setCurrentAreaType(startAreaResult.areaType);
+        setCurrentAreaIndex(startAreaResult.areaIndex);
+        setCurrentAreaInfo(startAreaResult.areaInfo);
+
+        // 초기 설정 완료 플래그
+        hasInitialAreaSet.current = true;
+
+        console.log('🎯 [초기영역설정] 초기 영역 상태 설정 완료:', {
+          areaType: startAreaResult.areaType,
+          areaIndex: startAreaResult.areaIndex,
+          areaName: startAreaResult.areaInfo?.name
+        });
+
+        // 초기 영역 설정 로그
+        if (startAreaResult.areaType === 'private') {
+          const areaName = startAreaResult.areaInfo?.name || `프라이빗 영역 ${startAreaResult.areaIndex}`;
+          console.log(`🎯 시작 위치: ${areaName}`);
+        } else {
+          console.log('🎯 시작 위치: 퍼블릭 영역');
+        }
+      } catch (error) {
+        console.error('🎯 [초기영역설정] 시작점 영역 감지 오류:', error);
+        hasInitialAreaSet.current = true; // 오류 시에도 재시도 방지
+      }
+    }
+  }, [charSync.myPosition, storedPrivateAreas]);
+  
   const isChatVisibleRef = useRef(false); // 채팅창 상태를 ref로도 추적
   const chatBubbleTimeouts = useRef(new Map()); // 채팅 풍선말 타임아웃 관리
   
@@ -70,17 +396,18 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       // 참가자 정보를 로그로 출력
       console.log(`👥 현재 맵 ${data.mapId}의 참가자:`, data.participants);
       
-      // 참가자 목록 업데이트
+      // 참가자 목록 업데이트 - 각 참가자의 실제 영역 계산
       if (data.participants && Array.isArray(data.participants)) {
-        setRoomParticipants(data.participants);
+        const updatedParticipants = data.participants.map(calculateParticipantArea);
+        
+        console.log(`👥 영역 계산된 참가자 정보:`, updatedParticipants);
+        setRoomParticipants(updatedParticipants);
       }
     }
   };
 
   const handleUserLeft = (data) => {
-    // 사용자가 나갔을 때 WebRTC 연결 끊기
-    const targetId = data.username || data.userId;
-    webRTC.disconnectFromUser?.(targetId);
+    console.log('사용자가 퇴장했습니다:', data);
   };
 
 
@@ -99,7 +426,14 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     // 경로 찾기를 사용한 클릭 이동
     if (charSync.moveCharacterTo) {
       console.log('🎯 클릭 이동: 목표 위치', { x: Math.round(x), y: Math.round(y) }, 'zoom:', zoomScale);
-      charSync.moveCharacterTo({ x, y });
+      
+      // 도착 시 영역 검사를 위한 콜백 함수
+      const onArrival = (position) => {
+        console.log('🌍 도착 지점 영역 검사:', position);
+        // Area detection hook이 자동으로 위치 변경을 감지하여 처리함
+      };
+      
+      charSync.moveCharacterTo({ x, y }, onArrival);
     }
   };
 
@@ -174,7 +508,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   };
   
   // 마우스 휠로 줌 (공간 생성과 동일)
-  const handleWheel = (e) => {
+  const handleWheel = useCallback((e) => {
     if (isEditMode) return;
     
     e.preventDefault();
@@ -192,7 +526,36 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     
     setZoomScale(newScale);
     setPanOffset({ x: newPanX, y: newPanY });
-  };
+  }, [isEditMode, zoomScale, panOffset.x, panOffset.y]);
+
+  // wheel 이벤트를 passive: false로 등록
+  useEffect(() => {
+    const container = viewportRef.current;
+    if (!container) return;
+
+    const wheelHandler = (e) => handleWheel(e);
+    container.addEventListener('wheel', wheelHandler, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', wheelHandler);
+    };
+  }, [handleWheel]);
+
+  // 키보드 단축키 (Enter 키로 빠른 채팅 열기)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 입력창이 활성화된 상태에서는 단축키 비활성화
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      if (e.key === 'Enter' && !isQuickChatVisible) {
+        e.preventDefault();
+        setIsQuickChatVisible(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isQuickChatVisible]);
 
   const resetView = () => {
     setPanOffset({ x: 0, y: 0 });
@@ -206,16 +569,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
   const handleImageLoad = (e) => { setBackgroundLoaded(true); setSceneSize({ width: e.target.naturalWidth, height: e.target.naturalHeight }); };
 
-  // WebRTC 이벤트 바인딩
-  useEffect(() => {
-    if (!socket || !currentMap) return;
-    
-    socket.on('webrtc-signal', webRTC.handleWebRTCSignal);
-    
-    return () => {
-      socket.off('webrtc-signal', webRTC.handleWebRTCSignal);
-    };
-  }, [socket, currentMap, webRTC]);
 
   // 채팅창 상태 동기화 및 읽지 않은 메시지 초기화
   useEffect(() => {
@@ -225,13 +578,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     }
   }, [isChatVisible]);
 
-  // 카메라 상태 모니터링 - 카메라가 켜져있으면 비디오 패널 표시
-  useEffect(() => {
-    if (webRTC.localStream && webRTC.isVideoCallActive) {
-      console.log('📹 카메라가 활성화됨 - 비디오 패널 표시');
-      setIsCallVisible(true);
-    }
-  }, [webRTC.localStream, webRTC.isVideoCallActive]);
 
   useEffect(() => {
     if (!socket || !currentMap) return;
@@ -248,63 +594,15 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     });
     
     // 프라이빗 영역 관련 이벤트
-    // 사용자 입장 시 자동 연결 (영역 구분 없음)
+    // 사용자 입장 이벤트
     socket.on('user-joined', async (data) => {
       console.log(`👋 사용자 입장:`, data);
-      
-      if (data.userId !== user.id) {
-        const targetId = data.username || data.userId;
-        
-        console.log(`🆕 새 사용자 ${targetId}가 방에 입장`);
-        
-        // 화상통화가 꺼져있으면 자동으로 켜기
-        if (!webRTC.isVideoCallActive && !webRTC.isCameraDisabledByUser) {
-          console.log(`📹 카메라 자동 시작`);
-          await webRTC.startCamera();
-          setIsVideoSidebarVisible(true);
-          setIsCallVisible(true);
-        }
-        
-        // 새로운 사용자와 연결 (이미 연결되어 있는지 확인)
-        if (!webRTC.remoteStreams.has(targetId)) {
-          console.log(`🎬 ${targetId}와 화상통화 연결 시작`);
-          setTimeout(async () => {
-            await webRTC.initiateCallToUser(targetId);
-          }, 1000);
-        } else {
-          console.log(`✅ ${targetId}는 이미 연결되어 있음`);
-        }
-        
-        // 참가자 수 업데이트 로그
-        console.log(`📊 화상통화 참가자 업데이트: ${webRTC.remoteStreams.size} → ${webRTC.remoteStreams.size + 1}명 예상`);
-      }
-      
     });
     
     
-    // 채널 기반 화상통화 참가자 업데이트
+    // 채널 참가자 업데이트 이벤트
     socket.on('channel-participants-update', async (data) => {
       console.log(`📡 채널 참가자 업데이트:`, data);
-      if (data.participants && Array.isArray(data.participants)) {
-        const otherUsers = data.participants.filter(p => p.userId !== user.id);
-        
-        if (otherUsers.length > 0) {
-          // 영역 구분 없이 자동 연결
-          if (!webRTC.isVideoCallActive && !webRTC.isCameraDisabledByUser) {
-            await webRTC.startCamera();
-            setIsVideoSidebarVisible(true);
-            setIsCallVisible(true);
-          }
-          
-          // 모든 참가자와 연결
-          for (const participant of otherUsers) {
-            const targetId = participant.username || participant.userId;
-            if (!webRTC.remoteStreams.has(targetId)) {
-              await webRTC.initiateCallToUser(targetId);
-            }
-          }
-        }
-      }
     });
     
     // user-joined 이벤트는 위에서 이미 처리됨
@@ -427,6 +725,12 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     
     socket.on('chat-message', (msg) => {
       console.log(`💬 채팅 메시지 수신:`, msg);
+      console.log(`🔍 메시지 상세:`, {
+        content: msg.content,
+        userId: msg.userId,
+        currentUserId: user.id,
+        type: msg.type
+      });
       
       // content가 비어있는 메시지 무시
       if (!msg.content || msg.content.trim() === '') {
@@ -455,19 +759,12 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           return [...prev, messageWithType];
         });
       } else {
-        // 영역 채팅 (area 또는 type이 없는 경우)
-        const mapId = msg.mapId || currentMap.id;
-        setChatMessagesByArea(prev => {
-          const newMap = new Map(prev);
-          const areaMessages = newMap.get(mapId) || [];
-          
-          // 중복 체크
-          if (msg.messageId && areaMessages.some(m => m.messageId === msg.messageId)) {
+        // 영역 채팅 (area 또는 type이 없는 경우) - 전체 채팅으로 처리
+        setGlobalChatMessages(prev => {
+          if (msg.messageId && prev.some(m => m.messageId === msg.messageId)) {
             return prev;
           }
-          
-          newMap.set(mapId, [...areaMessages, messageWithType]);
-          return newMap;
+          return [...prev, messageWithType];
         });
       }
       
@@ -477,7 +774,16 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       }
       
       // 채팅 풍선말 추가 (영역 채팅과 전체 채팅만)
+      console.log('🎭 말풍선 조건 확인:', {
+        msgType: msg.type,
+        content: msg.content,
+        userId: msg.userId,
+        shouldShow: (msg.type === 'area' || msg.type === 'global' || !msg.type) && msg.content && msg.content.trim() !== ''
+      });
+
       if ((msg.type === 'area' || msg.type === 'global' || !msg.type) && msg.content && msg.content.trim() !== '') {
+        console.log('💭 말풍선 추가:', { userId: msg.userId, message: msg.content });
+        
         // 이전 타임아웃이 있으면 취소
         const existingTimeout = chatBubbleTimeouts.current.get(msg.userId);
         if (existingTimeout) {
@@ -492,6 +798,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             message: msg.content,
             timestamp: bubbleTimestamp
           });
+          console.log('💭 현재 말풍선 상태:', Array.from(newBubbles.entries()));
           return newBubbles;
         });
         
@@ -629,36 +936,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     console.log(`🏠 맵 입장 요청:`, joinData);
     socket.emit('join-map', joinData);
     
-    // 방 입장 시 자동으로 화상채팅 시작
-    console.log('🎬 방 입장 - 화상채팅 자동 시작');
-    setTimeout(async () => {
-      try {
-        await webRTC.startCamera();
-        console.log('🎬 카메라 시작 완료');
-        setIsVideoSidebarVisible(true);
-        setIsCallVisible(true);
-        
-        // 현재 방의 모든 사용자와 연결
-        if (roomParticipants.length > 0) {
-          const otherUsers = roomParticipants.filter(p => p.userId !== user.id);
-          console.log(`🎬 방의 다른 사용자들과 연결 시작: ${otherUsers.length}명`);
-          
-          for (const participant of otherUsers) {
-            const targetId = participant.username || participant.userId;
-            try {
-              await webRTC.initiateCallToUser(targetId);
-              console.log(`✅ ${targetId}와 연결 성공`);
-            } catch (err) {
-              console.error(`❌ ${targetId}와 연결 실패:`, err);
-            }
-          }
-        } else {
-          console.log('🎬 방에 혼자 있음 - 본인 화면만 표시');
-        }
-      } catch (error) {
-        console.error('🎬 화상채팅 시작 실패:', error);
-      }
-    }, 1000); // 1초 지연 후 시작
     
     return () => { 
       console.log(`🏠 맵 퇴장 처리`);
@@ -859,6 +1136,12 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       >
         {/* 채팅 풍선말 */}
         {chatBubble && (
+          console.log('🎈 말풍선 렌더링:', { 
+            chatBubble, 
+            position: pos, 
+            username: info?.username || info?.name,
+            isCurrent 
+          }) || (
           <div style={{
             position: 'absolute',
             bottom: '100%',
@@ -892,6 +1175,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
               borderTop: '8px solid rgba(255, 255, 255, 0.95)'
             }} />
           </div>
+          )
         )}
         <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
           <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
@@ -928,287 +1212,31 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     ); 
   };
 
-  // 통화 오버레이 컴포넌트들
-  const RemoteVideo = ({ remoteStreams, targetUserId }) => {
-    const videoRef = useRef(null);
-    const playPromiseRef = useRef(null);
-    const currentStreamRef = useRef(null);
-    
-    useEffect(() => {
-      // targetUserId로 정확히 찾기
-      let stream = remoteStreams.get(targetUserId);
-      
-      // 찾지 못했다면 첫 번째 스트림 사용
-      if (!stream && remoteStreams.size > 0) {
-        stream = Array.from(remoteStreams.values())[0];
-      }
-      
-      // 이미 같은 스트림이 설정되어 있으면 무시
-      if (currentStreamRef.current === stream) {
-        return;
-      }
-      
-      currentStreamRef.current = stream;
-      
-      const handleVideoStream = async () => {
-        if (!videoRef.current) return;
-        
-        const video = videoRef.current;
-        
-        // 이전 play promise가 있으면 기다림
-        if (playPromiseRef.current) {
-          try {
-            await playPromiseRef.current;
-          } catch (e) {
-            // 이전 play가 취소되어도 무시
-          }
-        }
-        
-        // 스트림이 이미 설정되어 있고 같은 스트림이면 변경하지 않음
-        if (video.srcObject === stream) {
-          return;
-        }
-        
-        // 이벤트 리스너 추가
-        video.onloadedmetadata = () => {
-          // Video metadata loaded
-        };
-        
-        video.oncanplay = () => {
-          // Video can play
-        };
-        
-        video.onplaying = () => {
-          // Video playing
-        };
-        
-        video.onerror = (error) => {
-          console.error(`🎥 비디오 오류:`, error);
-        };
-        
-        // 기존 재생 중지
-        video.pause();
-        video.srcObject = null;
-        
-        // 새 스트림 설정
-        if (stream) {
-          video.srcObject = stream;
-          video.muted = false;
-          
-          // play를 promise로 저장
-          playPromiseRef.current = video.play();
-          
-          try {
-            await playPromiseRef.current;
-            // Video playback started
-          } catch (error) {
-            if (error.name !== 'AbortError') {
-              console.error(`🎥 비디오 재생 실패:`, error);
-            }
-          } finally {
-            playPromiseRef.current = null;
-          }
-        } else {
-          // No stream, stopping video
-        }
-      };
-      
-      handleVideoStream();
-      
-      // Cleanup
-      return () => {
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.srcObject = null;
-        }
-        playPromiseRef.current = null;
-        currentStreamRef.current = null;
-      };
-    }, [remoteStreams, targetUserId]);
-    return (
-      <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline 
-        style={{ 
-          position: 'absolute', 
-          inset: 0, 
-          width: '100%', 
-          height: '100%', 
-          objectFit: 'cover', 
-          zIndex: 4,
-          backgroundColor: '#000'
-        }} 
-      />
-    );
-  };
 
-  const LocalPiP = ({ localStream }) => {
-    const videoRef = useRef(null);
-    const playPromiseRef = useRef(null);
-    const currentStreamRef = useRef(null);
-    
-    useEffect(() => {
-      // 이미 같은 스트림이 설정되어 있으면 무시
-      if (currentStreamRef.current === localStream) {
-        return;
-      }
-      
-      currentStreamRef.current = localStream;
-      
-      const handleVideoStream = async () => {
-        if (!videoRef.current) return;
-        
-        const video = videoRef.current;
-        
-        // 이전 play promise가 있으면 기다림
-        if (playPromiseRef.current) {
-          try {
-            await playPromiseRef.current;
-          } catch (e) {
-            // 이전 play가 취소되어도 무시
-          }
-        }
-        
-        // 스트림이 이미 설정되어 있고 같은 스트림이면 변경하지 않음
-        if (video.srcObject === localStream) {
-          return;
-        }
-        
-        // 이벤트 리스너 추가
-        video.onloadedmetadata = () => {
-          // Local video metadata loaded
-        };
-        
-        video.oncanplay = () => {
-          // Local video can play
-        };
-        
-        video.onplaying = () => {
-          // Local video playing
-        };
-        
-        // 기존 재생 중지
-        video.pause();
-        video.srcObject = null;
-        
-        // 새 스트림 설정
-        if (localStream) {
-          video.srcObject = localStream;
-          video.muted = true;
-          
-          // play를 promise로 저장
-          playPromiseRef.current = video.play();
-          
-          try {
-            await playPromiseRef.current;
-            // Local video playback started
-          } catch (error) {
-            if (error.name !== 'AbortError') {
-              console.error(`🎥 로컬 비디오 재생 실패:`, error);
-            }
-          } finally {
-            playPromiseRef.current = null;
-          }
-        }
-      };
-      
-      handleVideoStream();
-      
-      // Cleanup
-      return () => {
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.srcObject = null;
-        }
-        playPromiseRef.current = null;
-        currentStreamRef.current = null;
-      };
-    }, [localStream]);
-    return (
-      <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline 
-        muted 
-        style={{ 
-          position: 'absolute', 
-          right: 20, 
-          bottom: 80, 
-          width: 200, 
-          height: 150, 
-          objectFit: 'cover', 
-          borderRadius: 12, 
-          border: '3px solid rgba(255,255,255,0.6)', 
-          zIndex: 5, 
-          pointerEvents: 'auto', 
-          background: '#000',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.4)'
-        }} 
-      />
-    );
-  };
-
-  const GroupGrid = ({ remoteStreams }) => {
-    const containerRef = useRef(null);
-    // Render simple grid of all remote streams
-    const entries = Array.from(remoteStreams.entries());
-    return (
-      <div ref={containerRef} style={{ position: 'absolute', inset: 0, display: 'grid', gap: 8, padding: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', zIndex: 3, pointerEvents: 'none' }}>
-        {entries.map(([uid, stream]) => (
-          <StreamTile key={uid} stream={stream} />
-        ))}
-      </div>
-    );
-  };
-
-  const StreamTile = ({ stream }) => {
-    const ref = useRef(null);
-    useEffect(() => {
-      if (ref.current) {
-        ref.current.srcObject = stream || null;
-        if (stream) {
-          ref.current.muted = false;
-          ref.current.play?.().catch(() => {});
-        }
-      }
-    }, [stream]);
-    return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
-  };
-
-  const LiveKitTile = ({ track }) => {
-    const ref = useRef(null);
-    useEffect(() => {
-      if (!track || !track.track) return;
-      // livekit-client Track publication -> mediaStreamTrack via attach()
-      try {
-        track.track.attach(ref.current);
-      } catch {}
-      return () => {
-        try { track.track.detach(ref.current); } catch {}
-      };
-    }, [track]);
-    return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
-  };
 
   return (
     <div className="metaverse-container">
       <NavigationBar 
         currentView={currentView}
         onViewChange={setCurrentView}
-        currentArea={{ type: 'public', name: '퍼블릭 영역' }}
+        currentArea={{ 
+          type: areaDetection.currentArea.type, 
+          name: areaDetection.getAreaInfo().displayName 
+        }}
         onReturnToLobby={onReturnToLobby}
         roomName={currentMap?.name}
-        onToggleGroupCall={() => {
-          const roomName = `map-${currentMap?.id || 'default'}`;
-          if (livekit?.connected) {
-            livekit.leave();
-          } else {
-            livekit.join(roomName).catch(() => {});
-          }
-        }}
-        groupCallActive={!!livekit?.connected}
+        onToggleGroupCall={() => {}}
+        groupCallActive={false}
         onOpenUserList={() => setIsUsersVisible(v => !v)}
+      />
+
+      {/* 🎯 영역 표시 패널 */}
+      <AreaIndicatorPanel
+        currentAreaIndex={currentAreaIndex}
+        currentAreaType={currentAreaType}
+        currentAreaInfo={currentAreaInfo}
+        userPosition={charSync.myPosition || { x: 0, y: 0 }}
+        isVisible={areaIndicatorVisible && currentView === 'metaverse'}
       />
       
       {/* 줌/패닝 컨트롤 UI - 게임 컨트롤러 스타일 */}
@@ -1365,6 +1393,33 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
               ▼
             </button>
           </div>
+
+          {/* 🎯 영역 패널 토글 버튼 */}
+          <button
+            onClick={() => setAreaIndicatorVisible(prev => !prev)}
+            style={{
+              width: '50px',
+              height: '30px',
+              borderRadius: '15px',
+              border: 'none',
+              background: areaIndicatorVisible ? 'rgba(76, 175, 80, 1)' : 'rgba(158, 158, 158, 1)',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(5px)',
+              transition: 'all 0.2s',
+              marginTop: '10px'
+            }}
+            onMouseEnter={(e) => e.target.style.background = areaIndicatorVisible ? 'rgba(67, 160, 71, 1)' : 'rgba(117, 117, 117, 1)'}
+            onMouseLeave={(e) => e.target.style.background = areaIndicatorVisible ? 'rgba(76, 175, 80, 1)' : 'rgba(158, 158, 158, 1)'}
+            title={areaIndicatorVisible ? "영역 패널 숨기기" : "영역 패널 보기"}
+          >
+            {areaIndicatorVisible ? '🎯' : '👁️'}
+          </button>
         </div>
       )}
       {currentView === 'metaverse' && (
@@ -1382,7 +1437,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
           onContextMenu={handleContextMenu}
         >
           <div 
@@ -1523,22 +1577,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             ))}
             {mapImageProp && !backgroundLoaded && (<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0, 0, 0, 0.8)', color: 'white', padding: '20px', borderRadius: '10px', fontSize: '16px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>배경 이미지 로딩 중...</div>)}
 
-            {/* 방 전체 카메라 버튼 (우측 상단) - LiveKit SFU */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                const roomName = `map-${currentMap?.id || 'default'}`;
-                if (livekit.connected) {
-                  livekit.leave();
-                } else {
-                  livekit.join(roomName).catch(() => {});
-                }
-              }}
-              title="방 전체 화상통화"
-              style={{ position: 'absolute', right: 20, top: 20, zIndex: 4, padding: '10px 14px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer' }}
-            >
-              {livekit.connected ? '통화 종료' : '카메라'}
-            </button>
 
             {/* 사용자 리스트 버튼 (우측 상단) */}
             <button
@@ -1569,87 +1607,28 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
             {/* 1:1 통화는 VideoSidebar에서 처리 */}
 
-            {/* LiveKit SFU 그룹 통화 오버레이 */}
-            {livekit.connected && (
-              <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', display: 'grid', gap: 8, padding: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-                {livekit.tracks.map((t, idx) => (
-                  <LiveKitTile key={idx} track={t} />
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
       
-      {/* 채팅 토글 버튼 (좌측 하단 - 화면에 고정) */}
+      {/* 빠른 채팅 버튼 (우상단 영역 표시 패널 왼쪽) */}
       {currentView === 'metaverse' && (
         <>
-          <button
-            onClick={(e) => { e.stopPropagation(); setIsChatVisible(v => !v); }}
-            style={{ 
-              position: 'fixed', 
-              left: 20, 
-              bottom: 20, 
-              zIndex: 1001, 
-              padding: '10px 14px', 
-              borderRadius: 20, 
-              border: '1px solid rgba(255,255,255,0.3)', 
-              background: 'rgba(0,0,0,0.35)', 
-              color: '#fff', 
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            {isChatVisible ? '채팅 숨기기' : '채팅 열기'}
-            {/* 읽지 않은 메시지 수 표시 */}
-            {!isChatVisible && unreadMessageCount > 0 && (
-              <span style={{
-                background: '#FFD700',
-                color: '#000',
-                borderRadius: '10px',
-                padding: '2px 6px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                minWidth: '20px',
-                textAlign: 'center'
-              }}>
-                {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
-              </span>
-            )}
-          </button>
+          <ChatButton 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              setIsQuickChatVisible(true); 
+            }} 
+          />
 
-          {/* 현재 영역 표시 (화면 하단 중앙) */}
-          <div style={{
-            position: 'fixed',
-            bottom: 20,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            padding: '8px 16px',
-            borderRadius: 20,
-            background: 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span>🌍</span>
-            <span>퍼블릭 영역</span>
-            {currentMap && (
-              <>
-                <span>•</span>
-                <span>{currentMap.name}</span>
-              </>
-            )}
-          </div>
 
           {/* 채널 기반 채팅창 (화면에 고정) */}
           <ChatWindow
-            currentArea={{ type: 'public', name: '퍼블릭 영역', mapName: currentMap.name }}
+            currentArea={{ 
+              type: areaDetection.currentArea.type, 
+              name: areaDetection.getAreaInfo().displayName, 
+              mapName: currentMap.name 
+            }}
             isVisible={isChatVisible}
             messages={[
               // 전체 채팅
@@ -1672,27 +1651,36 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
               socket.emit('chat-message', text, chatMode, targetUserId);
             }}
           />
+
+
+          {/* 영역 기반 화상통화 UI */}
+          <AreaVideoCallUI
+            socket={socket}
+            currentArea={{
+              type: areaDetection.currentArea.type,
+              name: areaDetection.getAreaInfo().displayName,
+              id: areaDetection.currentArea.id
+            }}
+            isVisible={currentView === 'metaverse'}
+          />
+
+          {/* 빠른 채팅 입력창 */}
+          <QuickChatInput
+            isVisible={isQuickChatVisible}
+            onSendMessage={(text, chatMode) => {
+              if (!socket) {
+                console.error('Socket not available');
+                return;
+              }
+              console.log('🚀 빠른 채팅 메시지 전송:', { text, chatMode, userId: user?.id, username: user?.username });
+              socket.emit('chat-message', text, chatMode, null);
+            }}
+            onClose={() => setIsQuickChatVisible(false)}
+          />
         </>
       )}
       {currentView === 'sns' && (<SNSBoard posts={snsPosts} onPostCreate={(post) => setSnsPosts(prev => [post, ...prev])} onPostLike={() => {}} onPostComment={() => {}} />)}
       
-      {/* 화상통화 오버레이 (최상위 레이어) */}
-      <VideoOverlay
-        localStream={webRTC.localStream}
-        remoteStreams={webRTC.remoteStreams}
-        isVisible={isVideoSidebarVisible || isCallVisible}
-        currentArea={{ type: 'public', name: '퍼블릭 영역' }}
-        isScreenSharing={webRTC.isScreenSharing}
-        onEndCall={() => {
-          // 로컬 통화 종료
-          webRTC.endCall();
-          setIsVideoSidebarVisible(false);
-          setIsCallVisible(false);
-        }}
-        onToggleMicrophone={() => webRTC.toggleMicrophone()}
-        onToggleCamera={() => webRTC.toggleCamera()}
-        onToggleScreenShare={() => webRTC.toggleScreenShare()}
-      />
     </div>
   );
 });

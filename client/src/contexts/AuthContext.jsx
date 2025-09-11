@@ -22,6 +22,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const location = useLocation()
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [loading, setLoading] = useState(true)
   const [socketConnected, setSocketConnected] = useState(false)
   const socketRef = useRef(null)
@@ -290,11 +291,13 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      checkAuth(token)
+    const storedToken = localStorage.getItem('token')
+    setToken(storedToken)
+    if (storedToken) {
+      checkAuth(storedToken)
     } else {
       setLoading(false)
+      setUser(null) // 토큰이 없으면 사용자 상태도 초기화
     }
   }, [])
 
@@ -309,27 +312,32 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async (token) => {
     try {
-      console.log('checkAuth 호출 - token:', token ? '존재' : '없음')
+      console.log('🔐 checkAuth 호출 - token:', token ? `${token.substring(0, 20)}...` : '없음')
       const response = await axios.get('/api/auth/user/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
-      console.log('checkAuth 응답:', response.data)
+      console.log('✅ checkAuth 성공:', response.data.user?.username)
       setUser(response.data.user)
     } catch (error) {
-      console.error('checkAuth 오류:', error.response?.status, error.response?.data)
-      // 자동 로그아웃 비활성화 - 토큰과 사용자 상태 유지
-      // localStorage.removeItem('token')
-      // setUser(null)
+      console.error('❌ checkAuth 실패:', error.response?.status, error.response?.data?.message)
       
-      // 토큰이 있으면 사용자 정보를 유지 (세션 만료 방지)
-      if (token) {
-        // 기존 사용자 정보 유지하거나 기본값 설정
+      // 401 에러인 경우 토큰이 만료되었거나 유효하지 않음
+      if (error.response?.status === 401) {
+        console.log('🚪 토큰 만료 또는 무효 - 로그아웃 처리')
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setUser(null)
+        setToken(null)
+      } else {
+        // 네트워크 오류 등의 경우 기존 사용자 정보 유지
         const savedUser = localStorage.getItem('user')
-        if (savedUser) {
+        if (savedUser && token) {
           try {
-            setUser(JSON.parse(savedUser))
+            const userInfo = JSON.parse(savedUser)
+            console.log('📦 로컬 스토리지에서 사용자 정보 복원:', userInfo.username)
+            setUser(userInfo)
           } catch {
-            // 파싱 실패 시 무시
+            console.error('❌ 저장된 사용자 정보 파싱 실패')
           }
         }
       }
@@ -346,9 +354,10 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('/api/auth/login', { email, password })
       console.log('로그인 응답:', response.data)
       
-      const { token, user } = response.data
-      localStorage.setItem('token', token)
+      const { token: newToken, user } = response.data
+      localStorage.setItem('token', newToken)
       localStorage.setItem('user', JSON.stringify(user)) // 사용자 정보도 저장
+      setToken(newToken)
       setUser(user)
       toast.success('로그인되었습니다.')
       return true
@@ -406,6 +415,8 @@ export const AuthProvider = ({ children }) => {
       console.error('로그아웃 오류:', error)
     } finally {
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setToken(null)
       setUser(null)
       disconnectSocket() // 로그아웃 시 Socket.IO 연결 종료
       toast.success('로그아웃되었습니다.')
@@ -435,6 +446,8 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setToken(null)
         setUser(null)
         disconnectSocket()
         toast.success('계정이 성공적으로 삭제되었습니다.')
@@ -478,7 +491,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
-    token: localStorage.getItem('token'), // token 추가
+    token, // 상태로 관리되는 token 사용
     login,
     register,
     logout,

@@ -86,6 +86,8 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
   const myDirectionRef = useRef(myDirection);
   const currentPathRef = useRef([]);
   const clickTargetRef = useRef(null); // 클릭 목표 지점
+  const lastAreaCheckPositionRef = useRef({ x: 0, y: 0 }); // 마지막 영역 검사 위치
+  const onPositionChangeCallbackRef = useRef(null); // 위치 변경 콜백
   // const pathFinderRef = useRef(null); // PathFinder 제거
   // const pathIndexRef = useRef(0); // PathFinder 제거
   // const isFollowingPathRef = useRef(false); // PathFinder 제거
@@ -203,8 +205,29 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
     return path.length > 0 ? path : [end];
   }, [currentMap, checkWallCollision]);
   
+  // 거리 기반 영역 검사 함수
+  const checkAreaIfMovedSignificantly = useCallback((newPosition) => {
+    const AREA_CHECK_THRESHOLD = 50; // 50px 이상 이동했을 때 영역 검사
+    
+    const lastCheckPos = lastAreaCheckPositionRef.current;
+    const distance = Math.hypot(
+      newPosition.x - lastCheckPos.x,
+      newPosition.y - lastCheckPos.y
+    );
+    
+    if (distance >= AREA_CHECK_THRESHOLD) {
+      console.log('🌍 거리 기반 영역 검사:', { distance, position: newPosition });
+      lastAreaCheckPositionRef.current = { ...newPosition };
+      
+      // 위치 변경 콜백 실행 (영역 감지를 위해)
+      if (onPositionChangeCallbackRef.current) {
+        onPositionChangeCallbackRef.current(newPosition);
+      }
+    }
+  }, []);
+  
   // 캐릭터 이동 함수 - 직선 이동
-  const moveCharacterTo = useCallback((targetPos) => {
+  const moveCharacterTo = useCallback((targetPos, onArrival = null) => {
     console.log('🎯 클릭 이동: 직선 이동 시작', targetPos);
     console.log('📍 현재 위치:', myPosition);
     
@@ -233,6 +256,11 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
         setMyPosition(target);
         setCurrentPath([]); // 경로 표시 초기화
         clickTargetRef.current = null;
+        
+        // 도착 이벤트 콜백 실행 (영역 감지를 위해)
+        if (onArrival) {
+          onArrival(target);
+        }
         return;
       }
       
@@ -261,6 +289,9 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
         setMyPosition(newPos);
         setMyDirection(newDir);
         myDirectionRef.current = newDir;
+        
+        // 거리 기반 영역 검사
+        checkAreaIfMovedSignificantly(newPos);
         
         // 직선 경로 표시 (시작점과 끝점만)
         setCurrentPath([myPosition, target]);
@@ -483,6 +514,13 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
     // isFollowingPathRef.current = false; // PathFinder 제거
   }, [currentMap?.id]);
   
+  // 위치 변경 콜백 설정 함수
+  const setOnPositionChange = useCallback((callback) => {
+    onPositionChangeCallbackRef.current = callback;
+    // 초기 위치도 기록
+    lastAreaCheckPositionRef.current = { ...myPosition };
+  }, [myPosition]);
+  
   return {
     myPosition,
     myDirection,
@@ -490,6 +528,7 @@ export const useRealtimeCharacterSync = (socket, currentMap) => {
     currentPath, // 경로 정보 반환
     moveCharacterTo,
     setMyPosition,
-    setMyDirection
+    setMyDirection,
+    setOnPositionChange // 위치 변경 콜백 설정 함수 추가
   };
 };

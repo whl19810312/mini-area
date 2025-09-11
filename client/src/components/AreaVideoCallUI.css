@@ -1,0 +1,278 @@
+.area-video-call-ui {
+  background: transparent;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  min-width: 280px;
+}
+
+.area-video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.area-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.area-type {
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.area-type.private {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  border-radius: 50%;
+}
+
+.area-type.public {
+  background: linear-gradient(135deg, #4ecdc4, #6ed4cc);
+  border-radius: 50%;
+}
+
+.area-type.lobby {
+  background: linear-gradient(135deg, #a8e6cf, #b8ebd6);
+  border-radius: 50%;
+}
+
+.area-name {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.participants-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+}
+
+.participants-icon {
+  font-size: 12px;
+}
+
+.video-call-controls {
+  margin-bottom: 8px;
+}
+
+.start-call-btn {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.start-call-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.start-call-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.active-call-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.call-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+}
+
+.call-indicator {
+  animation: pulse 1.5s infinite;
+  font-size: 12px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.participant-list {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: auto;
+}
+
+.end-call-btn {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.end-call-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.end-call-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.participants-list {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.participants-title {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.participants-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.participant-icon {
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.participant-id {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 로컬 비디오 스타일 */
+.local-video-container {
+  position: relative;
+  margin: 8px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.local-video {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  max-height: 150px;
+  display: block;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 비디오 호버 효과 */
+.local-video-container:hover {
+  border-color: rgba(76, 175, 80, 0.6);
+  transform: scale(1.01);
+  transition: all 0.2s ease;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .area-video-call-ui {
+    padding: 12px;
+    min-width: 240px;
+  }
+  
+  .area-video-header {
+    margin-bottom: 10px;
+  }
+  
+  .area-name {
+    font-size: 13px;
+  }
+  
+  .start-call-btn,
+  .end-call-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  .local-video {
+    max-width: 160px;
+    max-height: 120px;
+  }
+  
+  .video-label {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+}

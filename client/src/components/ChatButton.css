@@ -1,0 +1,51 @@
+/* 채팅 버튼 - 하단 중앙에 위치 */
+.chat-button-floating {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  user-select: none;
+}
+
+.chat-button-floating:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.5);
+  background: linear-gradient(135deg, #45a049, #4CAF50);
+}
+
+.chat-button-floating:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .chat-button-floating {
+    bottom: 20px;
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-button-floating {
+    bottom: 15px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
