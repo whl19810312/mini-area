@@ -1,33 +1,17 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useWebRTC } from '../hooks/useWebRTC';
-// LiveKit removed - using Mediasoup
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
-import MediasoupVideoPanel from './MediasoupVideoPanel';
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
-import VideoSidebar from './VideoSidebar';
-import DraggableVideoPanel from './DraggableVideoPanel';
-import VideoOverlay from './VideoOverlay';
 import UserList from './UserList';
-import AreaDebugOverlay from './AreaDebugOverlay';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
 const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, characters, currentCharacter, isEditMode = false, onReturnToLobby }, ref) => {
   const { user, socket } = useAuth();
   const { updateCharacterPosition } = useMetaverse();
-  
-  // 디버그: user 객체 확인 (변경시에만)
-  const previousUserMapRef = useRef({ userId: null, mapId: null });
-  const userMapKey = `${user?.id}-${currentMap?.id}`;
-  
-  if (previousUserMapRef.current.key !== userMapKey) {
-    console.log('🎬 MetaverseScene - user/map 변경:', { user: user?.username, currentMap: currentMap?.name });
-    previousUserMapRef.current = { key: userMapKey, userId: user?.id, mapId: currentMap?.id };
-  }
 
   // 뷰 상태 관리
   const [currentView, setCurrentView] = useState('metaverse'); // 'metaverse' | 'sns'
@@ -39,8 +23,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   // 줌 및 패닝 상태 (공간 생성과 동일하게)
   const [zoomScale, setZoomScale] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  // Mediasoup WebRTC
-  const webRTC = useWebRTC(socket, user);
 
   // SNS/채팅/통화 상태
   const [globalChatMessages, setGlobalChatMessages] = useState([]); // 전체 채팅 메시지
@@ -49,10 +31,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0); // 읽지 않은 메시지 수
   const [isUsersVisible, setIsUsersVisible] = useState(false);
-  const [isCallVisible, setIsCallVisible] = useState(false);
   const [roomParticipants, setRoomParticipants] = useState([]); // 현재 맵의 참가자 목록
-  const [isVideoSidebarVisible, setIsVideoSidebarVisible] = useState(false); // 화상통화 사이드바
-  const [isMediasoupPanelVisible, setIsMediasoupPanelVisible] = useState(true); // Mediasoup 화상통화 패널 - 항상 활성
   const [chatBubbles, setChatBubbles] = useState(new Map()); // 사용자별 채팅 풍선말
   
   // Area state (simplified - private area logic removed)
@@ -184,7 +163,26 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     setHasDraggedEnough(false);
   };
   
-  // handleWheel은 useEffect 내부로 이동 (non-passive listener)
+  // 마우스 휠로 줌 (공간 생성과 동일)
+  const handleWheel = (e) => {
+    if (isEditMode) return;
+    
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = Math.max(0.1, Math.min(5, zoomScale * delta));
+    
+    // 마우스 위치를 중심으로 줌
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    
+    // 줌 전후 마우스 위치 차이 계산
+    const scaleChange = newScale / zoomScale;
+    const newPanX = mouseX - (mouseX - panOffset.x) * scaleChange;
+    const newPanY = mouseY - (mouseY - panOffset.y) * scaleChange;
+    
+    setZoomScale(newScale);
+    setPanOffset({ x: newPanX, y: newPanY });
+  };
 
   const resetView = () => {
     setPanOffset({ x: 0, y: 0 });
@@ -197,43 +195,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   };
 
   const handleImageLoad = (e) => { setBackgroundLoaded(true); setSceneSize({ width: e.target.naturalWidth, height: e.target.naturalHeight }); };
-
-  // Wheel 이벤트 리스너 (non-passive)
-  useEffect(() => {
-    const container = document.querySelector('.game-area-container');
-    if (!container) return;
-    
-    const wheelHandler = (e) => {
-      if (isEditMode) return;
-      
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? 0.9 : 1.1;
-      
-      setZoomScale(prevScale => {
-        const newScale = Math.max(0.1, Math.min(5, prevScale * delta));
-        
-        // 마우스 위치를 중심으로 줌
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        
-        setPanOffset(prevOffset => {
-          const scaleChange = newScale / prevScale;
-          const newPanX = mouseX - (mouseX - prevOffset.x) * scaleChange;
-          const newPanY = mouseY - (mouseY - prevOffset.y) * scaleChange;
-          return { x: newPanX, y: newPanY };
-        });
-        
-        return newScale;
-      });
-    };
-    
-    // non-passive 리스너로 등록
-    container.addEventListener('wheel', wheelHandler, { passive: false });
-    
-    return () => {
-      container.removeEventListener('wheel', wheelHandler);
-    };
-  }, [isEditMode]);
 
   // WebRTC 이벤트 바인딩
   useEffect(() => {
@@ -262,19 +223,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     }
   }, [webRTC.localStream, webRTC.isVideoCallActive]);
 
-  // Mediasoup 화상통화 패널 자동 표시 - 최초 1번만
-  useEffect(() => {
-    if (!currentMap) return;
-    
-    console.log('🎥 Mediasoup 화상통화 자동 시작');
-    setIsMediasoupPanelVisible(true);
-  }, [currentMap?.id]); // currentMap이 변경될 때만 실행
-  
   useEffect(() => {
     if (!socket || !currentMap) return;
-    
-    // 이미 입장한 경우 중복 입장 방지
-    const hasJoinedRef = { current: false };
     
     // 입실 관련 이벤트 리스너 등록
     socket.on('update-participants', (data) => {
@@ -657,23 +607,48 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     };
     */
     
-    // 맵 입장 시 현재 캐릭터 위치 정보도 함께 전송 (중복 입장 방지)
-    if (!hasJoinedRef.current) {
-      hasJoinedRef.current = true;
-      const joinData = {
-        mapId: currentMap.id,
-        characterId: currentCharacter?.id,
-        userId: user?.id,
-        username: user?.username,
-        position: charSync.myPosition || { x: 200, y: 200 }, // 현재 위치 또는 기본 위치
-        characterInfo: currentCharacter
-      };
-      console.log(`🏠 맵 입장 요청:`, joinData);
-      socket.emit('join-map', joinData);
-    }
+    // 맵 입장 시 현재 캐릭터 위치 정보도 함께 전송
+    const joinData = {
+      mapId: currentMap.id,
+      characterId: currentCharacter?.id,
+      userId: user?.id,
+      username: user?.username,
+      position: charSync.myPosition || { x: 200, y: 200 }, // 현재 위치 또는 기본 위치
+      characterInfo: currentCharacter
+    };
+    console.log(`🏠 맵 입장 요청:`, joinData);
+    socket.emit('join-map', joinData);
     
-    // Mediasoup를 사용하므로 WebRTC 자동 시작 제거
-    // 사용자가 카메라 버튼을 클릭할 때 MediasoupVideoPanel이 열림
+    // 방 입장 시 자동으로 화상채팅 시작
+    console.log('🎬 방 입장 - 화상채팅 자동 시작');
+    setTimeout(async () => {
+      try {
+        await webRTC.startCamera();
+        console.log('🎬 카메라 시작 완료');
+        setIsVideoSidebarVisible(true);
+        setIsCallVisible(true);
+        
+        // 현재 방의 모든 사용자와 연결
+        if (roomParticipants.length > 0) {
+          const otherUsers = roomParticipants.filter(p => p.userId !== user.id);
+          console.log(`🎬 방의 다른 사용자들과 연결 시작: ${otherUsers.length}명`);
+          
+          for (const participant of otherUsers) {
+            const targetId = participant.username || participant.userId;
+            try {
+              await webRTC.initiateCallToUser(targetId);
+              console.log(`✅ ${targetId}와 연결 성공`);
+            } catch (err) {
+              console.error(`❌ ${targetId}와 연결 실패:`, err);
+            }
+          }
+        } else {
+          console.log('🎬 방에 혼자 있음 - 본인 화면만 표시');
+        }
+      } catch (error) {
+        console.error('🎬 화상채팅 시작 실패:', error);
+      }
+    }, 1000); // 1초 지연 후 시작
     
     return () => { 
       console.log(`🏠 맵 퇴장 처리`);
@@ -705,7 +680,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       });
       chatBubbleTimeouts.current.clear();
     };
-  }, [socket, currentMap?.id, user?.id]); // 필수 의존성만 포함
+  }, [socket, currentMap, currentCharacter, user.id, charSync.myPosition]);
 
   // 비디오 통화 제거: 연결 시도 로직 제거
 
@@ -1191,7 +1166,20 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
   };
 
-  // Mediasoup video tile will be handled by MediasoupVideoPanel component
+  const LiveKitTile = ({ track }) => {
+    const ref = useRef(null);
+    useEffect(() => {
+      if (!track || !track.track) return;
+      // livekit-client Track publication -> mediaStreamTrack via attach()
+      try {
+        track.track.attach(ref.current);
+      } catch {}
+      return () => {
+        try { track.track.detach(ref.current); } catch {}
+      };
+    }, [track]);
+    return <video ref={ref} autoPlay playsInline style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)' }} />;
+  };
 
   return (
     <div className="metaverse-container">
@@ -1202,10 +1190,14 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         onReturnToLobby={onReturnToLobby}
         roomName={currentMap?.name}
         onToggleGroupCall={() => {
-          // Mediasoup 화상통화 토글
-          setIsMediasoupPanelVisible(!isMediasoupPanelVisible);
+          const roomName = `map-${currentMap?.id || 'default'}`;
+          if (livekit?.connected) {
+            livekit.leave();
+          } else {
+            livekit.join(roomName).catch(() => {});
+          }
         }}
-        groupCallActive={isMediasoupPanelVisible}
+        groupCallActive={!!livekit?.connected}
         onOpenUserList={() => setIsUsersVisible(v => !v)}
       />
       
@@ -1380,6 +1372,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
           onContextMenu={handleContextMenu}
         >
           <div 
@@ -1520,26 +1513,29 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             ))}
             {mapImageProp && !backgroundLoaded && (<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0, 0, 0, 0.8)', color: 'white', padding: '20px', borderRadius: '10px', fontSize: '16px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>배경 이미지 로딩 중...</div>)}
 
+            {/* 방 전체 카메라 버튼 (우측 상단) - LiveKit SFU */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const roomName = `map-${currentMap?.id || 'default'}`;
+                if (livekit.connected) {
+                  livekit.leave();
+                } else {
+                  livekit.join(roomName).catch(() => {});
+                }
+              }}
+              title="방 전체 화상통화"
+              style={{ position: 'absolute', right: 20, top: 20, zIndex: 4, padding: '10px 14px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer' }}
+            >
+              {livekit.connected ? '통화 종료' : '카메라'}
+            </button>
 
             {/* 사용자 리스트 버튼 (우측 상단) */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsUsersVisible(v => !v); }}
-              style={{ 
-                position: 'absolute', 
-                right: 20, 
-                top: 20, 
-                zIndex: 1000, 
-                padding: '10px 16px', 
-                borderRadius: 20, 
-                border: '2px solid rgba(255,255,255,0.3)', 
-                background: 'rgba(0,0,0,0.7)', 
-                color: '#fff', 
-                cursor: 'pointer',
-                fontSize: '14px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}
+              style={{ position: 'absolute', right: 20, top: 20, zIndex: 4, padding: '10px 14px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer' }}
             >
-              👥 {isUsersVisible ? '숨기기' : '사용자 목록'}
+              {isUsersVisible ? '사용자 숨기기' : '사용자 목록'}
             </button>
 
             {/* 사용자 리스트 패널 */}
@@ -1562,67 +1558,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
 
             {/* 1:1 통화는 VideoSidebar에서 처리 */}
+
+            {/* LiveKit SFU 그룹 통화 오버레이 */}
+            {livekit.connected && (
+              <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', display: 'grid', gap: 8, padding: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+                {livekit.tracks.map((t, idx) => (
+                  <LiveKitTile key={idx} track={t} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
-      
-      {/* Mediasoup 화상통화 - 하단 중앙 고정, 맵 이동과 무관 */}
-      {useMemo(() => {
-        if (currentView !== 'metaverse' || !isMediasoupPanelVisible || !currentMap || !user?.id || !user?.username) {
-          return null;
-        }
-        
-        return (
-          <MediasoupVideoPanel
-            roomId={`map-${currentMap.id}`}
-            userId={user.id}
-            username={user.username}
-            areaId='public' // 영역에 상관없이 고정된 영역 사용
-            onClose={() => {
-              console.log('🎥 MediasoupVideoPanel 닫기');
-              setIsMediasoupPanelVisible(false);
-            }}
-          />
-        );
-      }, [currentView, isMediasoupPanelVisible, currentMap?.id, user?.id, user?.username])}
-      
-      {/* 현재 영역 표시 - 오브젝트 위치 (하단 중앙) */}
-      {currentView === 'metaverse' && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          color: 'white',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          zIndex: 998,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          backdropFilter: 'blur(5px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          <span style={{ fontSize: '16px' }}>
-            {charSync.currentAreaInfo?.type === 'public' ? '🌍' : '🔒'}
-          </span>
-          <span>
-            {charSync.currentAreaInfo?.name || '알 수 없음'}
-          </span>
-        </div>
-      )}
-      
-      {/* 영역 디버그 오버레이 - 맵 위에 표시 */}
-      {currentView === 'metaverse' && (
-        <AreaDebugOverlay
-          currentMap={currentMap}
-          currentPosition={charSync.myPosition}
-          currentArea={charSync.currentAreaInfo}
-          mapScale={1}
-        />
       )}
       
       {/* 채팅 토글 버튼 (좌측 하단 - 화면에 고정) */}
@@ -1664,6 +1610,32 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             )}
           </button>
 
+          {/* 현재 영역 표시 (화면 하단 중앙) */}
+          <div style={{
+            position: 'fixed',
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            padding: '8px 16px',
+            borderRadius: 20,
+            background: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>🌍</span>
+            <span>퍼블릭 영역</span>
+            {currentMap && (
+              <>
+                <span>•</span>
+                <span>{currentMap.name}</span>
+              </>
+            )}
+          </div>
 
           {/* 채널 기반 채팅창 (화면에 고정) */}
           <ChatWindow

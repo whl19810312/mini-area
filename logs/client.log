@@ -3,11 +3,12 @@
 > vite --port 5173 --host
 
 
-  VITE v4.5.14  ready in 142 ms
+  VITE v4.5.14  ready in 144 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
-5:18:00 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+  ➜  Network: https://172.17.0.1:5173/
+2:49:49 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 148|              mapCreatorId: map.creatorId,
 149|              mapCreatedBy: map.createdBy,
 150|              mapCreatorId: map.creator?.id,
@@ -17,7 +18,7 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-5:18:00 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+2:49:49 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 162|                mapCreatorId: map.creatorId,
 163|                mapCreatedBy: map.createdBy,
 164|                mapCreatorId: map.creator?.id,
@@ -27,3 +28,106 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+2:58:31 PM [vite] hmr update /src/index.css
+2:58:35 PM [vite] hmr update /src/App.css
+2:58:55 PM [vite] hmr update /src/styles/Auth.css
+2:59:10 PM [vite] hmr update /src/styles/Auth.css
+2:59:42 PM [vite] hmr update /src/styles/Metaverse.css
+3:00:09 PM [vite] hmr update /src/styles/MainPage.css
+3:00:30 PM [vite] hmr update /src/App.css
+3:09:09 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:09:09 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:09:10 PM [vite] Internal server error: Failed to resolve import "../hooks/useWebRTC" from "src/components/MetaverseScene.jsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx:4:26
+  19 |  import { useMetaverse } from "../contexts/MetaverseContext";
+  20 |  import { useAuth } from "../contexts/AuthContext";
+  21 |  import { useWebRTC } from "../hooks/useWebRTC";
+     |                             ^
+  22 |  import { useLiveKit } from "../hooks/useLiveKit";
+  23 |  import { useRealtimeCharacterSync } from "../hooks/useRealtimeCharacterSync";
+      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
+      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
+      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
+      at async Promise.all (index 6)
+      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
+      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
+      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
+3:09:10 PM [vite] Internal server error: Failed to resolve import "../hooks/useWebRTC" from "src/components/MetaverseScene.jsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx:4:26
+  19 |  import { useMetaverse } from "../contexts/MetaverseContext";
+  20 |  import { useAuth } from "../contexts/AuthContext";
+  21 |  import { useWebRTC } from "../hooks/useWebRTC";
+     |                             ^
+  22 |  import { useLiveKit } from "../hooks/useLiveKit";
+  23 |  import { useRealtimeCharacterSync } from "../hooks/useRealtimeCharacterSync";
+      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
+      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
+      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
+      at async Promise.all (index 6)
+      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
+      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
+      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
+3:09:40 PM [vite] hmr update /src/pages/Metaverse.jsx
+3:09:45 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:09:51 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:10:05 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:11:22 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:11:42 PM [vite] hmr update /src/components/VideoSidebar.jsx
+3:11:42 PM [vite] hmr update /src/components/VideoOverlay.jsx
+3:11:42 PM [vite] hmr update /src/components/DraggableVideoPanel.jsx
+3:11:53 PM [vite] hmr update /src/components/VideoSidebar.css
+3:11:53 PM [vite] hmr update /src/components/VideoOverlay.css
+3:11:53 PM [vite] hmr update /src/styles/DraggableVideoPanel.css
+3:14:08 PM [vite] hmr update /src/contexts/MetaverseContext.jsx, /src/contexts/AuthContext.jsx
+3:14:09 PM [vite] hmr invalidate /src/contexts/MetaverseContext.jsx Could not Fast Refresh ("useMetaverse" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+3:14:09 PM [vite] hmr update /src/App.jsx, /src/pages/Metaverse.jsx, /src/pages/MetaverseEdit.jsx, /src/pages/WaitingRoom.jsx, /src/components/MetaverseScene.jsx, /src/components/CharacterCustomizer.jsx
+3:14:09 PM [vite] hmr invalidate /src/contexts/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+3:14:09 PM [vite] hmr update /src/App.jsx, /src/pages/Login.jsx, /src/contexts/MetaverseContext.jsx, /src/pages/Metaverse.jsx, /src/pages/Register.jsx, /src/pages/MetaverseEdit.jsx, /src/pages/WaitingRoom.jsx, /src/components/PrivateRoute.jsx, /src/pages/MainPage.jsx, /src/components/MetaverseScene.jsx, /src/components/CharacterCustomizer.jsx
+3:14:09 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+148|              mapCreatorId: map.creatorId,
+149|              mapCreatedBy: map.createdBy,
+150|              mapCreatorId: map.creator?.id,
+   |              ^
+151|              userId: user?.id,
+152|              creatorIdMatch: map.creatorId === user?.id,
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:14:09 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+162|                mapCreatorId: map.creatorId,
+163|                mapCreatedBy: map.createdBy,
+164|                mapCreatorId: map.creator?.id,
+   |                ^
+165|                userId: user?.id,
+166|                userName: user?.username
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:14:09 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+148|              mapCreatorId: map.creatorId,
+149|              mapCreatedBy: map.createdBy,
+150|              mapCreatorId: map.creator?.id,
+   |              ^
+151|              userId: user?.id,
+152|              creatorIdMatch: map.creatorId === user?.id,
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:14:09 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+162|                mapCreatorId: map.creatorId,
+163|                mapCreatedBy: map.createdBy,
+164|                mapCreatorId: map.creator?.id,
+   |                ^
+165|                userId: user?.id,
+166|                userName: user?.username
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:14:30 PM [vite] hmr update /src/components/UserList.jsx
+3:15:24 PM [vite] hmr update /src/components/UserList.jsx

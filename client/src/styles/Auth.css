@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #e94560 100%);
   background-size: 400% 400%;
@@ -9,6 +11,7 @@
   padding: 20px;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .auth-container::before {
@@ -670,4 +673,160 @@
 
 .verification-actions .auth-button {
   margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 15px;
+  }
+  
+  .auth-card {
+    padding: 40px 30px;
+    max-width: 90vw;
+    margin: 0 auto;
+  }
+  
+  .auth-card h1 {
+    font-size: 28px;
+  }
+  
+  .auth-subtitle {
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+  
+  .form-input,
+  .form-group input {
+    padding: 16px 20px;
+    font-size: 16px;
+    min-height: 52px;
+  }
+  
+  .auth-card button[type="submit"] {
+    padding: 16px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 10px;
+    align-items: stretch;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+    max-width: 95vw;
+    border-radius: 20px;
+    margin: 10px auto;
+    min-height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .auth-card h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .auth-subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-input,
+  .form-group input {
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 48px;
+    border-radius: 12px;
+  }
+  
+  .auth-card button[type="submit"] {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+  
+  .auth-link {
+    margin-top: 30px;
+    font-size: 14px;
+  }
+  
+  .main-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-card {
+    padding: 25px 15px;
+    border-radius: 15px;
+  }
+  
+  .auth-card h1 {
+    font-size: 22px;
+  }
+  
+  .form-input,
+  .form-group input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+}
+
+/* 세로 화면이 짧은 경우 */
+@media (max-height: 600px) {
+  .auth-container {
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+  
+  .auth-card {
+    margin: 20px auto;
+    min-height: auto;
+  }
+  
+  .auth-card h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .auth-subtitle {
+    margin-bottom: 25px;
+  }
+  
+  .form-group {
+    margin-bottom: 18px;
+  }
+}
+
+/* 큰 화면 최적화 */
+@media (min-width: 1200px) {
+  .auth-card {
+    max-width: 520px;
+    padding: 70px 60px;
+  }
+  
+  .auth-card h1 {
+    font-size: 42px;
+  }
+  
+  .auth-subtitle {
+    font-size: 20px;
+  }
+  
+  .form-input,
+  .form-group input {
+    padding: 22px 26px;
+    font-size: 18px;
+    min-height: 64px;
+  }
 } 

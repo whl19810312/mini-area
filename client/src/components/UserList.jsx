@@ -27,11 +27,6 @@ const UserList = ({ onlineUsers = [], onSendMessage, onInviteUser, onRequestUser
     }
   }
 
-  const handleInviteToVideoCall = (userId) => {
-    if (onInviteUser) {
-      onInviteUser(userId, 'video-call', {})
-    }
-  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -153,12 +148,6 @@ const UserList = ({ onlineUsers = [], onSendMessage, onInviteUser, onRequestUser
               className="action-btn invite-btn"
             >
               프라이빗 영역 초대
-            </button>
-            <button 
-              onClick={() => handleInviteToVideoCall(selectedUser.userId)}
-              className="action-btn video-btn"
-            >
-              화상통화 초대
             </button>
           </div>
         </div>

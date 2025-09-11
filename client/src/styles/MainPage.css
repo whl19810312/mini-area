@@ -223,6 +223,11 @@
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+  .main-page {
+    width: 100vw;
+    height: 100vh;
+  }
+  
   .mini-area-text h1 {
     font-size: 2.5rem;
   }
@@ -234,12 +239,15 @@
   .main-buttons {
     flex-direction: column;
     gap: 15px;
+    width: 100%;
+    max-width: 300px;
   }
   
   .enter-metaverse-btn,
   .logout-btn {
     padding: 12px 25px;
     font-size: 1rem;
+    width: 100%;
   }
   
   .user-info {
@@ -250,5 +258,161 @@
   
   .user-info p {
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-page {
+    padding: 0 10px;
+  }
+  
+  .sky-background {
+    padding: 20px 10px;
+  }
+  
+  .mini-area-text {
+    margin-bottom: 30px;
+  }
+  
+  .mini-area-text h1 {
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+  }
+  
+  .mini-area-text p {
+    font-size: 0.9rem;
+    margin: 15px 0 0 0;
+  }
+  
+  .main-buttons {
+    gap: 12px;
+    max-width: 280px;
+  }
+  
+  .enter-metaverse-btn,
+  .logout-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 40px;
+  }
+  
+  .user-info {
+    top: 8px;
+    right: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  
+  .user-info p {
+    font-size: 0.75rem;
+  }
+  
+  .cloud1 {
+    width: 80px;
+    height: 32px;
+  }
+  
+  .cloud2 {
+    width: 100px;
+    height: 40px;
+  }
+  
+  .cloud3 {
+    width: 60px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .mini-area-text h1 {
+    font-size: 1.8rem;
+    letter-spacing: 0.05em;
+  }
+  
+  .mini-area-text p {
+    font-size: 0.8rem;
+  }
+  
+  .main-buttons {
+    max-width: 250px;
+  }
+  
+  .enter-metaverse-btn,
+  .logout-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+  
+  .user-info {
+    top: 5px;
+    right: 5px;
+    padding: 4px 8px;
+  }
+  
+  .user-info p {
+    font-size: 0.7rem;
+  }
+}
+
+/* 세로 화면이 짧은 경우 */
+@media (max-height: 600px) {
+  .sky-background {
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+  
+  .mini-area-text {
+    margin-bottom: 25px;
+  }
+  
+  .mini-area-text h1 {
+    font-size: 2.2rem;
+  }
+  
+  .mini-area-text p {
+    margin: 10px 0 0 0;
+  }
+  
+  .main-buttons {
+    margin-bottom: 20px;
+  }
+  
+  .user-info {
+    position: fixed;
+  }
+}
+
+/* 큰 화면 최적화 */
+@media (min-width: 1200px) {
+  .mini-area-text h1 {
+    font-size: 5rem;
+    letter-spacing: 0.3em;
+  }
+  
+  .mini-area-text p {
+    font-size: 1.4rem;
+    margin: 25px 0 0 0;
+  }
+  
+  .main-buttons {
+    gap: 25px;
+  }
+  
+  .enter-metaverse-btn,
+  .logout-btn {
+    padding: 18px 35px;
+    font-size: 1.2rem;
+    border-radius: 60px;
+  }
+  
+  .user-info {
+    top: 25px;
+    right: 25px;
+    padding: 12px 25px;
+    border-radius: 30px;
+  }
+  
+  .user-info p {
+    font-size: 1rem;
   }
 }

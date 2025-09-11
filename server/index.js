@@ -3,8 +3,6 @@ const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
-const https = require('https'); // HTTP → HTTPS
-const fs = require('fs'); // SSL 인증서 읽기용
 const socketIo = require('socket.io');
 require('dotenv').config();
 
@@ -13,49 +11,44 @@ const authRoutes = require('./routes/auth');
 const mapRoutes = require('./routes/map');
 const characterRoutes = require('./routes/character');
 const userRoutes = require('./routes/user');
-const livekitRoutes = require('./routes/livekit');
-const videoCallRoutes = require('./routes/videoCallRoutes');
 const PrivateAreaHandler = require('./websocket/privateAreaHandler');
 const MetaverseHandler = require('./websocket/metaverseHandler');
 
 const app = express();
 
-// HTTPS 서버 생성 (WebRTC 필수) - mkcert 신뢰할 수 있는 인증서 사용
-const server = https.createServer({
-  key: fs.readFileSync(path.join(__dirname, '../ssl/key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, '../ssl/cert.pem'))
-}, app);
+// HTTP 서버 생성
+const http = require('http');
+const server = http.createServer(app);
 
-// Socket.IO 설정 (WSS 지원)
+// Socket.IO 설정
 const io = socketIo(server, {
   cors: {
-    origin: "*", // 모든 origin 허용 (화상통신용)
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"]
   },
-  transports: ['websocket', 'polling'], // WebRTC와 호환성
+  transports: ['websocket', 'polling'],
   allowEIO3: true,
-  // 화상통신 최적화 설정
   pingTimeout: 60000,
   pingInterval: 25000,
   upgradeTimeout: 10000,
-  maxHttpBufferSize: 1e8, // 100MB (화상 데이터용)
+  maxHttpBufferSize: 1e6, // 1MB
   allowUpgrades: true,
   forceBase64: false
 });
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 3000;
 
 // 요청 로깅 미들웨어
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} from ${req.ip} (HTTPS: ${req.secure})`);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} from ${req.ip}`);
   next();
 });
 
-// CORS 설정 (화상통신 최적화)
+// CORS 설정
 app.use(cors({
-  origin: true, // 모든 origin 허용 (화상통신용)
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
   credentials: true,
@@ -63,8 +56,8 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-app.use(express.json({ limit: '100mb' })); // 화상 데이터용 증가
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -101,8 +94,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/maps', mapRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/livekit', livekitRoutes);
-app.use('/api/video-call', videoCallRoutes);
 
 // 클라이언트 호환성을 위한 추가 라우트 (api 접두사 없이)
 app.use('/maps', mapRoutes);
@@ -198,11 +189,9 @@ const getServerIP = () => {
 };
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log('🎥 화상통신 최적화 서버 시작!');
-  console.log(`🔒 HTTPS 서버가 포트 ${PORT}에서 실행 중입니다.`);
+  console.log('🚀 Mini Area 서버 시작!');
+  console.log(`📡 HTTP 서버가 포트 ${PORT}에서 실행 중입니다.`);
   const serverIP = getServerIP();
-  console.log(`LAN 접속: https://${serverIP}:${PORT}`);
-  console.log(`WebSocket 접속: wss://${serverIP}:${PORT}`);
-  console.log(`WebRTC 화상통신: 지원됨`);
-  console.log(`카메라/마이크: HTTPS 환경에서 활성화`);
+  console.log(`LAN 접속: http://${serverIP}:${PORT}`);
+  console.log(`WebSocket 접속: ws://${serverIP}:${PORT}`);
 }); 
