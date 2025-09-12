@@ -1,5 +1,5 @@
 .area-video-call-ui {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.1); /* 90% 투명 (10% 불투명) */
   border-radius: 12px;
   padding: 16px;
   margin: 8px 0;

@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react';
 import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
 import useAreaDetection from '../hooks/useAreaDetection';
-import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
 import UserList from './UserList';
 import AreaVideoCallUI from './AreaVideoCallUI';
-import QuickChatInput from './QuickChatInput';
 import SpeechBubble from './SpeechBubble';
 import AreaIndicatorPanel from './AreaIndicatorPanel';
-import ChatButton from './ChatButton';
+import SpeechBubbleButton from './SpeechBubbleButton';
+import SpeechBubbleInput from './SpeechBubbleInput';
 import { detectAreaByPosition, getAreaIndex, getAreaType } from '../utils/areaDetector';
+import zoneColorManager from '../utils/zoneColorManager';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -31,16 +31,12 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [zoomScale, setZoomScale] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
 
-  // SNS/채팅/통화 상태
-  const [globalChatMessages, setGlobalChatMessages] = useState([]); // 전체 채팅 메시지
-  const [privateChatMessages, setPrivateChatMessages] = useState([]); // 쪽지 메시지
+  // SNS/통화 상태
   const [snsPosts, setSnsPosts] = useState([]);
-  const [isChatVisible, setIsChatVisible] = useState(false);
-  const [unreadMessageCount, setUnreadMessageCount] = useState(0); // 읽지 않은 메시지 수
   const [isUsersVisible, setIsUsersVisible] = useState(false);
-  const [isQuickChatVisible, setIsQuickChatVisible] = useState(false);
+  const [isSpeechBubbleInputVisible, setIsSpeechBubbleInputVisible] = useState(false);
   const [roomParticipants, setRoomParticipants] = useState([]); // 현재 맵의 참가자 목록
-  const [chatBubbles, setChatBubbles] = useState(new Map()); // 사용자별 채팅 풍선말
+  const [chatBubbles, setChatBubbles] = useState(new Map()); // 사용자별 말풍선
   
   // 영역 모니터링 상태
   const [currentAreaIndex, setCurrentAreaIndex] = useState(0); // 0: 퍼블릭, 1~n: 프라이빗
@@ -383,8 +379,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     }
   }, [charSync.myPosition, storedPrivateAreas]);
   
-  const isChatVisibleRef = useRef(false); // 채팅창 상태를 ref로도 추적
-  const chatBubbleTimeouts = useRef(new Map()); // 채팅 풍선말 타임아웃 관리
+  const chatBubbleTimeouts = useRef(new Map()); // 말풍선 타임아웃 관리
   
   
 
@@ -402,6 +397,21 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         
         console.log(`👥 영역 계산된 참가자 정보:`, updatedParticipants);
         setRoomParticipants(updatedParticipants);
+        
+        // 🎥 setRoomParticipants 호출 시 자동 화상통화 시작
+        if (updatedParticipants.length >= 2 && socket) {
+          console.log('🎥 [자동시작] setRoomParticipants로 인한 화상통화 자동 시작 시도');
+          socket.emit('trigger-auto-video-call-from-participants', {
+            participants: updatedParticipants,
+            mapId: currentMap?.id
+          }, (response) => {
+            if (response?.success) {
+              console.log('🎥 [자동시작] 참가자 기반 화상통화 시작 성공:', response);
+            } else {
+              console.log('🎥 [자동시작] 참가자 기반 화상통화 시작 실패:', response?.error);
+            }
+          });
+        }
       }
     }
   };
@@ -485,11 +495,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     
     // UI 요소 확인
     const clickedElement = e.target;
-    const isUIElement = clickedElement.closest('.chat-window') || 
-                       clickedElement.closest('.chat-container') ||
-                       clickedElement.closest('.chat-input-form') ||
-                       clickedElement.closest('.chat-messages') ||
-                       clickedElement.closest('.modal') ||
+    const isUIElement = clickedElement.closest('.modal') ||
                        clickedElement.closest('.modal-content') ||
                        clickedElement.closest('button') ||
                        clickedElement.closest('input') ||
@@ -541,22 +547,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     };
   }, [handleWheel]);
 
-  // 키보드 단축키 (Enter 키로 빠른 채팅 열기)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // 입력창이 활성화된 상태에서는 단축키 비활성화
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      
-      if (e.key === 'Enter' && !isQuickChatVisible) {
-        e.preventDefault();
-        setIsQuickChatVisible(true);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isQuickChatVisible]);
-
   const resetView = () => {
     setPanOffset({ x: 0, y: 0 });
     setZoomScale(1);
@@ -570,13 +560,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const handleImageLoad = (e) => { setBackgroundLoaded(true); setSceneSize({ width: e.target.naturalWidth, height: e.target.naturalHeight }); };
 
 
-  // 채팅창 상태 동기화 및 읽지 않은 메시지 초기화
-  useEffect(() => {
-    isChatVisibleRef.current = isChatVisible;
-    if (isChatVisible) {
-      setUnreadMessageCount(0); // 채팅창이 열리면 읽지 않은 메시지 수 초기화
-    }
-  }, [isChatVisible]);
 
 
   useEffect(() => {
@@ -723,100 +706,57 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       }
     });
     
-    socket.on('chat-message', (msg) => {
-      console.log(`💬 채팅 메시지 수신:`, msg);
-      console.log(`🔍 메시지 상세:`, {
-        content: msg.content,
-        userId: msg.userId,
-        currentUserId: user.id,
-        type: msg.type
-      });
+    // 말풍선 메시지 수신 처리
+    socket.on('speech-bubble-message', (msg) => {
+      console.log(`💭 [수신] 말풍선 메시지:`, msg);
+      console.log(`💭 [수신상태] 현재 사용자:`, { userId: user?.id, username: user?.username });
+      console.log(`💭 [수신상태] 현재 chatBubbles:`, Array.from(chatBubbles.entries()));
       
-      // content가 비어있는 메시지 무시
-      if (!msg.content || msg.content.trim() === '') {
-        console.log('빈 메시지 무시');
+      if (!msg.message || msg.message.trim() === '') {
+        console.log('💭 [무시] 빈 말풍선 메시지');
         return;
       }
       
-      // 메시지 타입 설정
-      const messageWithType = { ...msg, type: msg.userId === user.id ? 'user' : 'other' };
-      
-      // 메시지 타입에 따라 다른 저장소에 저장
-      if (msg.type === 'global') {
-        // 전체 채팅
-        setGlobalChatMessages(prev => {
-          if (msg.messageId && prev.some(m => m.messageId === msg.messageId)) {
-            return prev;
-          }
-          return [...prev, messageWithType];
-        });
-      } else if (msg.type === 'private') {
-        // 쪽지
-        setPrivateChatMessages(prev => {
-          if (msg.messageId && prev.some(m => m.messageId === msg.messageId)) {
-            return prev;
-          }
-          return [...prev, messageWithType];
-        });
-      } else {
-        // 영역 채팅 (area 또는 type이 없는 경우) - 전체 채팅으로 처리
-        setGlobalChatMessages(prev => {
-          if (msg.messageId && prev.some(m => m.messageId === msg.messageId)) {
-            return prev;
-          }
-          return [...prev, messageWithType];
-        });
+      // 이전 타임아웃이 있으면 취소
+      const existingTimeout = chatBubbleTimeouts.current.get(msg.userId);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
       }
       
-      // 채팅창이 닫혀있고 다른 사용자의 메시지인 경우 읽지 않은 메시지 수 증가
-      if (!isChatVisibleRef.current && msg.userId !== user.id) {
-        setUnreadMessageCount(prev => prev + 1);
-      }
+      const bubbleTimestamp = Date.now();
       
-      // 채팅 풍선말 추가 (영역 채팅과 전체 채팅만)
-      console.log('🎭 말풍선 조건 확인:', {
-        msgType: msg.type,
-        content: msg.content,
-        userId: msg.userId,
-        shouldShow: (msg.type === 'area' || msg.type === 'global' || !msg.type) && msg.content && msg.content.trim() !== ''
+      setChatBubbles(prev => {
+        const newBubbles = new Map(prev);
+        const bubbleData = {
+          message: msg.message,
+          timestamp: bubbleTimestamp,
+          type: 'speech-bubble'
+        };
+        newBubbles.set(msg.userId, bubbleData);
+        console.log('💭 [상태업데이트] 말풍선 추가:', {
+          userId: msg.userId,
+          username: msg.username,
+          bubbleData,
+          totalBubbles: newBubbles.size,
+          allBubbles: Array.from(newBubbles.entries())
+        });
+        return newBubbles;
       });
-
-      if ((msg.type === 'area' || msg.type === 'global' || !msg.type) && msg.content && msg.content.trim() !== '') {
-        console.log('💭 말풍선 추가:', { userId: msg.userId, message: msg.content });
-        
-        // 이전 타임아웃이 있으면 취소
-        const existingTimeout = chatBubbleTimeouts.current.get(msg.userId);
-        if (existingTimeout) {
-          clearTimeout(existingTimeout);
-        }
-        
-        const bubbleTimestamp = Date.now();
-        
+      
+      // 15초 후 말풍선 제거 (일반 채팅보다 좀 더 길게)
+      const timeoutId = setTimeout(() => {
         setChatBubbles(prev => {
           const newBubbles = new Map(prev);
-          newBubbles.set(msg.userId, {
-            message: msg.content,
-            timestamp: bubbleTimestamp
-          });
-          console.log('💭 현재 말풍선 상태:', Array.from(newBubbles.entries()));
+          const bubble = newBubbles.get(msg.userId);
+          if (bubble && bubble.timestamp === bubbleTimestamp) {
+            newBubbles.delete(msg.userId);
+          }
           return newBubbles;
         });
-        
-        // 10초 후 풍선말 제거
-        const timeoutId = setTimeout(() => {
-          setChatBubbles(prev => {
-            const newBubbles = new Map(prev);
-            const bubble = newBubbles.get(msg.userId);
-            if (bubble && bubble.timestamp === bubbleTimestamp) {
-              newBubbles.delete(msg.userId);
-            }
-            return newBubbles;
-          });
-          chatBubbleTimeouts.current.delete(msg.userId);
-        }, 10000); // 10초로 변경
-        
-        chatBubbleTimeouts.current.set(msg.userId, timeoutId);
-      }
+        chatBubbleTimeouts.current.delete(msg.userId);
+      }, 15000);
+      
+      chatBubbleTimeouts.current.set(msg.userId, timeoutId);
     });
     
     socket.on('auto-rejoin', (data) => {
@@ -1114,6 +1054,31 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     const direction = info.direction || 'down'; 
     const parts = getCharacterParts(info);
     
+    // 🎯 각 캐릭터의 위치에 따른 개별 영역 계산
+    const characterArea = useMemo(() => {
+      if (isCurrent) {
+        // 현재 사용자는 areaDetection 훅의 정보 사용 (실시간 업데이트)
+        return areaDetection.getAreaInfo();
+      } else {
+        // 다른 사용자들은 자신의 위치에 따라 영역 계산
+        if (storedPrivateAreas.length > 0 && pos) {
+          const areaInfo = detectAreaByPosition(pos, storedPrivateAreas);
+          const areaIndex = getAreaIndex(pos, storedPrivateAreas);
+          const areaType = getAreaType(pos, storedPrivateAreas);
+          
+          return {
+            type: areaType,
+            id: areaInfo?.id || areaIndex,
+            name: areaInfo?.name || `영역 ${areaIndex}`,
+            displayName: areaType === 'public' ? '공용 영역' : (areaInfo?.name || `프라이빗 영역 ${areaIndex}`)
+          };
+        }
+        return { type: 'public', id: 0, name: '공용 영역', displayName: '공용 영역' };
+      }
+    }, [isCurrent, pos, storedPrivateAreas, areaDetection]);
+    
+    const zoneColor = zoneColorManager.getColorFromArea(characterArea);
+    const isInPrivateArea = characterArea.type === 'private';
     
     return (
       <div 
@@ -1126,22 +1091,41 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           zIndex: 1, 
           userSelect: 'none', 
           pointerEvents: 'none',
-          background: 'rgba(255, 255, 255, 0.1)',
+          background: isInPrivateArea ? zoneColorManager.getColorWithAlpha(zoneColor, 0.15) : 'rgba(255, 255, 255, 0.1)',
           borderRadius: '8px',
           padding: '2px',
-          border: isCurrent ? '1px solid #4CAF50' : '1px solid rgba(255, 255, 255, 0.3)',
+          border: isCurrent ? `1px solid ${zoneColor}` : `1px solid ${isInPrivateArea ? zoneColor : 'rgba(255, 255, 255, 0.3)'}`,
           transition: 'all 0.15s ease-out',
           ...style
         }}
       >
+        {/* 영역 색상 인디케이터 */}
+        {isInPrivateArea && (
+          <div 
+            style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              backgroundColor: zoneColor,
+              border: '2px solid white',
+              zIndex: 2
+            }}
+            title={`영역 색상: ${zoneColor}`}
+          />
+        )}
         {/* 채팅 풍선말 */}
-        {chatBubble && (
+        {chatBubble && (() => {
           console.log('🎈 말풍선 렌더링:', { 
             chatBubble, 
             position: pos, 
             username: info?.username || info?.name,
             isCurrent 
-          }) || (
+          });
+          return true;
+        })() && (
           <div style={{
             position: 'absolute',
             bottom: '100%',
@@ -1175,7 +1159,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
               borderTop: '8px solid rgba(255, 255, 255, 0.95)'
             }} />
           </div>
-          )
         )}
         <div style={{ textAlign: 'center', lineHeight: '1.05' }}>
           <div style={{ fontSize: 10.5, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>{parts.head}</div>
@@ -1536,7 +1519,16 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                   direction: charSync.myDirection 
                 }} 
                 isCurrent
-                chatBubble={chatBubbles.get(user.id)}
+                chatBubble={(() => {
+                  const bubble = chatBubbles.get(user.id);
+                  console.log('🎈 [현재사용자] 말풍선 조회:', {
+                    userId: user.id,
+                    username: user.username,
+                    bubble,
+                    allBubbles: Array.from(chatBubbles.entries())
+                  });
+                  return bubble;
+                })()}
               />
             ) : (
               // 캐릭터가 없을 때 기본 캐릭터 표시
@@ -1611,47 +1603,16 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         </div>
       )}
       
-      {/* 빠른 채팅 버튼 (우상단 영역 표시 패널 왼쪽) */}
+      {/* 말풍선 입력 버튼 */}
       {currentView === 'metaverse' && (
         <>
-          <ChatButton 
+          {/* 말풍선 텍스트 입력 버튼 (좌측 중간) */}
+          <SpeechBubbleButton 
             onClick={(e) => { 
               e.stopPropagation(); 
-              setIsQuickChatVisible(true); 
+              setIsSpeechBubbleInputVisible(true); 
             }} 
           />
-
-
-          {/* 채널 기반 채팅창 (화면에 고정) */}
-          <ChatWindow
-            currentArea={{ 
-              type: areaDetection.currentArea.type, 
-              name: areaDetection.getAreaInfo().displayName, 
-              mapName: currentMap.name 
-            }}
-            isVisible={isChatVisible}
-            messages={[
-              // 전체 채팅
-              ...globalChatMessages,
-              // 쪽지
-              ...privateChatMessages
-            ].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))}
-            onlineUsers={roomParticipants
-              .filter(p => p.userId !== user.id) // 자기 자신 제외
-              .map(p => ({
-                userId: p.userId,
-                username: p.username
-              }))}
-            onSendMessage={(text, chatMode, targetUserId) => {
-              if (!socket) {
-                console.error('Socket not available');
-                return;
-              }
-              console.log('Sending message:', { text, chatMode, targetUserId });
-              socket.emit('chat-message', text, chatMode, targetUserId);
-            }}
-          />
-
 
           {/* 영역 기반 화상통화 UI */}
           <AreaVideoCallUI
@@ -1664,18 +1625,30 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
             isVisible={currentView === 'metaverse'}
           />
 
-          {/* 빠른 채팅 입력창 */}
-          <QuickChatInput
-            isVisible={isQuickChatVisible}
-            onSendMessage={(text, chatMode) => {
+          {/* 말풍선 텍스트 입력창 */}
+          <SpeechBubbleInput
+            isVisible={isSpeechBubbleInputVisible}
+            onSendMessage={(text) => {
               if (!socket) {
-                console.error('Socket not available');
+                console.error('💭 [ERROR] Socket not available');
                 return;
               }
-              console.log('🚀 빠른 채팅 메시지 전송:', { text, chatMode, userId: user?.id, username: user?.username });
-              socket.emit('chat-message', text, chatMode, null);
+              console.log('💭 [전송시도] 말풍선 메시지:', { 
+                text, 
+                userId: user?.id, 
+                username: user?.username,
+                socketConnected: socket.connected,
+                mapId: socket.mapId,
+                currentMapId: currentMap?.id,
+                socketRooms: socket?.rooms ? Array.from(socket.rooms) : 'not available'
+              });
+              socket.emit('speech-bubble-message', {
+                message: text,
+                mapId: currentMap?.id
+              });
+              console.log('💭 [전송완료] speech-bubble-message 이벤트 발송됨');
             }}
-            onClose={() => setIsQuickChatVisible(false)}
+            onClose={() => setIsSpeechBubbleInputVisible(false)}
           />
         </>
       )}

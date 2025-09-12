@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
+import zoneColorManager from '../utils/zoneColorManager';
 
 /**
  * Three.js 기반 캐릭터 컴포넌트
@@ -14,7 +15,8 @@ const Character = ({
   position = { x: 0, y: 0 }, 
   direction = 'down', 
   isMoving = false, 
-  isCurrentUser = false 
+  isCurrentUser = false,
+  currentArea = null
 }) => {
   const [hovered, setHovered] = useState(false);
   const meshRef = useRef();
@@ -69,8 +71,24 @@ const Character = ({
   const animationScale = isMoving ? 1.1 : 1.0;
   const animationRotation = direction === 'left' ? Math.PI : 0;
   
-  // 캐릭터 색상
-  const characterColor = isCurrentUser ? '#4CAF50' : '#2196F3';
+  // 영역 기반 캐릭터 색상 계산
+  const characterColor = useMemo(() => {
+    if (isCurrentUser) {
+      // 현재 사용자는 영역 색상의 더 진한 버전
+      if (currentArea) {
+        const zoneColor = zoneColorManager.getColorFromArea(currentArea);
+        // 영역 색상을 더 진하게 만들어서 현재 사용자 구분
+        return zoneColor === '#E8E8E8' ? '#4CAF50' : zoneColor; 
+      }
+      return '#4CAF50';
+    } else {
+      // 다른 사용자들은 영역별 색상 사용
+      if (currentArea) {
+        return zoneColorManager.getColorFromArea(currentArea);
+      }
+      return '#2196F3'; // 기본 색상
+    }
+  }, [isCurrentUser, currentArea]);
   
   return (
     <group 
@@ -123,9 +141,21 @@ const Character = ({
         <mesh position={[0, -35, 0]}>
           <ringGeometry args={[25, 30, 16]} />
           <meshBasicMaterial 
-            color="#4CAF50" 
+            color={characterColor} 
             transparent 
             opacity={0.8}
+          />
+        </mesh>
+      )}
+      
+      {/* 영역 색상 인디케이터 */}
+      {currentArea && currentArea.type !== 'public' && (
+        <mesh position={[-30, 30, 0]}>
+          <circleGeometry args={[8, 16]} />
+          <meshBasicMaterial 
+            color={characterColor}
+            transparent 
+            opacity={0.9}
           />
         </mesh>
       )}

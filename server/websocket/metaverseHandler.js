@@ -14,6 +14,8 @@ class MetaverseHandler {
 
     // 영역 기반 화상통화 매니저 초기화
     this.areaVideoCallManager = new AreaVideoCallManager();
+    // 의존성 주입: 알림 발송을 위해 자기 자신을 참조로 설정
+    this.areaVideoCallManager.setMetaverseHandler(this);
 
     // 🎯 영역 상태 관리 시스템
     this.userAreaStates = new Map(); // userId -> { areaId, areaType, mapId, lastUpdate }
@@ -613,6 +615,29 @@ class MetaverseHandler {
       });
     });
 
+    // 색상 기반 화상통화 이벤트 처리 (새로 추가)
+    socket.on('start-color-based-video-call', (data, callback) => {
+      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
+      
+      const result = this.startColorBasedVideoCall(socket.userId);
+      if (result.success) {
+        callback({ success: true, result: result });
+        
+        // 같은 색상의 모든 사용자에게 알림
+        this.notifyColorBasedVideoCallStart(result.color, result.participants, result.sessionKey);
+      } else {
+        callback({ success: false, error: result.error });
+      }
+    });
+
+    // 영역 감시 시스템 상태 조회 (디버그용)
+    socket.on('get-area-monitoring-status', (data, callback) => {
+      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
+      
+      const status = this.areaVideoCallManager.getFullState();
+      callback({ success: true, status });
+    });
+
     socket.on('disconnect', () => this.handleDisconnect(socket));
 
     // 서버 상태 요청 처리 (스로틀링 적용)
@@ -683,6 +708,34 @@ class MetaverseHandler {
         mapId: socket.mapId
       });
       this.handleChatMessage(socket, message, chatMode, targetUserId);
+    });
+
+    // 말풍선 메시지 처리
+    socket.on('speech-bubble-message', (data) => {
+      // 문자열 또는 객체 형태 지원
+      const message = typeof data === 'string' ? data : data.message;
+      const clientMapId = typeof data === 'object' ? data.mapId : null;
+      
+      console.log(`💭 말풍선 메시지 수신 from ${socket.username}:`, {
+        message,
+        clientMapId,
+        userId: socket.userId,
+        socketMapId: socket.mapId,
+        finalMapId: socket.mapId || clientMapId
+      });
+      
+      this.handleSpeechBubbleMessage(socket, message, clientMapId);
+    });
+
+    // 참가자 기반 자동 화상통화 시작
+    socket.on('trigger-auto-video-call-from-participants', (data, callback) => {
+      console.log(`🎥 [자동시작] 참가자 기반 화상통화 요청 from ${socket.username}:`, {
+        participants: data.participants?.length,
+        mapId: data.mapId,
+        userId: socket.userId
+      });
+
+      this.handleTriggerAutoVideoCallFromParticipants(socket, data, callback);
     });
   }
 
@@ -1657,6 +1710,95 @@ class MetaverseHandler {
     }
   }
 
+  handleSpeechBubbleMessage(socket, message, clientMapId = null) {
+    const mapId = socket.mapId || clientMapId;
+    
+    console.log(`💭 말풍선 메시지 처리:`, { 
+      message, 
+      userId: socket.userId,
+      username: socket.username,
+      socketMapId: socket.mapId,
+      clientMapId,
+      finalMapId: mapId
+    });
+
+    if (!mapId || !socket.userId) {
+      console.log(`💭 말풍선 처리 실패: mapId=${mapId}, userId=${socket.userId}`);
+      socket.emit('error', { message: '맵에 입장한 후 말풍선을 사용할 수 있습니다.' });
+      return;
+    }
+
+    // 말풍선 메시지 객체 생성
+    const speechBubbleMessage = {
+      id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+      userId: socket.userId,
+      username: socket.username,
+      message: message.trim(),
+      timestamp: new Date().toISOString(),
+      type: 'speech-bubble'
+    };
+
+    // 같은 맵에 있는 모든 사용자에게 말풍선 메시지 전송
+    this.io.to(`map-${mapId}`).emit('speech-bubble-message', speechBubbleMessage);
+    console.log(`💭 말풍선 전송 완료 (맵 ${mapId}): ${socket.username}: ${message}`);
+  }
+
+  handleTriggerAutoVideoCallFromParticipants(socket, data, callback) {
+    const { participants, mapId } = data;
+    
+    console.log(`🎥 [자동시작] 참가자 기반 화상통화 처리 시작:`, {
+      requesterId: socket.userId,
+      requesterName: socket.username,
+      mapId,
+      participantCount: participants?.length
+    });
+
+    try {
+      if (!mapId || !participants || participants.length < 2) {
+        console.log(`🎥 [자동시작] 처리 실패: 조건 불충족`, { mapId, participantCount: participants?.length });
+        if (callback) {
+          callback({
+            success: false,
+            error: '참가자가 2명 이상이어야 합니다.'
+          });
+        }
+        return;
+      }
+
+      // 같은 영역에 있는 사용자들끼리 자동 화상통화 시작 요청
+      if (this.areaVideoCallManager) {
+        console.log(`🎥 [자동시작] AreaVideoCallManager를 통한 자동 화상통화 시작 요청`);
+        
+        // 영역별로 그룹화된 참가자들에게 자동 화상통화 시작
+        this.areaVideoCallManager.triggerAutoVideoCallForParticipants(mapId, participants);
+        
+        if (callback) {
+          callback({
+            success: true,
+            message: '참가자 기반 자동 화상통화 요청이 처리되었습니다.',
+            participantCount: participants.length
+          });
+        }
+      } else {
+        console.error(`🎥 [자동시작] AreaVideoCallManager를 사용할 수 없습니다.`);
+        if (callback) {
+          callback({
+            success: false,
+            error: '화상통화 매니저를 사용할 수 없습니다.'
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`🎥 [자동시작] 참가자 기반 화상통화 처리 오류:`, error);
+      if (callback) {
+        callback({
+          success: false,
+          error: '화상통화 시작 중 오류가 발생했습니다.'
+        });
+      }
+    }
+  }
+
   handleWebRTCSignal(socket, data) {
     const { type, targetUserId, fromUserId, ...signalData } = data;
 
@@ -2459,6 +2601,19 @@ class MetaverseHandler {
 
     const currentAreaId = currentAreaInfo.id || 'public';
     const currentAreaType = currentAreaInfo.type || 'public';
+
+    // AreaVideoCallManager에 사용자 영역 정보 업데이트 (자동 화상통화 감시를 위해)
+    const videoCallResult = this.areaVideoCallManager.updateUserArea(userId, mapId, position, privateAreas || []);
+    
+    if (videoCallResult.changed) {
+      console.log('🎥 [영역화상통화] 사용자 영역 변경:', {
+        userId,
+        oldArea: videoCallResult.oldAreaKey,
+        newArea: videoCallResult.newAreaKey,
+        color: videoCallResult.newColor,
+        usersWithSameColor: videoCallResult.usersWithSameColor?.length
+      });
+    }
     const areaKey = `${mapId}_${currentAreaType}_${currentAreaId}`;
 
     // 이전 영역 상태 조회
@@ -2861,6 +3016,140 @@ class MetaverseHandler {
       return result;
     }
     return null;
+  }
+
+  // 색상 기반 화상통화 세션 시작
+  startColorBasedVideoCall(userId) {
+    const result = this.areaVideoCallManager.startColorBasedVideoSession(userId);
+    return result;
+  }
+
+  // 색상 기반 화상통화 시작 알림
+  notifyColorBasedVideoCallStart(color, participants, sessionKey) {
+    console.log('🎨 색상 기반 화상통화 알림 발송:', { color, participants, sessionKey });
+    
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('color-based-video-call-started', {
+          color,
+          sessionKey,
+          participants,
+          message: `같은 색상(${color})의 캐릭터들과 화상통화가 시작되었습니다.`
+        });
+      }
+    });
+  }
+
+  // 자동 영역 화상통화 시작 알림
+  notifyAutoAreaVideoCallStart(areaKey, participants) {
+    console.log('🎥 [자동시작] 영역 화상통화 시작 알림 발송:', { areaKey, participants });
+    
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('auto-area-video-call-started', {
+          areaKey,
+          participants,
+          message: `영역에 2명 이상 입장하여 자동으로 화상통화가 시작되었습니다.`
+        });
+      }
+    });
+  }
+
+  // 자동 색상 화상통화 시작 알림
+  notifyAutoColorVideoCallStart(color, sessionKey, participants) {
+    console.log('🎨 [자동시작] 색상 기반 화상통화 시작 알림 발송:', { color, sessionKey, participants });
+    
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('auto-color-video-call-started', {
+          color,
+          sessionKey,
+          participants,
+          message: `같은 색상(${color}) 캐릭터들이 모여 자동으로 화상통화가 시작되었습니다.`
+        });
+      }
+    });
+  }
+
+  // 자동 영역 화상통화 종료 알림
+  notifyAutoAreaVideoCallEnd(areaKey, participants, reason) {
+    console.log('🎥 [자동종료] 영역 화상통화 종료 알림 발송:', { areaKey, participants, reason });
+    
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('auto-area-video-call-ended', {
+          areaKey,
+          participants,
+          reason,
+          message: `영역 화상통화가 자동으로 종료되었습니다: ${reason}`
+        });
+      }
+    });
+  }
+
+  // 화상통화 참가자 변경 알림
+  notifyVideoCallParticipantChange(sessionKey, participants, added, removed) {
+    console.log('👥 화상통화 참가자 변경 알림 발송:', { sessionKey, participants: participants.length, added: added.length, removed: removed.length });
+    
+    participants.forEach(participantId => {
+      const socket = this.getUserSocket(participantId);
+      if (socket) {
+        this.io.to(socket).emit('video-call-participant-changed', {
+          sessionKey,
+          participants,
+          added,
+          removed,
+          message: `화상통화 참가자가 변경되었습니다. (추가: ${added.length}명, 제거: ${removed.length}명)`
+        });
+      }
+    });
+  }
+
+  // 개별 사용자에게 자동 영역 화상통화 참여 알림
+  notifyUserAutoJoinVideoCall(userId, areaKey, participants) {
+    console.log('👤 [자동참여] 개별 사용자에게 영역 화상통화 참여 알림:', { userId, areaKey, participants: participants.length });
+    
+    const socket = this.getUserSocket(userId);
+    if (socket) {
+      this.io.to(socket).emit('user-auto-joined-video-call', {
+        areaKey,
+        participants,
+        message: '영역 내 다른 사용자와 함께 자동으로 화상통화에 참여되었습니다.'
+      });
+    }
+  }
+
+  // 개별 사용자에게 자동 색상 화상통화 참여 알림
+  notifyUserAutoJoinColorVideoCall(userId, color, sessionKey, participants) {
+    console.log('🎨 [자동참여] 개별 사용자에게 색상 화상통화 참여 알림:', { userId, color, sessionKey, participants: participants.length });
+    
+    const socket = this.getUserSocket(userId);
+    if (socket) {
+      this.io.to(socket).emit('user-auto-joined-color-video-call', {
+        color,
+        sessionKey,
+        participants,
+        message: `같은 색상(${color}) 캐릭터들과 함께 자동으로 화상통화에 참여되었습니다.`
+      });
+    }
+  }
+
+  // 개별 사용자에게 자동 화상통화 퇴장 알림
+  notifyUserAutoLeaveVideoCall(userId, sessionKey, reason) {
+    console.log('👤 [자동퇴장] 개별 사용자에게 화상통화 퇴장 알림:', { userId, sessionKey, reason });
+    
+    const socket = this.getUserSocket(userId);
+    if (socket) {
+      this.io.to(socket).emit('user-auto-left-video-call', {
+        sessionKey,
+        reason,
+        message: `화상통화에서 자동으로 퇴장되었습니다: ${reason}`
+      });
+    }
   }
 }
 

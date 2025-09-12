@@ -1,0 +1,176 @@
+/* 말풍선 입력 오버레이 */
+.speech-bubble-input-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* 말풍선 입력 컨테이너 */
+.speech-bubble-input-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 400px;
+  max-width: 500px;
+  overflow: hidden;
+  animation: speechBubbleInputAppear 0.2s ease-out;
+}
+
+@keyframes speechBubbleInputAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 헤더 */
+.speech-bubble-input-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  color: white;
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 폼 */
+.speech-bubble-input-form {
+  padding: 20px;
+}
+
+/* 텍스트 에어리어 */
+.speech-bubble-input-textarea {
+  width: 100%;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.speech-bubble-input-textarea:focus {
+  outline: none;
+  border-color: #FF6B6B;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.speech-bubble-input-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* 액션 버튼들 */
+.speech-bubble-input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.character-count {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.speech-bubble-input-actions > div {
+  display: flex;
+  gap: 8px;
+}
+
+.cancel-button,
+.send-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+}
+
+.cancel-button {
+  background: white;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.cancel-button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.send-button {
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  color: white;
+  border-color: transparent;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .speech-bubble-input-container {
+    min-width: 300px;
+    max-width: 90vw;
+    margin: 20px;
+  }
+  
+  .speech-bubble-input-header {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .speech-bubble-input-form {
+    padding: 16px;
+  }
+  
+  .speech-bubble-input-textarea {
+    min-height: 70px;
+    font-size: 13px;
+  }
+}
