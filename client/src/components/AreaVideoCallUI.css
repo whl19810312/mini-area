@@ -1,12 +1,15 @@
 .area-video-call-ui {
-  background: rgba(0, 0, 0, 0.1); /* 90% 투명 (10% 불투명) */
+  background: transparent; /* 100% 투명 */
   border-radius: 12px;
   padding: 16px;
   margin: 8px 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: none; /* 그림자 제거 */
+  border: none; /* 테두리 제거 */
+  backdrop-filter: none; /* 블러 효과 제거 */
   min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .area-video-header {
@@ -204,15 +207,23 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* 비디오 컨테이너 전체 스타일 */
+.videos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
 /* 로컬 비디오 스타일 */
 .local-video-container {
   position: relative;
-  margin: 8px 0;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(76, 175, 80, 0.3);
   background: rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 .local-video {
@@ -238,8 +249,32 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* 원격 비디오 스타일 */
+.remote-videos-container {
+  display: contents; /* 부모 flex 컨테이너와 통합 */
+}
+
+.remote-video-container {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(66, 165, 245, 0.3);
+  background: rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.remote-video {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
 /* 비디오 호버 효과 */
-.local-video-container:hover {
+.local-video-container:hover,
+.remote-video-container:hover {
   border-color: rgba(76, 175, 80, 0.6);
   transform: scale(1.01);
   transition: all 0.2s ease;

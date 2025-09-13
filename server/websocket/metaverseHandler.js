@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const AreaVideoCallManager = require('./areaVideoCallManager');
+const MediaSoupServer = require('../services/mediasoupServer');
 
 class MetaverseHandler {
   constructor(io) {
@@ -12,15 +12,18 @@ class MetaverseHandler {
     this.loggedInUsers = new Map(); // userId -> { id, username, socketId, ... }
     this.mapsList = new Map(); // mapId -> { id, name, creatorId, ... }
 
-    // 영역 기반 화상통화 매니저 초기화
-    this.areaVideoCallManager = new AreaVideoCallManager();
-    // 의존성 주입: 알림 발송을 위해 자기 자신을 참조로 설정
-    this.areaVideoCallManager.setMetaverseHandler(this);
+
+    // MediaSoup 서버 초기화
+    this.mediasoupServer = new MediaSoupServer();
+    this.initializeMediaSoup();
 
     // 🎯 영역 상태 관리 시스템
     this.userAreaStates = new Map(); // userId -> { areaId, areaType, mapId, lastUpdate }
     this.areaGroups = new Map(); // areaKey -> Set<userId> (실시간 영역별 사용자 그룹)
     this.videoCallSessions = new Map(); // areaKey -> { participants, startTime, isActive }
+    
+    // 📹 MediaSoup 준비 상태 관리
+    this.mediasoupReadyClients = new Set(); // socketId -> Ready for MediaSoup events
 
     // 0.5초마다 각 맵의 모든 사용자 정보를 브로드캐스트
     this.startBroadcastInterval();
@@ -297,6 +300,9 @@ class MetaverseHandler {
 
   handleConnection(socket) {
     console.log('새로운 mini area WebSocket 연결:', socket.id, 'IP:', socket.handshake.address);
+    
+    // MediaSoup 이벤트 핸들러 설정
+    this.setupMediaSoupSocketHandlers(socket);
 
     socket.on('authenticate', async (data) => {
       try {
@@ -466,67 +472,7 @@ class MetaverseHandler {
       this.leavePrivateArea(socket);
     });
 
-    // 자동 화상통화 초대 이벤트 처리
-    socket.on('area-video-call-invite', async (data) => {
-      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
-      
-      const { targetUserId, areaKey, roomName, inviterInfo } = data;
-      console.log(`📞 화상통화 자동 초대 요청: ${socket.username} → 사용자 ${targetUserId} (${areaKey})`);
-      
-      // AreaVideoCallManager가 있는 경우 처리
-      if (this.areaVideoCallManager) {
-        const result = await this.areaVideoCallManager.handleAutoVideoInvite(
-          socket.userId, 
-          targetUserId, 
-          areaKey, 
-          roomName
-        );
-        
-        socket.emit('area-video-call-invite-result', {
-          success: result,
-          targetUserId,
-          areaKey,
-          reason: inviterInfo?.reason || 'unknown'
-        });
-      } else {
-        console.error('❌ AreaVideoCallManager가 설정되지 않음');
-        socket.emit('area-video-call-invite-result', {
-          success: false,
-          error: 'AreaVideoCallManager not available'
-        });
-      }
-    });
 
-    // 자동 화상통화 제거 이벤트 처리
-    socket.on('area-video-call-remove', async (data) => {
-      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
-      
-      const { targetUserId, areaKey, roomName, reason } = data;
-      console.log(`🚪 화상통화 자동 제거 요청: ${socket.username} → 사용자 ${targetUserId} (${areaKey})`);
-      
-      // AreaVideoCallManager가 있는 경우 처리
-      if (this.areaVideoCallManager) {
-        const result = await this.areaVideoCallManager.handleAutoVideoRemove(
-          socket.userId, 
-          targetUserId, 
-          areaKey, 
-          roomName
-        );
-        
-        socket.emit('area-video-call-remove-result', {
-          success: result,
-          targetUserId,
-          areaKey,
-          reason: reason || 'unknown'
-        });
-      } else {
-        console.error('❌ AreaVideoCallManager가 설정되지 않음');
-        socket.emit('area-video-call-remove-result', {
-          success: false,
-          error: 'AreaVideoCallManager not available'
-        });
-      }
-    });
 
     // 새로운 update-my-position 이벤트 처리 (0.2초마다 전송)
     socket.on('update-my-position', (data) => {
@@ -575,68 +521,10 @@ class MetaverseHandler {
     });
 
     // 영역 기반 화상통화 이벤트 처리
-    socket.on('start-area-video-call', (data, callback) => {
-      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
-      
-      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
-      if (!userArea) {
-        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
-      }
 
-      const result = this.startAreaVideoCall(socket.userId, userArea.areaKey);
-      callback({ success: true, result });
-    });
 
-    socket.on('end-area-video-call', (data, callback) => {
-      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
-      
-      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
-      if (!userArea) {
-        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
-      }
 
-      const result = this.endAreaVideoCall(userArea.areaKey);
-      callback({ success: true, result });
-    });
 
-    socket.on('get-area-video-session', (data, callback) => {
-      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
-      
-      const userArea = this.areaVideoCallManager.getUserArea(socket.userId);
-      if (!userArea) {
-        return callback({ error: '현재 영역을 찾을 수 없습니다.' });
-      }
-
-      const participants = this.areaVideoCallManager.getVideoSession(userArea.areaKey);
-      callback({ 
-        success: true, 
-        areaKey: userArea.areaKey,
-        participants: participants || []
-      });
-    });
-
-    // 색상 기반 화상통화 이벤트 처리 (새로 추가)
-    socket.on('start-color-based-video-call', (data, callback) => {
-      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
-      
-      const result = this.startColorBasedVideoCall(socket.userId);
-      if (result.success) {
-        callback({ success: true, result: result });
-        
-        // 같은 색상의 모든 사용자에게 알림
-        this.notifyColorBasedVideoCallStart(result.color, result.participants, result.sessionKey);
-      } else {
-        callback({ success: false, error: result.error });
-      }
-    });
-
-    // 영역 감시 시스템 상태 조회 (디버그용)
-    socket.on('get-area-monitoring-status', (data, callback) => {
-      if (!socket.userId) return callback({ error: '인증이 필요합니다.' });
-      
-      const status = this.areaVideoCallManager.getFullState();
-      callback({ success: true, status });
-    });
 
     socket.on('disconnect', () => this.handleDisconnect(socket));
 
@@ -838,6 +726,84 @@ class MetaverseHandler {
       position: this.socketUsers.get(socket.id)?.position,
       participants: this.getParticipantsInMap(mapId).length
     });
+    
+    // MediaSoup: 새로 입장한 사용자에게 기존 Producer 정보 전송
+    socket.currentMapId = mapId;
+    setTimeout(() => {
+      if (this.mediasoupServer) {
+        try {
+          const allProducers = this.mediasoupServer.getExistingProducers(socket.id);
+          const mapProducers = [];
+          
+          // 같은 맵에 있는 사용자들의 Producer만 필터링
+          const mapSockets = this.maps.get(mapId);
+          if (mapSockets) {
+            allProducers.forEach(producer => {
+              const producerSocket = this.io.sockets.sockets.get(producer.userId);
+              if (producerSocket && mapSockets.has(producerSocket.id)) {
+                mapProducers.push({
+                  ...producer,
+                  username: producerSocket.username,
+                  realUserId: producerSocket.userId
+                });
+              }
+            });
+          }
+          
+          if (mapProducers.length > 0) {
+            console.log(`📹 [MediaSoup] 입장한 사용자에게 기존 Producer 정보 전송: ${socket.username} → ${mapProducers.length}개`);
+            socket.emit('existing-producers', { producers: mapProducers });
+          }
+        } catch (error) {
+          console.error('📹 [MediaSoup] 기존 Producer 정보 전송 실패:', error);
+        }
+      }
+    }, 1000); // 1초 후에 전송 (연결 안정화 대기)
+    
+    // MediaSoup: 같은 맵에 다른 사용자들이 있다면 자동으로 MediaSoup 연결 시작
+    setTimeout(() => {
+      console.log(`🔍 [DEBUG] MediaSoup 자동 연결 체크 시작: ${socket.username} → 맵 ${mapId}`);
+      const mapSockets = this.maps.get(mapId);
+      console.log(`🔍 [DEBUG] 맵 ${mapId} 소켓 수: ${mapSockets ? mapSockets.size : 0}`);
+      
+      if (mapSockets && mapSockets.size > 1) { // 자신 포함해서 2명 이상
+        console.log(`📹 [MediaSoup] 자동 연결 시작: ${socket.username} → 맵 ${mapId} (참가자: ${mapSockets.size}명)`);
+        
+        // 맵의 모든 사용자에게 자동 MediaSoup 연결 시작 알림 (양방향 연결)
+        mapSockets.forEach(socketId => {
+          const targetSocket = this.io.sockets.sockets.get(socketId);
+          if (targetSocket) {
+            // 각 사용자에게 맵의 모든 참가자와 연결하라는 알림
+            targetSocket.emit('auto-start-mediasoup', {
+              mapId: mapId,
+              participants: mapSockets.size - 1, // 자신 제외한 참가자 수
+              message: `${mapSockets.size}명이 같은 영역에 있어 자동으로 카메라를 연결합니다.`
+            });
+            console.log(`📹 [MediaSoup] auto-start-mediasoup 이벤트 전송 완료: ${targetSocket.username}`);
+          }
+        });
+        
+        // 추가로 기존 사용자들에게 새 참가자 정보도 알림
+        mapSockets.forEach(socketId => {
+          if (socketId !== socket.id) {
+            const otherSocket = this.io.sockets.sockets.get(socketId);
+            if (otherSocket) {
+              otherSocket.emit('new-user-joined-mediasoup', {
+                newUserId: socket.userId,
+                newUsername: socket.username,
+                newSocketId: socket.id,
+                mapId: mapId,
+                totalParticipants: mapSockets.size
+              });
+              console.log(`📹 [MediaSoup] new-user-joined-mediasoup 이벤트 전송 완료: ${otherSocket.username}`);
+            }
+          }
+        });
+      } else {
+        console.log(`🔍 [DEBUG] MediaSoup 자동 연결 조건 불충족: 참가자 수 ${mapSockets ? mapSockets.size : 0}`);
+      }
+    }, 1500); // 기존 Producer 정보 전송 후 0.5초 뒤
+    
     this.broadcastMapsList();
     this.broadcastServerState(); // 서버 상태 업데이트
   }
@@ -858,6 +824,7 @@ class MetaverseHandler {
     socket.leave(`map-${mapId}`);
     const leftMapId = socket.mapId;
     delete socket.mapId;
+    delete socket.currentMapId;
 
     // 연결이 끊긴 경우: 방 정보 영구 보존
     if (isDisconnecting) {
@@ -1765,28 +1732,35 @@ class MetaverseHandler {
         return;
       }
 
-      // 같은 영역에 있는 사용자들끼리 자동 화상통화 시작 요청
-      if (this.areaVideoCallManager) {
-        console.log(`🎥 [자동시작] AreaVideoCallManager를 통한 자동 화상통화 시작 요청`);
-        
-        // 영역별로 그룹화된 참가자들에게 자동 화상통화 시작
-        this.areaVideoCallManager.triggerAutoVideoCallForParticipants(mapId, participants);
-        
-        if (callback) {
-          callback({
-            success: true,
-            message: '참가자 기반 자동 화상통화 요청이 처리되었습니다.',
-            participantCount: participants.length
-          });
+      // 같은 영역에 있는 사용자들끼리 MediaSoup 자동 화상통화 시작
+      console.log(`🎥 [MediaSoup 자동시작] 참가자 ${participants.length}명에게 자동 화상통화 시작 알림`);
+      
+      // 각 참가자에게 MediaSoup 자동 시작 알림 전송
+      participants.forEach(participant => {
+        const socketId = this.userSockets.get(participant.userId);
+        if (socketId) {
+          const socket = this.io.sockets.sockets.get(socketId);
+          if (socket) {
+            socket.emit('auto-mediasoup-start', {
+              mapId,
+              participants: participants.map(p => ({
+                userId: p.userId,
+                username: p.username
+              })),
+              message: `${participants.length}명이 같은 영역에 있어 자동으로 화상통화가 시작됩니다.`
+            });
+            
+            console.log(`🎥 [MediaSoup 자동시작] ${participant.username}에게 자동 화상통화 시작 알림 전송`);
+          }
         }
-      } else {
-        console.error(`🎥 [자동시작] AreaVideoCallManager를 사용할 수 없습니다.`);
-        if (callback) {
-          callback({
-            success: false,
-            error: '화상통화 매니저를 사용할 수 없습니다.'
-          });
-        }
+      });
+      
+      if (callback) {
+        callback({
+          success: true,
+          message: 'MediaSoup 기반 자동 화상통화 요청이 처리되었습니다.',
+          participantCount: participants.length
+        });
       }
     } catch (error) {
       console.error(`🎥 [자동시작] 참가자 기반 화상통화 처리 오류:`, error);
@@ -2346,6 +2320,9 @@ class MetaverseHandler {
       timestamp: new Date().toLocaleString()
     });
     
+    // MediaSoup 정리
+    this.cleanupMediaSoupUser(socket.id);
+    
     if (socket.userId) {
       // 사용자 입실 상태 확인
       const userInfo = this.loggedInUsers.get(socket.userId);
@@ -2378,8 +2355,10 @@ class MetaverseHandler {
         status: 'offline'
       });
 
-      // 영역 기반 화상통화에서 사용자 제거
-      this.areaVideoCallManager.removeUser(socket.userId);
+      // MediaSoup에서 사용자 정리
+      if (this.mediasoupServer) {
+        this.mediasoupServer.cleanupUser(socket.id);
+      }
 
       // 🎯 새로운 영역 상태 관리 시스템에서 사용자 제거
       this.cleanupUserAreaState(socket.userId);
@@ -2602,18 +2581,7 @@ class MetaverseHandler {
     const currentAreaId = currentAreaInfo.id || 'public';
     const currentAreaType = currentAreaInfo.type || 'public';
 
-    // AreaVideoCallManager에 사용자 영역 정보 업데이트 (자동 화상통화 감시를 위해)
-    const videoCallResult = this.areaVideoCallManager.updateUserArea(userId, mapId, position, privateAreas || []);
-    
-    if (videoCallResult.changed) {
-      console.log('🎥 [영역화상통화] 사용자 영역 변경:', {
-        userId,
-        oldArea: videoCallResult.oldAreaKey,
-        newArea: videoCallResult.newAreaKey,
-        color: videoCallResult.newColor,
-        usersWithSameColor: videoCallResult.usersWithSameColor?.length
-      });
-    }
+    // 영역 정보는 이미 위에서 계산되었으므로 추가 처리 없이 진행
     const areaKey = `${mapId}_${currentAreaType}_${currentAreaId}`;
 
     // 이전 영역 상태 조회
@@ -2859,13 +2827,9 @@ class MetaverseHandler {
   handleAreaTransition(userId, result) {
     const { oldAreaKey, newAreaKey, usersInNewArea } = result;
 
-    // 이전 영역에서 화상통화 세션 퇴장
+    // 이전 영역에서 나감 (MediaSoup에서 자동 처리됨)
     if (oldAreaKey) {
-      const leaveResult = this.areaVideoCallManager.handleUserLeaveArea(userId, oldAreaKey);
-      if (leaveResult.left) {
-        // 이전 영역 참가자들에게 알림
-        this.notifyAreaVideoCallChange(oldAreaKey, leaveResult.remainingParticipants, 'user-left');
-      }
+      console.log(`📍 [영역전환] 사용자 ${userId}가 이전 영역 ${oldAreaKey}에서 나감`);
     }
 
     // 새 영역 진입 시 같은 영역 ID의 사용자들과 화상통화 시작
@@ -2886,45 +2850,28 @@ class MetaverseHandler {
         // 영역 ID 기반 세션 키 생성
         const areaSessionKey = `${result.mapId}_area_${currentAreaId}`;
         
-        // 기존 화상통화 세션이 있는지 확인
-        const existingSession = this.areaVideoCallManager.getVideoSession(areaSessionKey);
+        // MediaSoup를 통한 같은 영역 사용자들과의 자동 화상통화 시작
+        console.log('📹 [MediaSoup 자동시작] 같은 영역 사용자들과 화상통화:', { 
+          userId, 
+          areaId: currentAreaId,
+          usersCount: sameAreaUsers.length 
+        });
         
-        if (existingSession) {
-          // 기존 세션에 자동 참여
-          const joinResult = this.areaVideoCallManager.handleUserEnterArea(userId, areaSessionKey);
-          if (joinResult.joined) {
-            console.log('📹 [자동참여] 영역 ID 기반 화상통화에 참여:', { userId, areaId: currentAreaId });
-            this.notifyAreaVideoCallChange(areaSessionKey, joinResult.participants, 'user-joined');
+        // 같은 영역의 모든 사용자에게 MediaSoup 자동 화상통화 시작 알림
+        sameAreaUsers.forEach(user => {
+          const participantSocket = this.getUserSocket(user.userId);
+          if (participantSocket) {
+            this.io.to(participantSocket).emit('auto-mediasoup-start', {
+              mapId: result.mapId,
+              areaId: currentAreaId,
+              participants: sameAreaUsers.map(u => ({
+                userId: u.userId,
+                username: u.username
+              })),
+              message: `${sameAreaUsers.length}명이 같은 영역에 있어 MediaSoup 화상통화가 시작됩니다.`
+            });
           }
-        } else {
-          // 새로운 영역 ID 기반 화상통화 세션 자동 시작
-          console.log('📹 [자동시작] 같은 영역 ID 사용자들과 화상통화 시작:', { 
-            userId, 
-            areaId: currentAreaId,
-            usersCount: sameAreaUsers.length 
-          });
-          
-          // 세션에 같은 영역의 모든 사용자 추가
-          const sessionResult = this.areaVideoCallManager.startVideoSessionWithUsers(
-            areaSessionKey, 
-            sameAreaUsers.map(u => u.userId)
-          );
-          
-          this.notifyAreaVideoCallChange(areaSessionKey, sessionResult.participants, 'session-started');
-          
-          // 같은 영역의 모든 사용자에게 자동 화상통화 시작 알림
-          sameAreaUsers.forEach(user => {
-            const participantSocket = this.getUserSocket(user.userId);
-            if (participantSocket) {
-              this.io.to(participantSocket).emit('auto-video-call-started', {
-                areaKey: areaSessionKey,
-                areaId: currentAreaId,
-                participants: sessionResult.participants,
-                initiator: userId
-              });
-            }
-          });
-        }
+        });
       }
     }
 
@@ -2979,50 +2926,16 @@ class MetaverseHandler {
     return sameAreaUsers;
   }
 
-  // 영역 화상통화 변경 알림
-  notifyAreaVideoCallChange(areaKey, participants, eventType) {
-    participants.forEach(participantId => {
-      const socket = this.getUserSocket(participantId);
-      if (socket) {
-        this.io.to(socket).emit('area-video-call-changed', {
-          areaKey,
-          participants,
-          eventType
-        });
-      }
-    });
-  }
+  // notifyAreaVideoCallChange 메서드 제거됨 - AreaVideoCallManager 전용이었음
 
   // 사용자 소켓 ID 조회
   getUserSocket(userId) {
     return this.userSockets.get(parseInt(userId));
   }
 
-  // 영역 화상통화 세션 시작
-  startAreaVideoCall(userId, areaKey) {
-    const result = this.areaVideoCallManager.startVideoSession(areaKey, userId);
-    if (result) {
-      this.notifyAreaVideoCallChange(areaKey, result.participants, 'session-started');
-      return result;
-    }
-    return null;
-  }
-
-  // 영역 화상통화 세션 종료
-  endAreaVideoCall(areaKey) {
-    const result = this.areaVideoCallManager.endVideoSession(areaKey);
-    if (result) {
-      this.notifyAreaVideoCallChange(areaKey, result.participants, 'session-ended');
-      return result;
-    }
-    return null;
-  }
-
-  // 색상 기반 화상통화 세션 시작
-  startColorBasedVideoCall(userId) {
-    const result = this.areaVideoCallManager.startColorBasedVideoSession(userId);
-    return result;
-  }
+  // MediaSoup 기반 화상통화 - 기존 AreaVideoCallManager 메서드들은 모두 MediaSoup로 통합됨
+  // startAreaVideoCall, endAreaVideoCall, startColorBasedVideoCall 메서드들은 제거됨
+  // 모든 화상통화 기능은 MediaSoup 이벤트 핸들러를 통해 처리됨
 
   // 색상 기반 화상통화 시작 알림
   notifyColorBasedVideoCallStart(color, participants, sessionKey) {
@@ -3149,6 +3062,304 @@ class MetaverseHandler {
         reason,
         message: `화상통화에서 자동으로 퇴장되었습니다: ${reason}`
       });
+    }
+  }
+
+  // ============= MediaSoup 관련 메소드들 =============
+  
+  async initializeMediaSoup() {
+    try {
+      await this.mediasoupServer.initialize();
+      console.log('📹 [MetaverseHandler] MediaSoup 서버 초기화 완료');
+    } catch (error) {
+      console.error('📹 [MetaverseHandler] MediaSoup 서버 초기화 실패:', error);
+    }
+  }
+
+  setupMediaSoupSocketHandlers(socket) {
+    // RTP Capabilities 요청
+    socket.on('get-router-rtp-capabilities', (data, callback) => {
+      try {
+        console.log('📹 [MediaSoup] RTP Capabilities 요청:', socket.id);
+        const rtpCapabilities = this.mediasoupServer.getRtpCapabilities();
+        callback({ success: true, rtpCapabilities });
+      } catch (error) {
+        console.error('📹 [MediaSoup] RTP Capabilities 요청 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // MediaSoup 준비 완료 알림 처리
+    socket.on('mediasoup-ready', () => {
+      console.log('📹 [MediaSoup] 클라이언트 준비 완료:', socket.id, socket.username || 'unknown');
+      this.mediasoupReadyClients.add(socket.id);
+      
+      // 해당 클라이언트에게 기존 Producer들 알림
+      if (socket.currentMapId) {
+        const mapSockets = this.maps.get(socket.currentMapId);
+        if (mapSockets) {
+          mapSockets.forEach(socketId => {
+            if (socketId !== socket.id && this.mediasoupReadyClients.has(socketId)) {
+              const otherSocket = this.io.sockets.sockets.get(socketId);
+              if (otherSocket && otherSocket.hasProducers) {
+                // 기존 Producer들을 새로 준비된 클라이언트에게 알림
+                console.log('📹 [MediaSoup] 기존 Producer를 새 클라이언트에게 알림:', socketId, '→', socket.id);
+                // 실제 Producer 목록을 가져와서 전송해야 함 (향후 구현)
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // WebRTC Transport 생성 (통합 핸들러)
+    socket.on('create-webrtc-transport', async ({ direction }, callback) => {
+      try {
+        // 중복 Transport 생성 방지 검사
+        const existingTransports = this.mediasoupServer.transports.get(socket.id);
+        if (direction === 'send' && existingTransports?.sendTransport) {
+          console.log(`📹 [MediaSoup] Send Transport 이미 존재, 기존 것 사용: ${socket.id}`);
+          callback({
+            success: true,
+            params: {
+              id: existingTransports.sendTransport.id,
+              iceParameters: existingTransports.sendTransport.iceParameters,
+              iceCandidates: existingTransports.sendTransport.iceCandidates,
+              dtlsParameters: existingTransports.sendTransport.dtlsParameters,
+            }
+          });
+          return;
+        }
+        
+        if (direction === 'recv' && existingTransports?.receiveTransport) {
+          console.log(`📹 [MediaSoup] Receive Transport 이미 존재, 기존 것 사용: ${socket.id}`);
+          callback({
+            success: true,
+            params: {
+              id: existingTransports.receiveTransport.id,
+              iceParameters: existingTransports.receiveTransport.iceParameters,
+              iceCandidates: existingTransports.receiveTransport.iceCandidates,
+              dtlsParameters: existingTransports.receiveTransport.dtlsParameters,
+            }
+          });
+          return;
+        }
+        
+        console.log(`📹 [MediaSoup] WebRTC Transport 생성 요청 (${direction}):`, socket.id);
+        const { transport, params } = await this.mediasoupServer.createWebRtcTransport(socket.id);
+        
+        if (direction === 'send') {
+          this.mediasoupServer.setUserTransports(socket.id, transport, null);
+        } else if (direction === 'recv') {
+          this.mediasoupServer.setUserTransports(socket.id, null, transport);
+        }
+        
+        callback({ success: true, params });
+      } catch (error) {
+        console.error(`📹 [MediaSoup] ${direction} Transport 생성 실패:`, error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Send Transport 생성
+    socket.on('create-send-transport', async (data, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Send Transport 생성 요청:', socket.id);
+        const { transport, params } = await this.mediasoupServer.createWebRtcTransport(socket.id);
+        this.mediasoupServer.setUserTransports(socket.id, transport, null);
+        callback({ success: true, params });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Send Transport 생성 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Receive Transport 생성
+    socket.on('create-receive-transport', async (data, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Receive Transport 생성 요청:', socket.id);
+        const { transport, params } = await this.mediasoupServer.createWebRtcTransport(socket.id);
+        this.mediasoupServer.setUserTransports(socket.id, null, transport);
+        callback({ success: true, params });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Receive Transport 생성 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Transport 연결
+    socket.on('connect-transport', async ({ transportId, dtlsParameters }, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Transport 연결 요청:', socket.id, transportId);
+        await this.mediasoupServer.connectTransport(socket.id, transportId, dtlsParameters);
+        callback({ success: true });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Transport 연결 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Producer 생성
+    socket.on('produce', async ({ transportId, kind, rtpParameters }, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Producer 생성 요청:', socket.id, kind);
+        const result = await this.mediasoupServer.createProducer(socket.id, transportId, rtpParameters, kind);
+        
+        // 같은 맵에 있는 MediaSoup 준비된 다른 사용자들에게 새 Producer 알림
+        if (socket.currentMapId) {
+          const mapSockets = this.maps.get(socket.currentMapId);
+          if (mapSockets) {
+            let readyClientsCount = 0;
+            let totalClientsCount = 0;
+            mapSockets.forEach(socketId => {
+              if (socketId !== socket.id) {
+                totalClientsCount++;
+                const otherSocket = this.io.sockets.sockets.get(socketId);
+                if (otherSocket && this.mediasoupReadyClients.has(socketId)) {
+                  readyClientsCount++;
+                  otherSocket.emit('new-producer', {
+                    producerId: result.id,
+                    userId: socket.userId,
+                    username: socket.username,
+                    socketId: socket.id,
+                    kind: result.kind
+                  });
+                  console.log(`📹 [MediaSoup] Producer 알림 전송: ${socket.username} → ${otherSocket.username || socketId} (${kind})`);
+                } else if (otherSocket) {
+                  console.log(`📹 [MediaSoup] Producer 알림 대기: ${otherSocket.username || socketId} (아직 준비되지 않음)`);
+                }
+              }
+            });
+            console.log(`📹 [MediaSoup] Producer 알림 요약: ${readyClientsCount}/${totalClientsCount} 클라이언트에게 전송됨`);
+          }
+        }
+        
+        console.log(`📹 [MediaSoup] Producer 생성 완료 및 알림 전송: ${socket.username} → ${kind}`);
+        callback({ success: true, id: result.id });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Producer 생성 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Consumer 생성
+    socket.on('consume', async ({ transportId, producerId, rtpCapabilities }, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Consumer 생성 요청:', socket.id, producerId);
+        const result = await this.mediasoupServer.createConsumer(socket.id, producerId, rtpCapabilities);
+        callback({ success: true, params: result });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Consumer 생성 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Consumer 재개
+    socket.on('resume-consumer', async ({ consumerId }, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Consumer 재개 요청:', socket.id, consumerId);
+        await this.mediasoupServer.resumeConsumer(socket.id, consumerId);
+        if (callback) callback({ success: true });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Consumer 재개 실패:', error);
+        if (callback) callback({ success: false, error: error.message });
+      }
+    });
+
+    // 기존 Producer 목록 요청 (같은 맵에 있는 Producer들만)
+    socket.on('get-existing-producers', (data, callback) => {
+      try {
+        console.log('📹 [MediaSoup] 기존 Producer 목록 요청:', socket.id, '맵:', socket.currentMapId);
+        
+        const allProducers = this.mediasoupServer.getExistingProducers(socket.id);
+        const mapProducers = [];
+        
+        // 같은 맵에 있는 사용자들의 Producer만 필터링
+        if (socket.currentMapId) {
+          const mapSockets = this.maps.get(socket.currentMapId);
+          if (mapSockets) {
+            allProducers.forEach(producer => {
+              // producer.userId가 socketId이므로 해당 소켓을 찾아 사용자 정보 확인
+              const producerSocket = this.io.sockets.sockets.get(producer.userId);
+              if (producerSocket && mapSockets.has(producerSocket.id)) {
+                mapProducers.push({
+                  ...producer,
+                  username: producerSocket.username,
+                  realUserId: producerSocket.userId
+                });
+              }
+            });
+          }
+        }
+        
+        console.log(`📹 [MediaSoup] 맵 ${socket.currentMapId}의 Producer 목록: ${mapProducers.length}개`);
+        callback({ success: true, producers: mapProducers });
+      } catch (error) {
+        console.error('📹 [MediaSoup] 기존 Producer 목록 요청 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+
+    // Producer 정리 요청 (MID 충돌 방지)
+    socket.on('cleanup-producers', async (data, callback) => {
+      try {
+        console.log('📹 [MediaSoup] Producer 정리 요청:', socket.id);
+        
+        // 해당 사용자의 모든 Producer를 서버에서 정리
+        this.mediasoupServer.cleanupUser(socket.id);
+        
+        console.log('📹 [MediaSoup] Producer 정리 완료:', socket.id);
+        callback({ success: true, message: 'Producers cleaned up successfully' });
+      } catch (error) {
+        console.error('📹 [MediaSoup] Producer 정리 실패:', error);
+        callback({ success: false, error: error.message });
+      }
+    });
+  }
+
+  // 연결 해제 시 MediaSoup 정리
+  cleanupMediaSoupUser(socketId) {
+    try {
+      console.log('📹 [MediaSoup] 사용자 정리:', socketId);
+      
+      // 먼저 해당 사용자가 속한 맵 정보를 가져옴
+      const socket = this.io.sockets.sockets.get(socketId);
+      let userMapId = null;
+      if (socket && socket.currentMapId) {
+        userMapId = socket.currentMapId;
+      }
+      
+      // MediaSoup Producer 정보 가져오기 (정리 전)
+      const existingProducers = this.mediasoupServer.getExistingProducers(socketId);
+      const closingProducers = existingProducers.filter(p => p.userId === socketId);
+      
+      // MediaSoup 자원 정리
+      this.mediasoupServer.cleanupUser(socketId);
+      
+      // 같은 맵에 있는 사용자들에게만 Producer 종료 알림
+      if (userMapId && closingProducers.length > 0) {
+        const mapSockets = this.maps.get(userMapId);
+        if (mapSockets) {
+          closingProducers.forEach(producer => {
+            mapSockets.forEach(otherSocketId => {
+              if (otherSocketId !== socketId) {
+                const otherSocket = this.io.sockets.sockets.get(otherSocketId);
+                if (otherSocket) {
+                  otherSocket.emit('producer-closed', {
+                    producerId: producer.producerId,
+                    userId: socket?.userId,
+                    username: socket?.username,
+                    kind: producer.kind
+                  });
+                }
+              }
+            });
+          });
+          console.log(`📹 [MediaSoup] 맵 ${userMapId}의 ${closingProducers.length}개 Producer 종료 알림 전송`);
+        }
+      }
+    } catch (error) {
+      console.error('📹 [MediaSoup] 사용자 정리 실패:', error);
     }
   }
 }

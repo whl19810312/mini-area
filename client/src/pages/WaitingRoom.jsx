@@ -7,7 +7,7 @@ import '../styles/WaitingRoom.css'
 
 const WaitingRoom = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { maps, fetchMaps, loading, updateMap, createMap, socket } = useMetaverse()
 
   const [editingMapId, setEditingMapId] = useState(null)
@@ -199,6 +199,19 @@ const WaitingRoom = () => {
     }
   }
 
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm('정말 로그아웃하시겠습니까?')
+    if (!confirmLogout) return
+    
+    try {
+      await logout()
+      navigate('/')
+    } catch (error) {
+      console.error('로그아웃 오류:', error)
+      alert('로그아웃 중 오류가 발생했습니다.')
+    }
+  }
+
   if (loading) {
     return (
       <div className="waiting-room">
@@ -279,9 +292,37 @@ const WaitingRoom = () => {
             >
               ✨ 새 방 만들기
             </button>
+            <button
+              className="logout-btn"
+              title="로그아웃"
+              onClick={handleLogout}
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '16px',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                marginLeft: '6px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#d32f2f';
+                e.target.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#f44336';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              🚪 로그아웃
+            </button>
           </div>
         </div>
         <div className="header-stats">
+          <span>현재 사용자: <strong>{user?.username || '알 수 없음'}</strong></span>
           <span>대기실 인원: <strong>{lobbyCount}</strong></span>
           <span>입실 인원 합계: <strong>{Array.isArray(maps) ? maps.reduce((sum, m) => sum + (m.participantCount || 0), 0) : 0}</strong></span>
         </div>
