@@ -19,6 +19,7 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
   const [isConnecting, setIsConnecting] = useState(false); // MediaSoup 연결 상태 추적
   const [pendingConsumers, setPendingConsumers] = useState([]); // 대기 중인 Consumer 생성 요청들
   const [userNames, setUserNames] = useState(new Map()); // userId -> username 매핑
+  const [pendingProducers, setPendingProducers] = useState(new Set()); // 대기 중인 Producer 생성 요청들 (video, audio)
   const videoRef = useRef(null);
   const remoteVideoRefs = useRef(new Map()); // 원격 비디오 엘리먼트들
 
@@ -518,20 +519,49 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       console.log('📹 [MediaSoup] 새 Producer 감지:', data);
       const { producerId, userId, kind, username } = data;
       
+      // 자신의 Producer는 무시
+      if (userId === socket?.id) {
+        console.log('📹 [MediaSoup] 자신의 Producer 무시:', { userId, socketId: socket.id });
+        return;
+      }
+      
       // 사용자 이름 저장
       if (username && userId) {
         setUserNames(prev => new Map(prev.set(userId, username)));
         console.log(`📹 [MediaSoup] 사용자 이름 저장: ${userId} -> ${username}`);
       }
       
-      if (receiveTransport && mediasoupDevice) {
+      // Transport와 Device 상태 확인
+      const currentReceiveTransport = window.currentReceiveTransport || receiveTransport;
+      const currentDevice = mediasoupDevice;
+      
+      console.log('📹 [MediaSoup] Consumer 생성 조건 확인:', {
+        hasReceiveTransport: !!currentReceiveTransport,
+        hasMediasoupDevice: !!currentDevice,
+        transportClosed: currentReceiveTransport?.closed,
+        deviceLoaded: currentDevice?.loaded,
+        producerId,
+        userId,
+        kind,
+        username
+      });
+      
+      if (currentReceiveTransport && currentDevice && currentDevice.loaded && currentDevice.rtpCapabilities && !currentReceiveTransport.closed) {
         console.log(`📹 [MediaSoup] Consumer 생성 시작 - 사용자:${username || userId}, 종류:${kind}`);
-        await createConsumer(receiveTransport, producerId, userId, mediasoupDevice);
+        try {
+          await createConsumer(currentReceiveTransport, producerId, userId, currentDevice);
+        } catch (error) {
+          console.error('📹 [MediaSoup] Consumer 생성 실패:', error);
+          // 실패한 경우 대기열에 추가
+          setPendingConsumers(prev => [...prev, { producerId, userId, kind, username, timestamp: Date.now() }]);
+        }
       } else {
         console.log('📹 [MediaSoup] MediaSoup 준비되지 않음, Consumer 생성 요청을 대기열에 추가:', { 
           producerId, userId, kind, username,
-          hasReceiveTransport: !!receiveTransport,
-          hasMediasoupDevice: !!mediasoupDevice
+          hasReceiveTransport: !!currentReceiveTransport,
+          hasMediasoupDevice: !!currentDevice,
+          deviceLoaded: currentDevice?.loaded,
+          transportClosed: currentReceiveTransport?.closed
         });
         
         // 대기열에 Consumer 생성 요청 추가
@@ -645,6 +675,29 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       handleAutoStartMediasoup(data);
     });
     socket.on('new-user-joined-mediasoup', handleNewUserJoinedMediasoup);
+    socket.on('transport-closed', (data) => {
+      console.log('📹 [MediaSoup] 서버에서 Transport 닫힘 알림:', data);
+      const { transportId, transportType } = data;
+      
+      // Transport 상태 초기화
+      if (transportType === 'send') {
+        setSendTransport(null);
+        window.currentSendTransport = null;
+      } else if (transportType === 'receive') {
+        setReceiveTransport(null);
+        window.currentReceiveTransport = null;
+      }
+      
+      // 재연결 시도
+      setTimeout(async () => {
+        console.log('📹 [MediaSoup] Transport 닫힘으로 인한 재연결 시도');
+        try {
+          await startMediaSoupConnections();
+        } catch (reconnectError) {
+          console.error('📹 [MediaSoup] Transport 닫힘 재연결 실패:', reconnectError);
+        }
+      }, 3000);
+    });
 
     // 정리
     return () => {
@@ -671,12 +724,13 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       socket.off('producer-closed', handleProducerClosed);
       socket.off('auto-start-mediasoup', handleAutoStartMediasoup);
       socket.off('new-user-joined-mediasoup', handleNewUserJoinedMediasoup);
+      socket.off('transport-closed');
     };
   }, [socket]);
 
   // 대기 중인 Consumer 요청들을 처리
   const processPendingConsumers = useCallback(async () => {
-    if (pendingConsumers.length > 0 && receiveTransport && mediasoupDevice) {
+    if (pendingConsumers.length > 0 && receiveTransport && mediasoupDevice && mediasoupDevice.loaded && mediasoupDevice.rtpCapabilities) {
       console.log(`📹 [MediaSoup] 대기 중인 Consumer 요청 ${pendingConsumers.length}개 처리 시작`);
       
       const currentPending = [...pendingConsumers];
@@ -710,16 +764,7 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
     }
   }, [receiveTransport, mediasoupDevice, processPendingConsumers]);
 
-  // 원격 비디오 스트림을 비디오 엘리먼트에 연결
-  useEffect(() => {
-    remoteStreams.forEach((stream, userId) => {
-      const videoElement = remoteVideoRefs.current.get(userId);
-      if (videoElement && videoElement.srcObject !== stream) {
-        videoElement.srcObject = stream;
-        console.log(`📹 [UI] 비디오 엘리먼트에 스트림 연결 완료 - 사용자:${userId}`);
-      }
-    });
-  }, [remoteStreams]);
+  // 원격 비디오 스트림을 비디오 엘리먼트에 연결 (ref 콜백에서 처리하므로 제거)
 
   // MediaSoup Device 초기화
   const initializeMediaSoupDevice = useCallback(async () => {
@@ -761,6 +806,7 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
         if (sendTransportCreated && receiveTransportCreated) {
           setIsConnecting(false);
           window.mediasoupExecuting = false; // 실행 플래그 해제
+          window.mediasoupRetryCount = 0; // 성공 시 재시도 카운터 리셋
           console.log('📹 [MediaSoup] 모든 Transport 준비 완료 - 서버에 준비 상태 알림');
           socket.emit('mediasoup-ready');
           resolve();
@@ -786,6 +832,32 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
                     callback();
                   } else {
                     console.error('📹 [MediaSoup] SendTransport 연결 실패:', result.error);
+                    if (result.error.includes('Transport를 찾을 수 없습니다') || result.error.includes('해당 Transport를 찾을 수 없습니다')) {
+                      console.log('📹 [MediaSoup] Transport가 정리되었음, 전체 연결 재시작 필요');
+                      
+                      // Transport 상태 초기화
+                      setSendTransport(null);
+                      setReceiveTransport(null);
+                      window.currentSendTransport = null;
+                      window.currentReceiveTransport = null;
+                      
+                      // 재시도 제한 확인
+                      window.mediasoupRetryCount = (window.mediasoupRetryCount || 0) + 1;
+                      if (window.mediasoupRetryCount > 3) {
+                        console.error('📹 [MediaSoup] 재시도 횟수 초과, 재연결 중단');
+                        return;
+                      }
+                      
+                      // 잠시 후 재연결 시도
+                      setTimeout(async () => {
+                        console.log('📹 [MediaSoup] SendTransport 연결 실패로 인한 재연결 시도', window.mediasoupRetryCount);
+                        try {
+                          await startMediaSoupConnections();
+                        } catch (reconnectError) {
+                          console.error('📹 [MediaSoup] SendTransport 재연결 실패:', reconnectError);
+                        }
+                      }, 3000);
+                    }
                     errback(new Error(result.error));
                   }
                 });
@@ -843,8 +915,17 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
                   transportId: receiveTransport.id,
                   dtlsParameters
                 }, (result) => {
-                  if (result.success) callback();
-                  else errback(new Error(result.error));
+                  if (result.success) {
+                    callback();
+                  } else {
+                    console.error('📹 [MediaSoup] ReceiveTransport 연결 실패:', result.error);
+                    if (result.error.includes('Transport를 찾을 수 없습니다') || result.error.includes('해당 Transport를 찾을 수 없습니다')) {
+                      console.log('📹 [MediaSoup] ReceiveTransport가 정리되었음, 전체 연결 재시작 필요');
+                      // Transport가 서버에서 정리된 경우, 전체 연결을 재시작하지 않고 실패로 처리
+                      // 이는 pending consumer 큐를 통해 나중에 재시도됨
+                    }
+                    errback(new Error(result.error));
+                  }
                 });
               } catch (error) {
                 errback(error);
@@ -883,6 +964,15 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       return;
     }
 
+    // 중복 Producer 생성 요청 방지
+    if (pendingProducers.has(track.kind)) {
+      console.log('📹 [MediaSoup] 중복 Producer 생성 요청 무시:', track.kind);
+      return;
+    }
+
+    // Producer 생성 시작 표시
+    setPendingProducers(prev => new Set(prev).add(track.kind));
+
     try {
       console.log('📹 [MediaSoup] Producer 생성 시작:', {
         trackKind: track.kind,
@@ -896,12 +986,42 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       // Transport가 닫혀있는지 확인
       if (transport.closed) {
         console.error('📹 [MediaSoup] Producer 생성 실패: transport가 닫혀있음');
+        setPendingProducers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(track.kind);
+          return newSet;
+        });
         return;
       }
 
       // 트랙이 ended 상태인지 확인
       if (track.readyState === 'ended') {
         console.error('📹 [MediaSoup] Producer 생성 실패: track이 ended 상태');
+        setPendingProducers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(track.kind);
+          return newSet;
+        });
+        
+        // 새로운 미디어 스트림 획득 시도
+        console.log('📹 [MediaSoup] Track ended - 새 미디어 스트림 획득 시도');
+        setTimeout(async () => {
+          try {
+            const newStream = await startLocalCamera();
+            if (newStream) {
+              console.log('📹 [MediaSoup] 새 미디어 스트림 획득 성공, Producer 재시도');
+              const newTrack = track.kind === 'video' 
+                ? newStream.getVideoTracks()[0] 
+                : newStream.getAudioTracks()[0];
+              
+              if (newTrack && newTrack.readyState === 'live') {
+                await createProducer(transport, newTrack);
+              }
+            }
+          } catch (refreshError) {
+            console.error('📹 [MediaSoup] 새 스트림 획득 실패:', refreshError);
+          }
+        }, 1000);
         return;
       }
 
@@ -961,6 +1081,44 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
         };
       }
 
+      // 직접 Producer 생성 직전에 한 번 더 트랙 상태 확인
+      if (track.readyState === 'ended') {
+        console.error('📹 [MediaSoup] Producer 생성 중단: track이 ended 상태로 변경됨');
+        
+        // 트랙이 ended 상태인 경우 새 스트림 획득 시도
+        console.log('📹 [MediaSoup] Track ended - 새 미디어 스트림 획득 시도');
+        try {
+          const newStream = await startLocalCamera();
+          if (newStream) {
+            console.log('📹 [MediaSoup] 새 스트림 획득 성공, Producer 재시도');
+            const newTrack = track.kind === 'video' 
+              ? newStream.getVideoTracks()[0] 
+              : newStream.getAudioTracks()[0];
+            
+            if (newTrack && newTrack.readyState === 'live') {
+              // 기존 pending 제거 - 새 트랙으로는 자동 복구 로직에서 처리
+              setPendingProducers(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(track.kind);
+                return newSet;
+              });
+              console.log('📹 [MediaSoup] 새 트랙 준비됨, 자동 복구에서 처리됨');
+              return;
+            }
+          }
+        } catch (refreshError) {
+          console.error('📹 [MediaSoup] 새 스트림 획득 실패:', refreshError);
+        }
+        
+        // 실패한 경우 pending에서 제거
+        setPendingProducers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(track.kind);
+          return newSet;
+        });
+        return;
+      }
+
       const producer = await transport.produce(produceOptions);
       setProducers(prev => new Map(prev.set(track.kind, producer)));
       console.log('📹 [MediaSoup] Producer 생성 완료:', {
@@ -968,20 +1126,106 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
         producerId: producer.id,
         trackId: track.id
       });
+      
+      // 성공적으로 완료되면 pending에서 제거
+      setPendingProducers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(track.kind);
+        return newSet;
+      });
+      
       return producer;
     } catch (error) {
       console.error('📹 [MediaSoup] Producer 생성 실패:', {
         error: error.message,
         trackKind: track.kind,
         transportId: transport.id,
-        transportClosed: transport.closed
+        transportClosed: transport.closed,
+        trackReadyState: track?.readyState
+      });
+
+      // 특정 오류 타입에 대한 추가 처리
+      if (error.message && (error.message.includes('track ended') || error.message.includes('ended'))) {
+        console.log('📹 [MediaSoup] Track ended 오류 감지 - 새 스트림 획득 필요');
+        
+        // Track ended의 경우 미디어 스트림 새로 고침 시도
+        setTimeout(async () => {
+          console.log('📹 [MediaSoup] Track ended 복구 시도');
+          try {
+            const newStream = await startLocalCamera();
+            if (newStream) {
+              console.log('📹 [MediaSoup] 새 미디어 스트림 획득 성공');
+              // 새 스트림으로 Producer 재생성 시도
+              const videoTrack = newStream.getVideoTracks()[0];
+              const audioTrack = newStream.getAudioTracks()[0];
+              
+              if (videoTrack && videoTrack.readyState === 'live' && sendTransport) {
+                await createProducer(sendTransport, videoTrack);
+              }
+              if (audioTrack && audioTrack.readyState === 'live' && sendTransport) {
+                await createProducer(sendTransport, audioTrack);
+              }
+            }
+          } catch (recoveryError) {
+            console.error('📹 [MediaSoup] Track ended 복구 실패:', recoveryError);
+          }
+        }, 500);
+      } else if (error.message && (error.message.includes('Transport를 찾을 수 없습니다') || error.message.includes('해당 Transport를 찾을 수 없습니다'))) {
+        console.log('📹 [MediaSoup] Transport not found 오류 감지 - 재연결 필요');
+        
+        // Transport 상태 초기화 및 재연결 시도
+        setSendTransport(null);
+        setReceiveTransport(null);
+        window.currentSendTransport = null;
+        window.currentReceiveTransport = null;
+        
+        // 재시도 제한 확인
+        window.mediasoupRetryCount = (window.mediasoupRetryCount || 0) + 1;
+        if (window.mediasoupRetryCount > 3) {
+          console.error('📹 [MediaSoup] 재시도 횟수 초과, 재연결 중단');
+          return;
+        }
+        
+        // 잠시 후 재연결 시도
+        setTimeout(async () => {
+          console.log('📹 [MediaSoup] Transport 재연결 시도 시작', window.mediasoupRetryCount);
+          try {
+            await startMediaSoupConnections();
+          } catch (reconnectError) {
+            console.error('📹 [MediaSoup] 재연결 실패:', reconnectError);
+          }
+        }, 2500);
+      }
+      
+      // 에러 발생 시 pending에서 제거
+      setPendingProducers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(track.kind);
+        return newSet;
       });
     }
-  }, []);
+  }, [pendingProducers]);
 
   // MediaSoup Consumer 생성 (원격 스트림 수신)
   const createConsumer = useCallback(async (transport, producerId, userId, device) => {
-    if (!transport || !producerId) return;
+    console.log('📹 [MediaSoup] createConsumer 호출됨:', {
+      hasTransport: !!transport,
+      transportId: transport?.id,
+      transportClosed: transport?.closed,
+      producerId,
+      userId,
+      hasDevice: !!device,
+      deviceLoaded: device?.loaded,
+      paramDeviceLoaded: device?.loaded,
+      globalDeviceLoaded: mediasoupDevice?.loaded,
+      willUseParamDevice: !!device,
+      willUseGlobalDevice: !device && !!mediasoupDevice
+    });
+
+    if (!transport || !producerId) {
+      console.error('📹 [MediaSoup] createConsumer 실패: transport 또는 producerId 없음');
+      return;
+    }
 
     try {
       const deviceToUse = device || mediasoupDevice;
@@ -990,44 +1234,171 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
         return;
       }
 
+      if (!deviceToUse.loaded || !deviceToUse.rtpCapabilities) {
+        console.error('📹 [MediaSoup] Device가 완전히 로드되지 않음 - Consumer 생성 불가', {
+          deviceExists: !!deviceToUse,
+          deviceLoaded: deviceToUse.loaded,
+          hasRtpCapabilities: !!deviceToUse.rtpCapabilities,
+          rtpCapabilitiesLength: deviceToUse.rtpCapabilities?.codecs?.length || 0,
+          mediasoupDeviceState: mediasoupDevice ? {
+            loaded: mediasoupDevice.loaded,
+            hasRtpCapabilities: !!mediasoupDevice.rtpCapabilities,
+            rtpCapabilitiesLength: mediasoupDevice.rtpCapabilities?.codecs?.length || 0
+          } : null
+        });
+        
+        // 재시도 제한 확인
+        window.mediasoupRetryCount = (window.mediasoupRetryCount || 0) + 1;
+        if (window.mediasoupRetryCount > 3) {
+          console.error('📹 [MediaSoup] 재시도 횟수 초과, Device 재로딩 중단');
+          return;
+        }
+        
+        // Device 재로딩 시도
+        setTimeout(async () => {
+          console.log('📹 [MediaSoup] Device 재로딩 시도', window.mediasoupRetryCount);
+          try {
+            await startMediaSoupConnections();
+          } catch (reloadError) {
+            console.error('📹 [MediaSoup] Device 재로딩 실패:', reloadError);
+          }
+        }, 2500);
+        return;
+      }
+
+      console.log('📹 [MediaSoup] consume 이벤트 전송:', {
+        transportId: transport.id,
+        producerId,
+        hasRtpCapabilities: !!deviceToUse.rtpCapabilities
+      });
+
       socket.emit('consume', {
         transportId: transport.id,
         producerId,
         rtpCapabilities: deviceToUse.rtpCapabilities
       }, async (response) => {
+        console.log('📹 [MediaSoup] consume 응답 수신:', response);
+        
         if (response.success) {
-          const consumer = await transport.consume(response.params);
-          setConsumers(prev => new Map(prev.set(`${userId}_${consumer.kind}`, consumer)));
-          
-          console.log('📹 [MediaSoup] Consumer 생성 완료:', userId, consumer.kind, consumer.id);
-          
-          // 기존 스트림이 있으면 트랙을 추가, 없으면 새 스트림 생성
-          setRemoteStreams(prev => {
-            const newMap = new Map(prev);
-            let existingStream = newMap.get(userId);
-            
-            if (existingStream) {
-              // 기존 스트림에 트랙 추가
-              existingStream.addTrack(consumer.track);
-              console.log(`📹 [MediaSoup] ${consumer.kind} 트랙 추가됨 - 사용자:${userId}`);
-            } else {
-              // 새 스트림 생성
-              existingStream = new MediaStream([consumer.track]);
-              newMap.set(userId, existingStream);
-              console.log(`📹 [MediaSoup] 새 스트림 생성 - 사용자:${userId}, 종류:${consumer.kind}`);
+          try {
+            // Consumer 생성 직전 Device 로딩 상태 재확인
+            if (!deviceToUse.loaded || !deviceToUse.rtpCapabilities) {
+              console.error('📹 [MediaSoup] Device가 완전히 준비되지 않음 - Consumer 생성 중단', {
+                loaded: deviceToUse.loaded,
+                hasRtpCapabilities: !!deviceToUse.rtpCapabilities
+              });
+              return;
             }
             
-            return newMap;
-          });
-          
-          // Consumer 재개
-          socket.emit('resume-consumer', { consumerId: consumer.id });
+            console.log('📹 [MediaSoup] transport.consume() 호출 시작:', {
+              hasTransport: !!transport,
+              transportClosed: transport.closed,
+              hasDevice: !!deviceToUse,
+              deviceLoaded: deviceToUse.loaded,
+              hasRtpCapabilities: !!deviceToUse.rtpCapabilities,
+              responseParams: response.params
+            });
+            
+            const consumer = await transport.consume(response.params);
+            
+            // 중복 Consumer 체크 및 기존 Consumer 정리
+            const consumerKey = `${userId}_${consumer.kind}`;
+            setConsumers(prev => {
+              const newMap = new Map(prev);
+              
+              // 기존 Consumer가 있으면 정리
+              if (newMap.has(consumerKey)) {
+                const existingConsumer = newMap.get(consumerKey);
+                console.log('📹 [MediaSoup] 기존 Consumer 정리:', { userId, kind: consumer.kind, existingId: existingConsumer.id });
+                try {
+                  existingConsumer.close();
+                } catch (closeError) {
+                  console.warn('📹 [MediaSoup] 기존 Consumer 정리 실패:', closeError);
+                }
+              }
+              
+              newMap.set(consumerKey, consumer);
+              return newMap;
+            });
+            
+            console.log('📹 [MediaSoup] Consumer 생성 완료:', {
+              userId,
+              kind: consumer.kind,
+              consumerId: consumer.id,
+              trackId: consumer.track.id,
+              trackKind: consumer.track.kind,
+              trackEnabled: consumer.track.enabled,
+              trackReadyState: consumer.track.readyState
+            });
+            
+            // 기존 스트림이 있으면 트랙을 추가, 없으면 새 스트림 생성
+            setRemoteStreams(prev => {
+              const newMap = new Map(prev);
+              let existingStream = newMap.get(userId);
+              
+              if (existingStream) {
+                // 같은 종류의 기존 트랙이 있는지 확인
+                const existingTracks = consumer.kind === 'video' 
+                  ? existingStream.getVideoTracks() 
+                  : existingStream.getAudioTracks();
+                
+                // 기존 트랙 제거 후 새 트랙 추가
+                existingTracks.forEach(track => {
+                  existingStream.removeTrack(track);
+                  console.log(`📹 [MediaSoup] 기존 ${consumer.kind} 트랙 제거 - 사용자:${userId}`);
+                });
+                
+                existingStream.addTrack(consumer.track);
+                console.log(`📹 [MediaSoup] ${consumer.kind} 트랙 교체됨 - 사용자:${userId}`);
+              } else {
+                // 새 스트림 생성
+                existingStream = new MediaStream([consumer.track]);
+                newMap.set(userId, existingStream);
+                console.log(`📹 [MediaSoup] 새 스트림 생성 - 사용자:${userId}, 종류:${consumer.kind}`);
+              }
+              
+              return newMap;
+            });
+            
+            // Consumer 재개
+            console.log('📹 [MediaSoup] Consumer 재개 요청:', consumer.id);
+            socket.emit('resume-consumer', { consumerId: consumer.id });
+            
+            // 트랙 상태 확인 및 강제 활성화
+            setTimeout(() => {
+              const track = consumer.track;
+              console.log('📹 [MediaSoup] Consumer 상태 확인:', {
+                userId,
+                kind: consumer.kind,
+                consumerPaused: consumer.paused,
+                trackEnabled: track?.enabled,
+                trackReadyState: track?.readyState,
+                trackMuted: track?.muted
+              });
+              
+              // Consumer가 paused 상태면 resume
+              if (consumer.paused) {
+                console.log('📹 [MediaSoup] Consumer paused 상태 - resume 시도');
+                consumer.resume();
+              }
+              
+              // 트랙이 비활성화되어 있으면 활성화
+              if (track && !track.enabled) {
+                track.enabled = true;
+                console.log('📹 [MediaSoup] Consumer 트랙 강제 활성화:', { userId, kind: consumer.kind });
+              }
+            }, 500);
+          } catch (consumeError) {
+            console.error('📹 [MediaSoup] transport.consume() 실패:', consumeError);
+          }
+        } else {
+          console.error('📹 [MediaSoup] consume 서버 응답 실패:', response.error);
         }
       });
     } catch (error) {
       console.error('📹 [MediaSoup] Consumer 생성 실패:', error);
     }
-  }, [socket]);
+  }, [socket, mediasoupDevice]);
 
   // MediaSoup 연결 정리
   const cleanupMediaSoupConnections = useCallback(() => {
@@ -1065,6 +1436,12 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
     // window 참조도 정리
     window.currentReceiveTransport = null;
     
+    // MediaSoup Device 정리
+    if (mediasoupDevice) {
+      console.log('📹 [MediaSoup] MediaSoup Device 정리');
+      setMediasoupDevice(null);
+    }
+    
     // State 정리
     setProducers(new Map());
     setConsumers(new Map());
@@ -1073,10 +1450,11 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
     setUserNames(new Map()); // 사용자 이름 매핑도 정리
     setIsConnecting(false);
     window.mediasoupExecuting = false; // 실행 플래그 해제
+    window.mediasoupRetryCount = 0; // 재시도 카운터도 리셋
     remoteVideoRefs.current.clear();
     
     console.log('📹 [MediaSoup] 모든 연결 정리 완료');
-  }, [producers, consumers, sendTransport, receiveTransport]);
+  }, [producers, consumers, sendTransport, receiveTransport, mediasoupDevice]);
 
   // 모든 MediaSoup 연결 시작
   const startMediaSoupConnections = useCallback(async (participantIds) => {
@@ -1087,13 +1465,22 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       hasReceiveTransport: !!receiveTransport,
       hasMediasoupDevice: !!mediasoupDevice,
       participantIds,
-      isExecuting: window.mediasoupExecuting
+      isExecuting: window.mediasoupExecuting,
+      windowSendTransport: !!window.currentSendTransport,
+      windowReceiveTransport: !!window.currentReceiveTransport
     });
 
     if (!socket) {
       console.error('📹 [MediaSoup] Socket이 없어서 연결 중단');
       return;
     }
+
+    // 새 연결 시작 전 기존 연결 완전 정리
+    console.log('📹 [MediaSoup] 새 연결 시작 전 기존 연결 정리');
+    cleanupMediaSoupConnections();
+    
+    // 정리 완료 대기 (비동기 정리 작업 완료 대기)
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // 동기적 중복 실행 방지 - window 속성 사용
     if (window.mediasoupExecuting) {
@@ -1107,9 +1494,18 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       return;
     }
 
-    // 이미 완전히 연결된 상태인지 확인
-    if (sendTransport && receiveTransport && mediasoupDevice) {
-      console.log('📹 [MediaSoup] 이미 완전히 연결됨, 중복 실행 방지');
+    // 이미 완전히 연결된 상태인지 확인 (window 참조 포함)
+    const currentSendTransport = window.currentSendTransport || sendTransport;
+    const currentReceiveTransport = window.currentReceiveTransport || receiveTransport;
+    
+    if (currentSendTransport && currentReceiveTransport && mediasoupDevice && 
+        !currentSendTransport.closed && !currentReceiveTransport.closed) {
+      console.log('📹 [MediaSoup] 이미 완전히 연결됨, 중복 실행 방지:', {
+        sendTransportId: currentSendTransport.id,
+        receiveTransportId: currentReceiveTransport.id,
+        sendClosed: currentSendTransport.closed,
+        receiveClosed: currentReceiveTransport.closed
+      });
       return;
     }
 
@@ -1161,7 +1557,14 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       
       // Device에 RTP Capabilities 로드
       await device.load({ routerRtpCapabilities: rtpCapabilities });
-      console.log('📹 [MediaSoup] Device RTP Capabilities 로드 완료');
+      console.log('📹 [MediaSoup] Device RTP Capabilities 로드 완료', {
+        loaded: device.loaded,
+        hasRtpCapabilities: !!device.rtpCapabilities,
+        canProduce: device.loaded ? {
+          video: device.canProduce('video'),
+          audio: device.canProduce('audio')
+        } : null
+      });
       
       // Transport 생성 및 완료 대기
       await createTransports(device);
@@ -1181,18 +1584,46 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       console.log('📹 [MediaSoup] 기존 Producer 목록 수신:', existingProducers);
       
       // 기존 Producer들에 대한 Consumer 생성
-      existingProducers.forEach(({ producerId, userId, username }) => {
+      existingProducers.forEach(async ({ producerId, userId, username, kind }) => {
+        // 자신의 Producer는 무시
+        if (userId === socket.id) {
+          console.log('📹 [MediaSoup] 기존 Producer - 자신의 Producer 무시:', { userId, socketId: socket.id });
+          return;
+        }
+        
         // receiveTransport는 이제 확실히 존재함
         const currentReceiveTransport = window.currentReceiveTransport || receiveTransport;
-        if (currentReceiveTransport && userId !== socket.id) {
-          console.log('📹 [MediaSoup] 기존 Producer에 대한 Consumer 생성:', { producerId, userId, username });
+        
+        console.log('📹 [MediaSoup] 기존 Producer Consumer 생성 조건 확인:', {
+          hasReceiveTransport: !!currentReceiveTransport,
+          hasDevice: !!device,
+          deviceLoaded: device?.loaded,
+          transportClosed: currentReceiveTransport?.closed,
+          producerId,
+          userId,
+          username,
+          kind
+        });
+        
+        if (currentReceiveTransport && device && device.loaded && device.rtpCapabilities && !currentReceiveTransport.closed) {
+          console.log('📹 [MediaSoup] 기존 Producer에 대한 Consumer 생성:', { producerId, userId, username, kind });
           
           // 사용자 이름 저장
           if (username && userId) {
             setUserNames(prev => new Map(prev.set(userId, username)));
           }
           
-          createConsumer(currentReceiveTransport, producerId, userId, device);
+          try {
+            await createConsumer(currentReceiveTransport, producerId, userId, device);
+          } catch (error) {
+            console.error('📹 [MediaSoup] 기존 Producer Consumer 생성 실패:', error);
+            // 실패한 경우 대기열에 추가
+            setPendingConsumers(prev => [...prev, { producerId, userId, kind, username, timestamp: Date.now() }]);
+          }
+        } else {
+          console.log('📹 [MediaSoup] 기존 Producer - MediaSoup 준비되지 않음, 대기열에 추가');
+          // 대기열에 Consumer 생성 요청 추가
+          setPendingConsumers(prev => [...prev, { producerId, userId, kind, username, timestamp: Date.now() }]);
         }
       });
               
@@ -1364,6 +1795,8 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
       }
 
       console.log('📹 [MediaSoup] 모든 초기화 완료 - isConnecting=false로 설정');
+      // 성공적인 연결 시 재시도 카운터 리셋
+      window.mediasoupRetryCount = 0;
       // 모든 작업 완료 후 연결 상태 해제 (이미 createTransports에서 설정되었지만 확실하게)
       // setIsConnecting(false); // createTransports에서 이미 처리됨
 
@@ -1449,20 +1882,101 @@ const AreaVideoCallUI = ({ socket, currentArea, isVisible }) => {
         </div>
 
         {/* 원격 비디오들 (MediaSoup 스트림) */}
-        {isCallActive && Array.from(remoteStreams.entries()).map(([userId, stream]) => {
+        {isCallActive && Array.from(remoteStreams.entries())
+          .filter(([userId, stream]) => {
+            // 자신은 제외 (원격 스트림만 표시)
+            const isNotSelf = userId !== socket?.id;
+            // 스트림이 있고 트랙이 있는 것만 필터링
+            const hasValidTracks = stream && stream.getTracks().length > 0;
+            
+            if (!isNotSelf) {
+              console.log('📹 [UI] 자신의 스트림 제외:', { userId, socketId: socket?.id });
+            } else if (!hasValidTracks) {
+              console.log('📹 [UI] 빈 스트림 필터링:', { userId, hasStream: !!stream, trackCount: stream?.getTracks()?.length || 0 });
+            }
+            
+            return isNotSelf && hasValidTracks;
+          })
+          .map(([userId, stream]) => {
           const username = userNames.get(userId) || userId;
+          
+          // 비디오 트랙 상태 확인
+          const videoTracks = stream.getVideoTracks();
+          const audioTracks = stream.getAudioTracks();
+          const hasVideoTrack = videoTracks.length > 0;
+          const videoTrackEnabled = hasVideoTrack && videoTracks[0].enabled;
+          const videoTrackReady = hasVideoTrack && videoTracks[0].readyState === 'live';
+          
+          // 문제가 있는 경우에만 로그 출력
+          if (!hasVideoTrack || !videoTrackEnabled || !videoTrackReady) {
+            console.warn('📹 [UI] 비디오 트랙 문제:', {
+              userId,
+              username,
+              hasVideoTrack,
+              videoTrackEnabled,
+              videoTrackReady,
+              videoTrackState: hasVideoTrack ? videoTracks[0].readyState : 'no track'
+            });
+          }
+          
           return (
             <div key={userId} className="remote-video-container">
               <video 
                 ref={(videoEl) => {
-                  if (videoEl) {
+                  if (videoEl && stream) {
                     remoteVideoRefs.current.set(userId, videoEl);
+                    
+                    // 스트림 연결
                     videoEl.srcObject = stream;
+                    
+                    // 비디오 이벤트 리스너 추가
+                    const handleLoadedMetadata = () => {
+                      console.log('📹 [UI] 비디오 메타데이터 로드 완료:', { userId, username });
+                    };
+                    
+                    const handleCanPlay = () => {
+                      console.log('📹 [UI] 비디오 재생 준비 완료:', { userId, username });
+                      videoEl.play().catch(playError => {
+                        console.warn('📹 [UI] 비디오 재생 실패:', playError);
+                      });
+                    };
+                    
+                    const handlePlaying = () => {
+                      console.log('📹 [UI] 비디오 재생 시작:', { userId, username });
+                    };
+                    
+                    const handleError = (error) => {
+                      console.error('📹 [UI] 비디오 에러:', { userId, username, error });
+                    };
+                    
+                    videoEl.addEventListener('loadedmetadata', handleLoadedMetadata);
+                    videoEl.addEventListener('canplay', handleCanPlay);
+                    videoEl.addEventListener('playing', handlePlaying);
+                    videoEl.addEventListener('error', handleError);
+                    
+                    // 컴포넌트 언마운트 시 정리를 위해 ref에 cleanup 함수 저장
+                    videoEl._cleanup = () => {
+                      videoEl.removeEventListener('loadedmetadata', handleLoadedMetadata);
+                      videoEl.removeEventListener('canplay', handleCanPlay);
+                      videoEl.removeEventListener('playing', handlePlaying);
+                      videoEl.removeEventListener('error', handleError);
+                    };
+                  } else if (videoEl && videoEl._cleanup) {
+                    // 요소가 제거될 때 이벤트 리스너 정리
+                    videoEl._cleanup();
                   }
                 }}
                 autoPlay
                 playsInline
+                controls={true}
+                muted={false}
                 className="remote-video"
+                style={{
+                  width: '300px',
+                  height: '200px',
+                  backgroundColor: '#000',
+                  objectFit: 'cover'
+                }}
               />
               <div className="video-label">
                 {username}

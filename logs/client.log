@@ -3,12 +3,12 @@
 > vite --port 5173 --host
 
 
-  VITE v4.5.14  ready in 165 ms
+  VITE v4.5.14  ready in 159 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-11:15:42 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+3:01:39 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 148|              mapCreatorId: map.creatorId,
 149|              mapCreatedBy: map.createdBy,
 150|              mapCreatorId: map.creator?.id,
@@ -18,7 +18,7 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-11:15:42 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+3:01:39 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 162|                mapCreatorId: map.creatorId,
 163|                mapCreatedBy: map.createdBy,
 164|                mapCreatorId: map.creator?.id,
@@ -28,12 +28,5 @@
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-(node:1108168) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(node:2165351) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-11:18:10 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:18:24 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:18:33 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:18:40 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:18:50 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:18:59 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx
-11:19:18 AM [vite] hmr update /src/components/AreaVideoCallUI.jsx

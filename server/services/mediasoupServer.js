@@ -119,7 +119,37 @@ class MediaSoupServer {
       });
 
       transport.on('@close', () => {
-        console.log('📹 [MediaSoup] Transport 닫힘:', socketId);
+        console.log('📹 [MediaSoup] Transport 닫힘:', socketId, transport.id);
+        
+        // Transport 닫힘 시 해당 Transport를 사용자 저장소에서 제거
+        const userTransports = this.transports.get(socketId);
+        if (userTransports) {
+          let transportType = null;
+          if (userTransports.sendTransport && userTransports.sendTransport.id === transport.id) {
+            console.log('📹 [MediaSoup] SendTransport 저장소에서 제거:', socketId, transport.id);
+            userTransports.sendTransport = null;
+            transportType = 'send';
+          }
+          if (userTransports.receiveTransport && userTransports.receiveTransport.id === transport.id) {
+            console.log('📹 [MediaSoup] ReceiveTransport 저장소에서 제거:', socketId, transport.id);
+            userTransports.receiveTransport = null;
+            transportType = 'receive';
+          }
+          
+          // 클라이언트에게 Transport 닫힘 알림
+          if (transportType && this.io) {
+            const targetSocket = this.io.sockets.sockets.get(socketId);
+            if (targetSocket) {
+              targetSocket.emit('transport-closed', {
+                transportId: transport.id,
+                transportType: transportType
+              });
+              console.log('📹 [MediaSoup] 클라이언트에게 Transport 닫힘 알림 전송:', socketId, transportType);
+            }
+          }
+        }
+        // 연결된 Transport 추적에서 제거
+        this.connectedTransports.delete(transport.id);
       });
 
       console.log('📹 [MediaSoup] Transport 생성 완료:', {
@@ -158,8 +188,20 @@ class MediaSoupServer {
 
       const userTransports = this.transports.get(socketId);
       if (!userTransports) {
+        console.error('📹 [MediaSoup] 사용자 Transport가 없음:', { socketId, transportId });
         throw new Error('Transport를 찾을 수 없습니다');
       }
+
+      console.log('📹 [MediaSoup] 사용자 Transport 상태:', {
+        socketId,
+        transportId,
+        hasSendTransport: !!userTransports.sendTransport,
+        hasReceiveTransport: !!userTransports.receiveTransport,
+        sendTransportId: userTransports.sendTransport?.id,
+        receiveTransportId: userTransports.receiveTransport?.id,
+        sendTransportClosed: userTransports.sendTransport?.closed,
+        receiveTransportClosed: userTransports.receiveTransport?.closed
+      });
 
       let transport = null;
       if (userTransports.sendTransport && userTransports.sendTransport.id === transportId) {
@@ -169,30 +211,120 @@ class MediaSoupServer {
       }
 
       if (!transport) {
+        console.error('📹 [MediaSoup] Transport ID가 일치하지 않음:', {
+          socketId,
+          requestedTransportId: transportId,
+          availableTransports: {
+            sendTransportId: userTransports.sendTransport?.id,
+            receiveTransportId: userTransports.receiveTransport?.id
+          }
+        });
         throw new Error('해당 Transport를 찾을 수 없습니다');
       }
 
-      await transport.connect({ dtlsParameters });
+      // Transport가 이미 연결된 상태인지 확인 (connectionState 체크)
+      if (transport.connectionState === 'connected') {
+        console.log('📹 [MediaSoup] Transport 이미 연결된 상태:', { socketId, transportId, state: transport.connectionState });
+        this.connectedTransports.add(transportId);
+        return { success: true };
+      }
+
+      // Transport가 닫혀있거나 실패 상태인지 확인
+      if (transport.closed || transport.connectionState === 'failed') {
+        console.error('📹 [MediaSoup] Transport가 닫혀있거나 실패 상태:', { 
+          socketId, 
+          transportId, 
+          closed: transport.closed,
+          connectionState: transport.connectionState 
+        });
+        throw new Error('Transport가 닫혀있거나 실패 상태입니다');
+      }
+
+      try {
+        await transport.connect({ dtlsParameters });
+        
+        // 연결 성공 시 추적 Set에 추가
+        this.connectedTransports.add(transportId);
+        console.log('📹 [MediaSoup] Transport 연결 완료:', { socketId, transportId, state: transport.connectionState });
+        
+        return { success: true };
+      } catch (connectError) {
+        // "connect() already called" 에러는 이미 연결된 것으로 간주
+        if (connectError.message && connectError.message.includes('connect() already called')) {
+          console.log('📹 [MediaSoup] Transport 이미 connect() 호출됨, 연결된 것으로 간주:', { socketId, transportId });
+          this.connectedTransports.add(transportId);
+          return { success: true };
+        }
+        throw connectError;
+      }
       
-      // 연결 성공 시 추적 Set에 추가
-      this.connectedTransports.add(transportId);
-      console.log('📹 [MediaSoup] Transport 연결 완료:', { socketId, transportId });
-      
-      return { success: true };
     } catch (error) {
       console.error('📹 [MediaSoup] Transport 연결 실패:', error);
       throw error;
     }
   }
 
+  // Producer 생성 중인 요청 추적
+  pendingProducers = new Map();
+  
   // Producer 생성
   async createProducer(socketId, transportId, rtpParameters, kind) {
     console.log('📹 [MediaSoup] Producer 생성:', { socketId, transportId, kind });
+    
+    // 기존 Producer가 있으면 먼저 정리
+    const existingProducers = this.producers.get(socketId);
+    if (existingProducers && existingProducers.has(kind)) {
+      const existingProducer = existingProducers.get(kind);
+      console.log('📹 [MediaSoup] 기존 Producer 정리:', { socketId, kind, producerId: existingProducer.id });
+      try {
+        existingProducer.close();
+        existingProducers.delete(kind);
+      } catch (closeError) {
+        console.warn('📹 [MediaSoup] 기존 Producer 정리 실패:', closeError);
+      }
+    }
+    
+    // 중복 Producer 생성 요청 방지
+    const requestKey = `${socketId}-${kind}`;
+    if (this.pendingProducers.has(requestKey)) {
+      console.log('📹 [MediaSoup] 중복 Producer 생성 요청 무시:', { socketId, kind });
+      throw new Error(`${kind} Producer 생성이 이미 진행 중입니다`);
+    }
+    
+    // 요청 시작 표시 (10초 후 자동 정리)
+    this.pendingProducers.set(requestKey, true);
+    setTimeout(() => {
+      if (this.pendingProducers.has(requestKey)) {
+        console.warn('📹 [MediaSoup] Producer 생성 타임아웃으로 pending 제거:', { socketId, kind });
+        this.pendingProducers.delete(requestKey);
+      }
+    }, 10000);
 
     try {
       const userTransports = this.transports.get(socketId);
+      
+      console.log('📹 [MediaSoup] Producer 생성 전 Transport 상태 확인:', {
+        socketId,
+        kind,
+        hasUserTransports: !!userTransports,
+        hasSendTransport: !!userTransports?.sendTransport,
+        sendTransportId: userTransports?.sendTransport?.id,
+        sendTransportClosed: userTransports?.sendTransport?.closed,
+        hasReceiveTransport: !!userTransports?.receiveTransport,
+        receiveTransportId: userTransports?.receiveTransport?.id
+      });
+      
       if (!userTransports || !userTransports.sendTransport) {
-        throw new Error('SendTransport를 찾을 수 없습니다');
+        const error = new Error(`SendTransport를 찾을 수 없습니다. Transport 상태: ${JSON.stringify({
+          hasUserTransports: !!userTransports,
+          hasSendTransport: !!userTransports?.sendTransport,
+          sendTransportClosed: userTransports?.sendTransport?.closed
+        })}`);
+        throw error;
+      }
+      
+      if (userTransports.sendTransport.closed) {
+        throw new Error('SendTransport가 이미 닫혀있습니다');
       }
 
       // 기존 동일한 종류의 Producer가 있으면 먼저 정리하여 MID 충돌 방지
@@ -203,17 +335,68 @@ class MediaSoupServer {
           console.log('📹 [MediaSoup] 기존 Producer 정리 (MID 충돌 방지):', { 
             socketId, 
             kind, 
-            existingProducerId: existingProducer.id 
+            existingProducerId: existingProducer.id,
+            existingProducerClosed: existingProducer.closed
           });
-          existingProducer.close();
+          
+          // Producer가 이미 닫혀있지 않은 경우에만 close 호출
+          if (!existingProducer.closed) {
+            existingProducer.close();
+          }
+          
+          // Producer 맵에서 즉시 제거
           userProducers.delete(kind);
+          
+          // 추가적인 정리 시간을 위해 대기 (MediaSoup MID 해제 시간 확보)
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          console.log('📹 [MediaSoup] 기존 Producer 정리 완료, 새 Producer 생성 진행');
         }
       }
 
-      const producer = await userTransports.sendTransport.produce({ 
-        kind, 
-        rtpParameters 
-      });
+      let producer;
+      try {
+        // 다시 한번 transport 유효성 확인 (race condition 방지)
+        if (!userTransports.sendTransport) {
+          throw new Error('SendTransport가 Producer 생성 중 null이 되었습니다 (race condition)');
+        }
+        
+        producer = await userTransports.sendTransport.produce({ 
+          kind, 
+          rtpParameters 
+        });
+      } catch (produceError) {
+        // MID 충돌 에러 처리
+        if (produceError.message && produceError.message.includes('MID already exists')) {
+          console.log('📹 [MediaSoup] MID 충돌 감지, Transport 재생성으로 해결 시도:', {
+            socketId,
+            kind,
+            error: produceError.message
+          });
+          
+          // 기존 SendTransport 완전 제거
+          if (userTransports.sendTransport) {
+            userTransports.sendTransport.close();
+            userTransports.sendTransport = null;
+          }
+          
+          // 새 SendTransport 생성
+          const { transport: newTransport } = await this.createWebRtcTransport(socketId);
+          userTransports.sendTransport = newTransport;
+          
+          console.log('📹 [MediaSoup] MID 충돌 해결용 새 SendTransport 생성 완료:', newTransport.id);
+          
+          // 새 Transport로 Producer 재시도
+          producer = await userTransports.sendTransport.produce({ 
+            kind, 
+            rtpParameters 
+          });
+          
+          console.log('📹 [MediaSoup] MID 충돌 해결 완료, Producer 생성 성공');
+        } else {
+          throw produceError;
+        }
+      }
 
       // Producer 이벤트 핸들러
       producer.on('transportclose', () => {
@@ -238,12 +421,19 @@ class MediaSoupServer {
         producerId: producer.id
       });
 
+      // 성공 시 pending 요청 제거
+      this.pendingProducers.delete(requestKey);
+
       return {
         id: producer.id,
         kind: producer.kind
       };
     } catch (error) {
       console.error('📹 [MediaSoup] Producer 생성 실패:', error);
+      
+      // 실패 시에도 pending 요청 제거
+      this.pendingProducers.delete(requestKey);
+      
       throw error;
     }
   }
