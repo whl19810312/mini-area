@@ -465,7 +465,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
-        onWheelCapture={(e) => e.preventDefault()}
         style={{ 
           overflow: 'visible', // 캐릭터 머리와 이름표가 잘리지 않도록 변경
           position: 'relative',
@@ -942,6 +941,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         currentMap={currentMap}
         userId={user?.id || Date.now()}
         username={user?.username || '익명'}
+        userPosition={charSync.myPosition}
         isEnabled={currentMap && user}
       />
     </div>

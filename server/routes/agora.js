@@ -38,12 +38,15 @@ router.post('/token', auth, async (req, res) => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const expireTime = currentTimestamp + TOKEN_EXPIRATION_TIME;
 
+    // UID를 숫자로 변환 (0이면 모든 UID에 유효한 토큰)
+    const numericUid = 0; // 0은 모든 UID에 유효
+    
     // 토큰 생성
     const token = RtcTokenBuilder.buildTokenWithUid(
       APP_ID,
       APP_CERTIFICATE,
       channelName,
-      userId,
+      numericUid,
       rtcRole,
       expireTime
     );
@@ -89,11 +92,14 @@ router.post('/refresh-token', auth, async (req, res) => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const expireTime = currentTimestamp + TOKEN_EXPIRATION_TIME;
 
+    // UID를 숫자로 변환 (0이면 모든 UID에 유효한 토큰)
+    const numericUid = 0; // 0은 모든 UID에 유효
+    
     const token = RtcTokenBuilder.buildTokenWithUid(
       APP_ID,
       APP_CERTIFICATE,
       channelName,
-      userId,
+      numericUid,
       rtcRole,
       expireTime
     );

@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
+import { getAreaTypeAtPoint } from '../utils/privateAreaUtils';
+import { useAuth } from '../contexts/AuthContext';
 
 const IntegratedVideoBar = ({ 
   currentMap, 
   userId, 
   username,
+  userPosition,
   isEnabled = true 
 }) => {
+  const { token } = useAuth();
   // 상태 관리
   const [isJoined, setIsJoined] = useState(false);
   const [isMicOn, setIsMicOn] = useState(true);
@@ -32,19 +36,56 @@ const IntegratedVideoBar = ({
   // Agora 설정
   const APP_ID = import.meta.env.VITE_AGORA_APP_ID || '4fdc24d11417437785bfc1d7ddb78c96';
 
-  // 채널명 생성
-  const channelName = useMemo(() => {
-    if (!currentMap) return null;
-    if (currentMap.creatorId && currentMap.creatorMapIndex) {
-      return `creator_${currentMap.creatorId}_map_${currentMap.creatorMapIndex}`;
+  // 현재 사용자가 있는 영역 정보 계산
+  const currentAreaInfo = useMemo(() => {
+    if (!currentMap || !userPosition) return { type: 'public', id: null };
+    
+    const areaType = getAreaTypeAtPoint(userPosition, currentMap.privateAreas);
+    
+    // 개인 영역인 경우 해당 영역의 ID 찾기
+    let areaId = null;
+    if (areaType === 'private' && currentMap.privateAreas) {
+      const area = currentMap.privateAreas.find(area => {
+        const normalizedArea = {
+          position: area.position || area.start,
+          size: area.size || {
+            width: area.end.x - area.start.x,
+            height: area.end.y - area.start.y
+          }
+        };
+        return userPosition.x >= normalizedArea.position.x && 
+               userPosition.x <= normalizedArea.position.x + normalizedArea.size.width &&
+               userPosition.y >= normalizedArea.position.y && 
+               userPosition.y <= normalizedArea.position.y + normalizedArea.size.height;
+      });
+      areaId = area?.id || area?.name || 'unknown';
     }
-    return `metaverse_map_${currentMap.id}`;
-  }, [currentMap]);
+    
+    return { type: areaType, id: areaId };
+  }, [currentMap, userPosition]);
+
+  // 영역별 채널명 생성
+  const channelName = useMemo(() => {
+    if (!currentMap || !currentAreaInfo) return null;
+    
+    let baseChannelName;
+    if (currentMap.creatorId && currentMap.creatorMapIndex) {
+      baseChannelName = `creator_${currentMap.creatorId}_map_${currentMap.creatorMapIndex}`;
+    } else {
+      baseChannelName = `metaverse_map_${currentMap.id}`;
+    }
+    
+    // 영역별로 채널 분리
+    if (currentAreaInfo.type === 'private' && currentAreaInfo.id) {
+      return `${baseChannelName}_private_${currentAreaInfo.id}`;
+    } else {
+      return `${baseChannelName}_public`;
+    }
+  }, [currentMap, currentAreaInfo]);
 
   // 토큰 요청 함수
   const requestAgoraToken = async (channelName, userId, role = 'publisher') => {
     try {
-      const token = localStorage.getItem('authToken');
       if (!token) throw new Error('Authentication token not found');
 
       const response = await fetch('/api/agora/token', {
@@ -129,24 +170,61 @@ const IntegratedVideoBar = ({
 
   // 채널 입장
   const joinChannel = async () => {
-    if (!clientRef.current || !channelName) return;
+    console.log('🎥 joinChannel 시작:', { 
+      hasClient: !!clientRef.current, 
+      channelName, 
+      userId, 
+      isMicOn, 
+      isCameraOn 
+    });
+
+    if (!clientRef.current || !channelName) {
+      console.log('❌ joinChannel 중단: client 또는 channelName 없음');
+      return;
+    }
     
     setIsLoading(true);
     
     try {
+      console.log('🎫 토큰 요청 중...');
       const token = await requestAgoraToken(channelName, userId, 'publisher');
-      await clientRef.current.join(APP_ID, channelName, token, userId);
+      console.log('✅ 토큰 요청 성공');
+
+      // 고유한 숫자 UID 생성 (시간 기반)
+      const numericUid = Date.now() % 1000000000; // 10억 미만 숫자로 제한
+      console.log('🚪 Agora 채널 입장 중...', { channelName, numericUid, originalUserId: userId });
+      await clientRef.current.join(APP_ID, channelName, token, numericUid);
+      console.log('✅ Agora 채널 입장 성공');
 
       // 로컬 트랙 생성
+      console.log('📹 로컬 트랙 생성 시작...');
       if (isMicOn) {
+        console.log('🎤 마이크 트랙 생성 중...');
         localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
+        console.log('✅ 마이크 트랙 생성 완료');
       }
       
       if (isCameraOn) {
-        localVideoTrackRef.current = await AgoraRTC.createCameraVideoTrack();
-        if (localVideoContainerRef.current) {
-          localVideoTrackRef.current.play(localVideoContainerRef.current);
-        }
+        console.log('📷 카메라 트랙 생성 중...');
+        localVideoTrackRef.current = await AgoraRTC.createCameraVideoTrack({
+          encoderConfig: "480p_1"
+        });
+        console.log('✅ 카메라 트랙 생성 완료');
+        
+        // 약간의 지연 후 재생 시도
+        setTimeout(() => {
+          if (localVideoContainerRef.current && localVideoTrackRef.current) {
+            console.log('📺 로컬 비디오 재생 시작...');
+            try {
+              localVideoTrackRef.current.play(localVideoContainerRef.current);
+              console.log('✅ 로컬 비디오 재생 완료');
+            } catch (error) {
+              console.error('❌ 로컬 비디오 재생 실패:', error);
+            }
+          } else {
+            console.log('❌ 로컬 비디오 컨테이너 또는 트랙을 찾을 수 없음');
+          }
+        }, 100);
       }
 
       // 트랙 퍼블리시
@@ -154,14 +232,21 @@ const IntegratedVideoBar = ({
       if (localAudioTrackRef.current) tracks.push(localAudioTrackRef.current);
       if (localVideoTrackRef.current) tracks.push(localVideoTrackRef.current);
       
+      console.log('📡 트랙 퍼블리시 중...', { trackCount: tracks.length });
       if (tracks.length > 0) {
         await clientRef.current.publish(tracks);
+        console.log('✅ 트랙 퍼블리시 완료');
       }
 
       setIsJoined(true);
       console.log('✅ 자동 화상회의 참여 완료:', channelName);
     } catch (error) {
       console.error('❌ 채널 입장 실패:', error);
+      console.error('❌ 에러 상세:', {
+        name: error.name,
+        message: error.message,
+        code: error.code
+      });
     } finally {
       setIsLoading(false);
     }
@@ -172,21 +257,53 @@ const IntegratedVideoBar = ({
     if (!clientRef.current) return;
 
     try {
-      if (localAudioTrackRef.current) {
-        localAudioTrackRef.current.close();
-        localAudioTrackRef.current = null;
-      }
+      console.log('🚪 채널 퇴장 시작...');
       
-      if (localVideoTrackRef.current) {
-        localVideoTrackRef.current.close();
-        localVideoTrackRef.current = null;
+      // 화면 공유 트랙 정리
+      if (screenShareTrackRef.current) {
+        try {
+          await clientRef.current.unpublish(screenShareTrackRef.current);
+          screenShareTrackRef.current.close();
+          screenShareTrackRef.current = null;
+          setIsScreenSharing(false);
+        } catch (error) {
+          console.log('화면 공유 트랙 정리 중 오류:', error);
+        }
       }
 
-      await clientRef.current.leave();
+      // 오디오 트랙 정리
+      if (localAudioTrackRef.current) {
+        try {
+          localAudioTrackRef.current.close();
+          localAudioTrackRef.current = null;
+        } catch (error) {
+          console.log('오디오 트랙 정리 중 오류:', error);
+        }
+      }
+      
+      // 비디오 트랙 정리
+      if (localVideoTrackRef.current) {
+        try {
+          localVideoTrackRef.current.close();
+          localVideoTrackRef.current = null;
+        } catch (error) {
+          console.log('비디오 트랙 정리 중 오류:', error);
+        }
+      }
+
+      // 클라이언트 연결 해제
+      if (clientRef.current.connectionState !== 'DISCONNECTED') {
+        await clientRef.current.leave();
+        console.log('✅ Agora 채널 퇴장 완료');
+      }
+      
       setIsJoined(false);
       setRemoteUsers([]);
     } catch (error) {
       console.error('❌ 채널 퇴장 실패:', error);
+      // 에러가 발생해도 상태는 정리
+      setIsJoined(false);
+      setRemoteUsers([]);
     }
   };
 
@@ -237,40 +354,115 @@ const IntegratedVideoBar = ({
 
     try {
       if (isScreenSharing) {
-        // 화면 공유 중지
+        // 화면 공유 중지 - 카메라 다시 켜기
+        console.log('🖥️ 화면 공유 중지 중...');
+        
         if (screenShareTrackRef.current) {
           await clientRef.current.unpublish(screenShareTrackRef.current);
           screenShareTrackRef.current.close();
           screenShareTrackRef.current = null;
         }
+        
+        // 카메라 비디오 다시 시작
+        if (isCameraOn && !localVideoTrackRef.current) {
+          console.log('📷 카메라 비디오 재시작...');
+          localVideoTrackRef.current = await AgoraRTC.createCameraVideoTrack();
+          if (localVideoContainerRef.current) {
+            localVideoTrackRef.current.play(localVideoContainerRef.current);
+          }
+          await clientRef.current.publish(localVideoTrackRef.current);
+        }
+        
         setIsScreenSharing(false);
+        console.log('✅ 화면 공유 중지 완료');
       } else {
+        // 화면 공유 시작 - 기존 비디오 트랙 먼저 제거
+        console.log('🖥️ 화면 공유 시작 중...');
+        
+        // 기존 카메라 비디오 트랙 언퍼블리시
+        if (localVideoTrackRef.current) {
+          console.log('📷 카메라 비디오 언퍼블리시...');
+          await clientRef.current.unpublish(localVideoTrackRef.current);
+          localVideoTrackRef.current.close();
+          localVideoTrackRef.current = null;
+        }
+        
         // 화면 공유 시작
+        console.log('🖥️ 화면 공유 트랙 생성...');
         screenShareTrackRef.current = await AgoraRTC.createScreenVideoTrack();
+        
+        // 화면 공유를 로컬 비디오 컨테이너에 표시
+        if (localVideoContainerRef.current) {
+          screenShareTrackRef.current.play(localVideoContainerRef.current);
+        }
+        
         await clientRef.current.publish(screenShareTrackRef.current);
+        
         setIsScreenSharing(true);
+        console.log('✅ 화면 공유 시작 완료');
       }
     } catch (error) {
-      console.error('화면 공유 오류:', error);
+      console.error('❌ 화면 공유 오류:', error);
+      setIsScreenSharing(false);
     }
   };
 
-  // 맵 변경 시 자동 재입장
+  // 자동 입장 상태 관리
+  const [isInitializing, setIsInitializing] = useState(false);
+
+  // 맵이나 영역 변경 시 자동 재입장
   useEffect(() => {
-    if (!isEnabled || !currentMap || !userId) return;
+    if (!isEnabled || !currentMap || !userId || !channelName || !userPosition) return;
+    if (isInitializing) return; // 이미 초기화 중인 경우 무시
 
     const autoJoinChannel = async () => {
-      if (isJoined) await leaveChannel();
-      await initializeAgora();
-      await joinChannel();
+      console.log(`🎥 영역 변경 감지 - 새 채널로 이동: ${channelName}`);
+      console.log(`📍 현재 영역: ${currentAreaInfo.type}${currentAreaInfo.id ? ` (${currentAreaInfo.id})` : ''}`);
+      
+      setIsInitializing(true);
+      
+      try {
+        // 기존 연결이 있으면 완전히 정리
+        if (clientRef.current && isJoined) {
+          console.log('🔄 기존 채널 연결 정리 중...');
+          await leaveChannel();
+          // 잠시 대기하여 완전히 정리될 시간 확보
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        await initializeAgora();
+        await joinChannel();
+      } catch (error) {
+        console.error('자동 입장 중 오류:', error);
+      } finally {
+        setIsInitializing(false);
+      }
     };
 
-    autoJoinChannel();
+    const timeoutId = setTimeout(autoJoinChannel, 100); // 약간의 지연
 
     return () => {
-      leaveChannel();
+      clearTimeout(timeoutId);
+      if (!isInitializing) {
+        leaveChannel();
+      }
     };
-  }, [currentMap?.id, isEnabled]);
+  }, [currentMap?.id, channelName, isEnabled, userPosition]);
+
+  // 로컬 비디오 재생 확인
+  useEffect(() => {
+    if (isJoined && localVideoTrackRef.current && localVideoContainerRef.current) {
+      if (!isScreenSharing) {
+        console.log('🔄 로컬 비디오 재연결 시도...');
+        try {
+          localVideoTrackRef.current.play(localVideoContainerRef.current);
+          console.log('✅ 로컬 비디오 재연결 성공');
+        } catch (error) {
+          console.error('❌ 로컬 비디오 재연결 실패:', error);
+        }
+      }
+    }
+  }, [isJoined, isCameraOn, isScreenSharing]);
 
   // 원격 사용자 비디오 렌더링
   useEffect(() => {
@@ -284,26 +476,24 @@ const IntegratedVideoBar = ({
     });
   }, [remoteUsers]);
 
-  // 자동 숨김/보임 (마우스 이동 감지)
-  useEffect(() => {
-    let hideTimer;
-    
-    const handleMouseMove = () => {
-      setIsBarVisible(true);
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => {
-        if (!isExpanded) setIsBarVisible(false);
-      }, 3000);
-    };
+  // 자동 숨김 기능 제거 - 이제 수동 토글만 사용
 
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      clearTimeout(hideTimer);
-    };
-  }, [isExpanded]);
+  if (!isEnabled || !currentMap) {
+    console.log('🎥 IntegratedVideoBar 렌더링 안됨:', { isEnabled, currentMap: !!currentMap, userPosition: !!userPosition });
+    return null;
+  }
 
-  if (!isEnabled || !currentMap) return null;
+  console.log('🎥 IntegratedVideoBar 렌더링:', { 
+    channelName, 
+    currentAreaInfo, 
+    userPosition, 
+    isJoined, 
+    isCameraOn,
+    isScreenSharing,
+    hasLocalVideoTrack: !!localVideoTrackRef.current,
+    hasLocalVideoContainer: !!localVideoContainerRef.current,
+    totalParticipants: (isJoined ? 1 : 0) + remoteUsers.length 
+  });
 
   const totalParticipants = (isJoined ? 1 : 0) + remoteUsers.length;
   const maxVisibleCameras = 5;
@@ -317,11 +507,49 @@ const IntegratedVideoBar = ({
         left: 0,
         right: 0,
         zIndex: 1000,
-        transform: isBarVisible ? 'translateY(0)' : 'translateY(80%)',
+        transform: isBarVisible ? 'translateY(0)' : 'translateY(calc(100% - 50px))',
         transition: 'transform 0.3s ease-in-out',
-        pointerEvents: isBarVisible ? 'auto' : 'none'
+        pointerEvents: 'auto'
       }}
     >
+      {/* 화상회의 히든 상태일 때 토글 버튼 */}
+      {!isBarVisible && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: '20px',
+            height: '50px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <button
+            onClick={() => setIsBarVisible(true)}
+            style={{
+              padding: '8px',
+              backgroundColor: 'rgba(76, 175, 80, 0.8)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              fontSize: '14px',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+            }}
+            title="화상회의 보이기"
+          >
+            👁️
+          </button>
+        </div>
+      )}
+      
       {/* 투명한 배경 바 */}
       <div
         style={{
@@ -353,6 +581,28 @@ const IntegratedVideoBar = ({
               gap: '10px'
             }}
           >
+            {/* 현재 영역 정보 */}
+            <div
+              style={{
+                backgroundColor: currentAreaInfo.type === 'private' 
+                  ? 'rgba(255, 193, 7, 0.8)' 
+                  : 'rgba(76, 175, 80, 0.8)',
+                color: 'white',
+                padding: '6px 12px',
+                borderRadius: '15px',
+                fontSize: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              <span>{currentAreaInfo.type === 'private' ? '🔒' : '🌍'}</span>
+              {currentAreaInfo.type === 'private' 
+                ? `개인 영역 ${currentAreaInfo.id || ''}`
+                : '공용 영역'
+              }
+            </div>
+
             {totalParticipants > 0 && (
               <div
                 style={{
@@ -516,12 +766,12 @@ const IntegratedVideoBar = ({
               </button>
             )}
 
-            {/* 고정/숨김 토글 */}
+            {/* 화상회의 숨김/보이기 토글 */}
             <button
               onClick={() => setIsBarVisible(!isBarVisible)}
               style={{
                 padding: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                backgroundColor: isBarVisible ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '50%',
@@ -532,12 +782,11 @@ const IntegratedVideoBar = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                transition: 'background-color 0.2s'
+                transition: 'all 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+              title={isBarVisible ? '화상회의 숨기기' : '화상회의 보이기'}
             >
-              📌
+              {isBarVisible ? '👁️' : '🙈'}
             </button>
           </div>
         </div>
@@ -561,48 +810,46 @@ const IntegratedVideoBar = ({
             <div
               style={{
                 position: 'relative',
-                width: '120px',
-                height: '90px',
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                border: '3px solid #4CAF50',
-                flexShrink: 0,
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)'
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flexShrink: 0
               }}
             >
+              <div
+                style={{
+                  position: 'relative',
+                  width: '120px',
+                  height: '90px',
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '3px solid #4CAF50',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)'
+                }}
+              >
               <div
                 ref={localVideoContainerRef}
                 style={{
                   width: '100%',
                   height: '100%',
-                  backgroundColor: isCameraOn ? 'transparent' : '#333'
-                }}
-              />
-              
-              {/* 내 이름 라벨 */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '6px',
-                  left: '6px',
-                  right: '6px',
-                  color: 'white',
-                  backgroundColor: 'rgba(76, 175, 80, 0.9)',
-                  padding: '2px 6px',
-                  borderRadius: '8px',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                  backgroundColor: (isCameraOn || isScreenSharing) ? 'transparent' : '#333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                나 ({username})
+                {/* 로컬 비디오가 없을 때 디버깅 메시지 */}
+                {!isCameraOn && !isScreenSharing && (
+                  <div style={{ color: 'white', fontSize: '12px', textAlign: 'center' }}>
+                    카메라 꺼짐
+                  </div>
+                )}
               </div>
 
-              {/* 카메라 꺼짐 아이콘 */}
-              {!isCameraOn && (
+              {/* 카메라 꺼짐 또는 화면 공유 아이콘 */}
+              {(!isCameraOn && !isScreenSharing) && (
                 <div
                   style={{
                     position: 'absolute',
@@ -663,6 +910,30 @@ const IntegratedVideoBar = ({
                 {connectionQuality === 'good' ? '📶' : 
                  connectionQuality === 'medium' ? '📶' : '📵'}
               </div>
+              </div>
+              
+              {/* 내 이름 라벨 - 비디오 프레임 밖에 위치 */}
+              <div
+                style={{
+                  marginTop: '4px',
+                  color: 'white',
+                  backgroundColor: isScreenSharing 
+                    ? 'rgba(255, 193, 7, 0.9)' 
+                    : 'rgba(76, 175, 80, 0.9)',
+                  padding: '3px 8px',
+                  borderRadius: '10px',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '120px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {isScreenSharing ? '🖥️ 화면공유' : `나 (${username})`}
+              </div>
             </div>
           )}
 
@@ -672,17 +943,25 @@ const IntegratedVideoBar = ({
               key={user.uid}
               style={{
                 position: 'relative',
-                width: '120px',
-                height: '90px',
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                border: '2px solid rgba(255,255,255,0.3)',
-                flexShrink: 0,
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flexShrink: 0
               }}
             >
+              <div
+                style={{
+                  position: 'relative',
+                  width: '120px',
+                  height: '90px',
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                }}
+              >
               <div
                 id={`integrated-remote-video-${user.uid}`}
                 style={{
@@ -691,25 +970,6 @@ const IntegratedVideoBar = ({
                   backgroundColor: user.videoTrack ? 'transparent' : '#333'
                 }}
               />
-              
-              {/* 사용자 이름 */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '6px',
-                  left: '6px',
-                  right: '6px',
-                  color: 'white',
-                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                  padding: '2px 6px',
-                  borderRadius: '8px',
-                  fontSize: '10px',
-                  textAlign: 'center',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.5)'
-                }}
-              >
-                사용자 {user.uid}
-              </div>
 
               {/* 비디오 꺼짐 아이콘 */}
               {!user.videoTrack && (
@@ -758,6 +1018,28 @@ const IntegratedVideoBar = ({
                     }}
                   />
                 )}
+              </div>
+              </div>
+              
+              {/* 사용자 이름 - 비디오 프레임 밖에 위치 */}
+              <div
+                style={{
+                  marginTop: '4px',
+                  color: 'white',
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  padding: '3px 8px',
+                  borderRadius: '10px',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '120px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                사용자 {user.uid}
               </div>
             </div>
           ))}
