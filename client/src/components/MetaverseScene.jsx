@@ -7,8 +7,10 @@ import { getAreaTypeAtPoint, getNametagBackgroundColor } from '../utils/privateA
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
+import UnifiedTopBar from './UnifiedTopBar';
 import UserList from './UserList';
 import IntegratedVideoBar from './IntegratedVideoBar';
+import PersonalShop from './PersonalShop';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -39,6 +41,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [isUsersVisible, setIsUsersVisible] = useState(false);
   const [roomParticipants, setRoomParticipants] = useState([]);
   const [chatBubbles, setChatBubbles] = useState(new Map());
+  const [isShopVisible, setIsShopVisible] = useState(false);
   
   // 채팅 입력 상태
   const [showChatInput, setShowChatInput] = useState(false);
@@ -426,14 +429,76 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     setCurrentView('metaverse');
   };
 
+  // SNS 게시글 처리 함수들
+  const handleCreatePost = (post) => {
+    setSnsPosts(prev => [post, ...prev]);
+    
+    // 서버에 전송 (선택사항)
+    if (socket) {
+      socket.emit('sns-post-create', {
+        post,
+        mapId: currentMap?.id,
+        userId: user?.id
+      });
+    }
+  };
+
+  const handlePostLike = (postId) => {
+    setSnsPosts(prev => 
+      prev.map(post => 
+        post.id === postId 
+          ? { ...post, likes: post.likes + 1 }
+          : post
+      )
+    );
+    
+    // 서버에 전송 (선택사항)
+    if (socket) {
+      socket.emit('sns-post-like', {
+        postId,
+        userId: user?.id
+      });
+    }
+  };
+
+  const handlePostComment = (postId, commentContent) => {
+    const newComment = {
+      id: Date.now(),
+      author: user?.username || '익명',
+      content: commentContent,
+      timestamp: new Date().toISOString()
+    };
+
+    setSnsPosts(prev => 
+      prev.map(post => 
+        post.id === postId 
+          ? { ...post, comments: [...(post.comments || []), newComment] }
+          : post
+      )
+    );
+
+    // 서버에 전송 (선택사항)
+    if (socket) {
+      socket.emit('sns-post-comment', {
+        postId,
+        comment: newComment,
+        userId: user?.id
+      });
+    }
+  };
+
   // 렌더링
   if (currentView === 'sns') {
     return (
       <div className="metaverse-scene">
         <SNSBoard
           posts={snsPosts}
-          onReturn={handleReturnToMetaverse}
+          onPostCreate={handleCreatePost}
+          onPostLike={handlePostLike}
+          onPostComment={handlePostComment}
           currentMap={currentMap}
+          userPosition={charSync?.myPosition}
+          currentCharacter={currentCharacter}
         />
       </div>
     );
@@ -442,18 +507,23 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   return (
     <div className="metaverse-scene">
       <div className="scene-header">
-        <NavigationBar
+        <UnifiedTopBar
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          currentArea={userStatus.userStatus}
           currentMap={currentMap}
           onReturnToLobby={() => {
             userStatus.setLobbyStatus();
             onReturnToLobby();
           }}
-          onSwitchToSNS={handleSwitchToSNS}
           onToggleChat={() => setIsChatVisible(!isChatVisible)}
           onToggleUsers={() => setIsUsersVisible(!isUsersVisible)}
-          onToggleVideoConference={() => {}}
-          videoConferenceActive={false}
-          unreadCount={unreadMessageCount}
+          onToggleVideo={() => {}}
+          onToggleShop={() => setIsShopVisible(!isShopVisible)}
+          isChatVisible={isChatVisible}
+          isUsersVisible={isUsersVisible}
+          isVideoActive={false}
+          isShopVisible={isShopVisible}
           participantCount={roomParticipants.length}
         />
       </div>
@@ -943,6 +1013,15 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         username={user?.username || '익명'}
         userPosition={charSync.myPosition}
         isEnabled={currentMap && user}
+        socket={socket}
+      />
+
+      {/* 개인 쇼핑몰 */}
+      <PersonalShop
+        isOpen={isShopVisible}
+        onClose={() => setIsShopVisible(false)}
+        userId={user?.id || 'guest'}
+        username={user?.username || '게스트'}
       />
     </div>
   );

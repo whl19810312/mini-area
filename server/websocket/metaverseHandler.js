@@ -687,6 +687,36 @@ class MetaverseHandler {
     socket.on('end-video-call', (data) => {
       this.handleEndVideoCall(socket, data);
     });
+
+    // 화상회의 사용자 정보 동기화
+    socket.on('video-user-info', (data) => {
+      if (!socket.userId) return;
+      console.log('📹 화상회의 사용자 정보 수신:', data);
+      
+      // 같은 채널의 다른 사용자들에게 브로드캐스트
+      socket.broadcast.emit('video-user-info', {
+        ...data,
+        socketId: socket.id
+      });
+    });
+
+    // 화상회의 사용자 목록 요청
+    socket.on('request-video-users', (data) => {
+      if (!socket.userId) return;
+      console.log('📹 화상회의 사용자 목록 요청:', data);
+      
+      // 현재 채널에 있는 모든 사용자 정보 브로드캐스트 요청
+      socket.broadcast.emit('request-video-user-info');
+    });
+
+    // 특정 화상회의 사용자 정보 요청
+    socket.on('request-specific-video-user', (data) => {
+      if (!socket.userId) return;
+      console.log('📹 특정 사용자 정보 요청:', data);
+      
+      // 특정 사용자에게 정보 요청
+      socket.broadcast.emit('request-specific-video-user', data);
+    });
     
     // 대기실 상태 업데이트 처리
     socket.on('update-lobby-status', (data) => {

@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { getAreaTypeAtPoint } from '../utils/privateAreaUtils';
 import { useAuth } from '../contexts/AuthContext';
+import { useEffect as useSocketEffect } from 'react';
 
 const IntegratedVideoBar = ({ 
   currentMap, 
   userId, 
   username,
   userPosition,
-  isEnabled = true 
+  isEnabled = true,
+  socket
 }) => {
   const { token } = useAuth();
   // 상태 관리
@@ -23,6 +25,7 @@ const IntegratedVideoBar = ({
   const [connectionQuality, setConnectionQuality] = useState('good');
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [userMapping, setUserMapping] = useState({}); // UID -> username 매핑
   
   const screenShareTrackRef = useRef(null);
   
@@ -35,6 +38,17 @@ const IntegratedVideoBar = ({
 
   // Agora 설정
   const APP_ID = import.meta.env.VITE_AGORA_APP_ID || '4fdc24d11417437785bfc1d7ddb78c96';
+
+  // username을 숫자 UID로 변환하는 함수
+  const generateUidFromUsername = (username) => {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      const char = username.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // 32비트 정수로 변환
+    }
+    return Math.abs(hash) % 1000000000; // 항상 양수이고 10억 미만
+  };
 
   // 현재 사용자가 있는 영역 정보 계산
   const currentAreaInfo = useMemo(() => {
@@ -119,7 +133,14 @@ const IntegratedVideoBar = ({
   };
 
   const handleUserPublished = async (user, mediaType) => {
+    console.log('👤 사용자 발행 이벤트:', { uid: user.uid, mediaType, user });
     await clientRef.current.subscribe(user, mediaType);
+    
+    // 즉시 Socket.io로 해당 사용자의 정보 요청
+    if (socket && !userMapping[user.uid]) {
+      console.log('🔍 사용자 정보 요청:', user.uid);
+      socket.emit('request-specific-video-user', { uid: user.uid, channelName });
+    }
     
     if (mediaType === 'video') {
       setRemoteUsers(prev => {
@@ -127,6 +148,7 @@ const IntegratedVideoBar = ({
         if (existingUser) {
           return prev.map(u => u.uid === user.uid ? { ...u, videoTrack: user.videoTrack } : u);
         }
+        console.log('➕ 새 비디오 사용자 추가:', user.uid);
         return [...prev, { uid: user.uid, videoTrack: user.videoTrack, audioTrack: null }];
       });
     }
@@ -137,6 +159,7 @@ const IntegratedVideoBar = ({
         if (existingUser) {
           return prev.map(u => u.uid === user.uid ? { ...u, audioTrack: user.audioTrack } : u);
         }
+        console.log('🎵 새 오디오 사용자 추가:', user.uid);
         return [...prev, { uid: user.uid, videoTrack: null, audioTrack: user.audioTrack }];
       });
       user.audioTrack.play();
@@ -190,11 +213,37 @@ const IntegratedVideoBar = ({
       const token = await requestAgoraToken(channelName, userId, 'publisher');
       console.log('✅ 토큰 요청 성공');
 
-      // 고유한 숫자 UID 생성 (시간 기반)
-      const numericUid = Date.now() % 1000000000; // 10억 미만 숫자로 제한
-      console.log('🚪 Agora 채널 입장 중...', { channelName, numericUid, originalUserId: userId });
+      // username을 기반으로 한 고유한 숫자 UID 생성
+      const numericUid = username ? generateUidFromUsername(username) : Date.now() % 1000000000;
+      console.log('🚪 Agora 채널 입장 중...', { channelName, numericUid, username, originalUserId: userId });
+      
+      // 사용자 매핑 정보 저장
+      setUserMapping(prev => ({
+        ...prev,
+        [numericUid]: username || `사용자${userId}`
+      }));
+      
       await clientRef.current.join(APP_ID, channelName, token, numericUid);
-      console.log('✅ Agora 채널 입장 성공');
+      console.log('✅ Agora 채널 입장 성공 - 내 UID:', numericUid, '내 username:', username);
+
+      // 즉시 내 정보 브로드캐스트 (3번 반복으로 확실히)
+      const broadcastMyInfo = () => {
+        const infoData = {
+          channelName,
+          uid: numericUid,
+          username,
+          userId
+        };
+        console.log('📤 내 정보 브로드캐스트 (즉시):', infoData);
+        if (socket) {
+          socket.emit('video-user-info', infoData);
+        }
+      };
+      
+      // 여러 번 브로드캐스트로 확실히 전달
+      broadcastMyInfo();
+      setTimeout(broadcastMyInfo, 500);
+      setTimeout(broadcastMyInfo, 1000);
 
       // 로컬 트랙 생성
       console.log('📹 로컬 트랙 생성 시작...');
@@ -475,6 +524,78 @@ const IntegratedVideoBar = ({
       }
     });
   }, [remoteUsers]);
+
+  // Socket.io를 통한 사용자 정보 동기화
+  useEffect(() => {
+    if (!socket || !channelName) return;
+
+    // 내 정보를 다른 사용자들에게 브로드캐스트
+    const broadcastMyInfo = () => {
+      if (isJoined) {
+        const myUid = generateUidFromUsername(username);
+        const infoData = {
+          channelName,
+          uid: myUid,
+          username,
+          userId
+        };
+        console.log('📤 내 정보 브로드캐스트:', infoData);
+        socket.emit('video-user-info', infoData);
+      }
+    };
+
+    // 다른 사용자의 정보 수신
+    const handleVideoUserInfo = (data) => {
+      console.log('📹 사용자 정보 수신:', data, 'channelName:', channelName);
+      if (data.channelName === channelName && data.uid !== generateUidFromUsername(username)) {
+        console.log('✅ 사용자 매핑 추가:', data.uid, '→', data.username);
+        setUserMapping(prev => {
+          const newMapping = {
+            ...prev,
+            [data.uid]: data.username
+          };
+          console.log('🗺️ 새로운 매핑 상태:', newMapping);
+          return newMapping;
+        });
+      }
+    };
+
+    // 특정 사용자 정보 요청 처리
+    const handleSpecificUserRequest = (data) => {
+      if (data.channelName === channelName && data.uid === generateUidFromUsername(username)) {
+        console.log('📞 특정 사용자 정보 요청 받음:', data.uid);
+        broadcastMyInfo();
+      }
+    };
+
+    // 사용자 정보 요청
+    const requestUserInfos = () => {
+      socket.emit('request-video-users', { channelName });
+    };
+
+    // 내 정보를 주기적으로 브로드캐스트
+    broadcastMyInfo();
+    const broadcastInterval = setInterval(broadcastMyInfo, 5000);
+    
+    // 처음 입장 시 다른 사용자 정보 요청
+    requestUserInfos();
+
+    socket.on('video-user-info', handleVideoUserInfo);
+    socket.on('request-specific-video-user', handleSpecificUserRequest);
+    
+    // 다른 사용자가 내 정보를 요청할 때 응답
+    socket.on('request-video-user-info', () => {
+      console.log('📞 다른 사용자가 내 정보 요청함');
+      broadcastMyInfo();
+    });
+
+    return () => {
+      clearInterval(broadcastInterval);
+      socket.off('video-user-info', handleVideoUserInfo);
+      socket.off('request-specific-video-user', handleSpecificUserRequest);
+      socket.off('request-video-user-info');
+    };
+  }, [socket, channelName, isJoined, username, userId]);
 
   // 자동 숨김 기능 제거 - 이제 수동 토글만 사용
 
@@ -1039,7 +1160,23 @@ const IntegratedVideoBar = ({
                   textOverflow: 'ellipsis'
                 }}
               >
-                사용자 {user.uid}
+{(() => {
+                  console.log('🔍 사용자 이름 표시 디버그:', { 
+                    uid: user.uid, 
+                    mappedName: userMapping[user.uid], 
+                    allMappings: userMapping,
+                    myUsername: username 
+                  });
+                  
+                  // 우선순위: 매핑된 이름 > 일반적인 사용자명 추정 > UID 표시
+                  if (userMapping[user.uid]) {
+                    return userMapping[user.uid];
+                  }
+                  
+                  // 매핑이 없으면 임시로 사용자 번호로 표시
+                  const userNumber = String(user.uid).slice(-3); // 마지막 3자리만 사용
+                  return `사용자${userNumber}`;
+                })()}
               </div>
             </div>
           ))}

@@ -3,6 +3,20 @@
   height: 100vh;
   position: relative;
   overflow: visible;
+  padding-top: 80px; /* 새로운 고정 메뉴바를 위한 여백 */
+}
+
+/* 반응형을 위한 추가 스타일 */
+@media (max-width: 900px) {
+  .metaverse-scene {
+    padding-top: 140px; /* 모바일에서는 더 많은 여백 필요 */
+  }
+}
+
+@media (max-width: 600px) {
+  .metaverse-scene {
+    padding-top: 160px; /* 매우 작은 화면에서는 더 많은 여백 */
+  }
 }
 
 /* 상단 툴바 스타일 */
