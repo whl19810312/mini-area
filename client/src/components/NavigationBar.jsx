@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/NavigationBar.css';
 
-const NavigationBar = ({ currentView, onViewChange, currentArea, onReturnToLobby, onToggleGroupCall, groupCallActive, onOpenUserList, roomName }) => {
+const NavigationBar = ({ currentView, onViewChange, currentArea, onReturnToLobby, onToggleGroupCall, groupCallActive, onOpenUserList, roomName, onToggleVideoConference, videoConferenceActive }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   // 전체화면 상태 변경 감지
@@ -65,6 +65,17 @@ const NavigationBar = ({ currentView, onViewChange, currentArea, onReturnToLobby
           title={isFullscreen ? "전체화면 종료" : "전체화면"}
         >
           {isFullscreen ? '🔳' : '🔲'} 전체화면
+        </button>
+        <button
+          className={`nav-button ${videoConferenceActive ? 'active' : ''}`}
+          onClick={() => onToggleVideoConference && onToggleVideoConference()}
+          title="화상회의"
+          style={{
+            backgroundColor: videoConferenceActive ? '#4CAF50' : undefined,
+            color: videoConferenceActive ? 'white' : undefined
+          }}
+        >
+          🎥 화상회의
         </button>
         <button
           className="nav-button"

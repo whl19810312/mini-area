@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
+import { useUserStatus } from '../hooks/useUserStatus';
 import { getAreaTypeAtPoint, getNametagBackgroundColor } from '../utils/privateAreaUtils';
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
 import UserList from './UserList';
+import VideoConference from './VideoConference';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -42,6 +44,9 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatInputValue, setChatInputValue] = useState('');
   
+  // 화상회의 상태
+  const [showVideoConference, setShowVideoConference] = useState(false);
+  
   // 마우스 드래그 상태 관리
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -52,6 +57,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const viewportRef = useRef(null);
   const sceneContainerRef = useRef(null);
   const charSync = useRealtimeCharacterSync(socket, currentMap, currentCharacter);
+  const userStatus = useUserStatus(currentMap, charSync.myPosition);
   const isChatVisibleRef = useRef(false);
   const chatBubbleTimeouts = useRef(new Map());
 
@@ -61,6 +67,13 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       console.log('👤 내 캐릭터 위치:', charSync.myPosition);
     }
   }, [charSync.myPosition]);
+
+  // 디버깅: 사용자 상태 로그
+  useEffect(() => {
+    if (userStatus.userStatus) {
+      console.log('👤 사용자 상태 업데이트:', userStatus.userStatus);
+    }
+  }, [userStatus.userStatus]);
   
   // 디버깅: 현재 캐릭터 데이터 확인 및 이모지 캐릭터 자동 생성
   useEffect(() => {
@@ -101,23 +114,32 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   
   // 디버깅: 다른 캐릭터들 위치 로그
   useEffect(() => {
+    console.log('👥 다른 캐릭터들 전체 데이터:', charSync.otherCharacters);
+    console.log('👥 다른 캐릭터들 개수:', Object.keys(charSync.otherCharacters).length);
+    console.log('👥 현재 방 참가자 수:', roomParticipants.length);
     if (Object.keys(charSync.otherCharacters).length > 0) {
       console.log('👥 다른 캐릭터들 위치:', Object.values(charSync.otherCharacters).map(char => ({
         username: char.username,
-        position: char.position
+        position: char.position,
+        characterInfo: char.characterInfo
       })));
     }
-  }, [charSync.otherCharacters]);
+  }, [charSync.otherCharacters, roomParticipants]);
 
   const handleUpdateParticipants = async (data) => {
     console.log(`👥 참가자 업데이트 처리:`, data);
+    console.log(`👥 현재 맵 ID:`, currentMap?.id);
+    console.log(`👥 수신된 맵 ID:`, data.mapId);
     
-    if (data.mapId === currentMap.id) {
+    if (data.mapId === currentMap?.id) {
       console.log(`👥 현재 맵 ${data.mapId}의 참가자:`, data.participants);
       
       if (data.participants && Array.isArray(data.participants)) {
+        console.log(`👥 참가자 수 업데이트: ${data.participants.length}명`);
         setRoomParticipants(data.participants);
       }
+    } else {
+      console.log(`👥 다른 맵의 참가자 정보 (무시됨)`);
     }
   };
 
@@ -326,21 +348,33 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   // Enter 키로 채팅 입력창 토글
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // 입력창이 포커스된 상태가 아닐 때만 Enter 키 감지
-      if (e.key === 'Enter' && !e.target.matches('input, textarea')) {
-        e.preventDefault();
-        setShowChatInput(true);
+      console.log('🔑 키 입력 감지:', e.key, 'Target:', e.target.tagName);
+      
+      // 입력창이 포커스된 상태가 아닐 때만 키 감지
+      if (!e.target.matches('input, textarea')) {
+        // Enter 키로 채팅 입력창 토글
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          setShowChatInput(true);
+        }
+        // V 키로 화상회의 토글
+        if (e.key === 'v' || e.key === 'V') {
+          e.preventDefault();
+          console.log('🎥 V키 눌림 - 화상회의 토글:', !showVideoConference);
+          setShowVideoConference(prev => !prev);
+        }
       }
-      // ESC 키로 채팅 입력창 닫기
+      // ESC 키로 모든 창 닫기
       if (e.key === 'Escape') {
         setShowChatInput(false);
         setChatInputValue('');
+        setShowVideoConference(false);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [showVideoConference]);
 
   // 채팅창 표시/숨김에 따른 읽지 않은 메시지 수 초기화
   useEffect(() => {
@@ -419,10 +453,15 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
       <div className="scene-header">
         <NavigationBar
           currentMap={currentMap}
-          onReturnToLobby={onReturnToLobby}
+          onReturnToLobby={() => {
+            userStatus.setLobbyStatus();
+            onReturnToLobby();
+          }}
           onSwitchToSNS={handleSwitchToSNS}
           onToggleChat={() => setIsChatVisible(!isChatVisible)}
           onToggleUsers={() => setIsUsersVisible(!isUsersVisible)}
+          onToggleVideoConference={() => setShowVideoConference(!showVideoConference)}
+          videoConferenceActive={showVideoConference}
           unreadCount={unreadMessageCount}
           participantCount={roomParticipants.length}
         />
@@ -559,7 +598,9 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           )}
 
           {/* 다른 사용자 캐릭터들 렌더링 */}
-          {Object.values(charSync.otherCharacters).map((character) => (
+          {Object.values(charSync.otherCharacters).map((character) => {
+            console.log('👥 다른 캐릭터 렌더링:', character);
+            return (
             <div key={character.id}>
               <div
                 className="character other-character"
@@ -648,7 +689,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 {character.username}
               </div>
             </div>
-          ))}
+            );
+          })}
 
           {/* 전경 이미지 렌더링 (시작점 레이어 위) */}
           {currentMap?.foregroundLayer?.objects?.map((obj) => (
@@ -902,6 +944,15 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           </form>
         </div>
       )}
+
+      {/* 화상회의 */}
+      <VideoConference
+        isOpen={showVideoConference}
+        onClose={() => setShowVideoConference(false)}
+        roomId={currentMap?.id || 'default'}
+        userId={user?.id || Date.now()}
+        username={user?.username || '익명'}
+      />
     </div>
   );
 });

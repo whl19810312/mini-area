@@ -390,8 +390,8 @@ class MetaverseHandler {
           });
           
           // 자동으로 이전 맵에 재입장
-          setTimeout(() => {
-            this.autoRejoinMap(socket, existingUserInfo);
+          setTimeout(async () => {
+            await this.autoRejoinMap(socket, existingUserInfo);
           }, 1000); // 1초 후 자동 재입장
         } else {
           // 새로운 사용자 또는 대기실 사용자
@@ -440,6 +440,24 @@ class MetaverseHandler {
 
     socket.on('join-map', ({ mapId, characterId, position, characterInfo }) => {
       if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
+      
+      console.log('📥 join-map 이벤트 수신:', {
+        userId: socket.userId,
+        username: socket.username,
+        mapId,
+        characterId,
+        hasCharacterInfo: !!characterInfo,
+        characterInfoKeys: characterInfo ? Object.keys(characterInfo) : [],
+        characterInfoDetail: {
+          id: characterInfo?.id,
+          name: characterInfo?.name,
+          hasImages: !!characterInfo?.images,
+          hasAppearance: !!characterInfo?.appearance,
+          imagesKeys: characterInfo?.images ? Object.keys(characterInfo.images) : [],
+          appearanceKeys: characterInfo?.appearance ? Object.keys(characterInfo.appearance) : []
+        }
+      });
+      
       this.joinMap(socket, mapId, characterId, position, characterInfo);
     });
 
@@ -530,6 +548,63 @@ class MetaverseHandler {
         }
     });
 
+    // 사용자 상태 업데이트 처리
+    socket.on('user-status-update', (data) => {
+      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
+      
+      console.log('👤 사용자 상태 업데이트 수신:', {
+        userId: data.userId,
+        username: data.username,
+        status: data.status,
+        currentRoom: data.currentRoom,
+        position: data.position,
+        area: data.area,
+        areaType: data.areaType
+      });
+
+      // 사용자 정보 업데이트
+      const userInfo = this.socketUsers.get(socket.id);
+      if (userInfo) {
+        userInfo.status = data.status;
+        userInfo.currentRoom = data.currentRoom;
+        userInfo.area = data.area;
+        userInfo.areaType = data.areaType;
+        if (data.position) {
+          userInfo.position = data.position;
+        }
+      }
+
+      // 로그인 사용자 정보 업데이트
+      const updateData = {
+        상태: data.status,
+        마지막활동: new Date().toISOString()
+      };
+
+      if (data.status === 'in-room' && data.currentRoom) {
+        updateData.입실공간 = data.currentRoom.name;
+        updateData.mapId = data.currentRoom.mapId;
+        if (data.position) {
+          updateData.위치 = data.position;
+        }
+        if (data.area) {
+          updateData.영역 = data.area;
+        }
+        if (data.areaType) {
+          updateData.영역유형 = data.areaType;
+        }
+      } else if (data.status === 'lobby') {
+        updateData.입실공간 = '대기실';
+        updateData.mapId = null;
+        updateData.위치 = null;
+        updateData.영역 = null;
+        updateData.영역유형 = null;
+      }
+
+      this.updateLoggedInUserInfo(socket.userId, updateData);
+      
+      console.log('✅ 사용자 상태 업데이트 완료:', updateData);
+    });
+
     socket.on('disconnect', () => this.handleDisconnect(socket));
 
     // 서버 상태 요청 처리 (스로틀링 적용)
@@ -551,6 +626,44 @@ class MetaverseHandler {
     // 캐릭터 업데이트 처리
     socket.on('character-updated', (data) => {
       this.handleCharacterUpdate(socket, data);
+    });
+
+    // 캐릭터 이동 처리 (실시간 동기화)
+    socket.on('character-move', (data) => {
+      if (!socket.userId) return socket.emit('error', { message: '인증이 필요합니다.' });
+      
+      const userInfo = this.socketUsers.get(socket.id);
+      if (!userInfo) return;
+
+      // 사용자 위치 정보 업데이트
+      userInfo.position = data.position;
+      userInfo.direction = data.direction;
+      userInfo.isMoving = data.isMoving;
+      userInfo.lastUpdate = Date.now();
+
+      // 같은 맵에 있는 다른 사용자들에게 브로드캐스트
+      if (userInfo.mapId) {
+        const broadcastData = {
+          characterId: data.characterId,
+          username: socket.username,
+          position: data.position,
+          direction: data.direction,
+          isMoving: data.isMoving,
+          characterInfo: userInfo.characterInfo,
+          mapId: data.mapId
+        };
+
+        console.log('👥 캐릭터 이동 브로드캐스트:', {
+          from: socket.username,
+          mapId: userInfo.mapId,
+          position: data.position,
+          hasCharacterInfo: !!userInfo.characterInfo,
+          characterInfo: userInfo.characterInfo ? 'present' : 'missing'
+        });
+
+        // 같은 맵의 다른 사용자들에게만 전송
+        socket.to(`map-${userInfo.mapId}`).emit('character-moved', broadcastData);
+      }
     });
 
     socket.on('request-all-users', () => {
@@ -657,6 +770,17 @@ class MetaverseHandler {
         areaDescription: areaDescription,
         lastPositionUpdate: new Date()
     });
+    
+    // characterInfo 저장 확인 로그
+    if (characterInfo) {
+      console.log(`✅ ${socket.username} characterInfo 저장 완료:`, {
+        hasImages: !!characterInfo.images,
+        hasAppearance: !!characterInfo.appearance,
+        characterId: characterInfo.id
+      });
+    } else {
+      console.log(`⚠️ ${socket.username} characterInfo가 null/undefined로 저장됨`);
+    }
     
     console.log(`🏠 ${socket.username} 맵 입장 - 초기 위치 및 영역 설정:`, {
       position: initialPosition,
@@ -816,7 +940,7 @@ class MetaverseHandler {
     }
   }
 
-  autoRejoinMap(socket, userInfo) {
+  async autoRejoinMap(socket, userInfo) {
     try {
       const mapId = userInfo.mapId;
       const position = userInfo.위치 || { x: 100, y: 100 };
@@ -830,8 +954,37 @@ class MetaverseHandler {
       
       console.log(`🔄 자동 재입장 시도: ${socket.username} → 맵 ${mapId}`);
       
-      // 맵에 자동 재입장
-      this.joinMap(socket, mapId, null, position, null);
+      // 사용자의 활성 캐릭터를 데이터베이스에서 로드
+      let characterInfo = userInfo.characterInfo || null;
+      let characterId = null;
+      
+      try {
+        const Character = require('../models/Character');
+        const activeCharacter = await Character.findOne({
+          where: { 
+            userId: socket.userId,
+            isActive: true 
+          }
+        });
+        
+        if (activeCharacter) {
+          characterInfo = activeCharacter.toJSON();
+          characterId = activeCharacter.id;
+          console.log(`✅ ${socket.username} 활성 캐릭터 로드 완료:`, {
+            characterId: characterInfo.id,
+            characterName: characterInfo.name,
+            hasImages: !!characterInfo.images,
+            hasAppearance: !!characterInfo.appearance
+          });
+        } else {
+          console.log(`⚠️ ${socket.username} 활성 캐릭터 없음 - 기본 캐릭터로 진행`);
+        }
+      } catch (dbError) {
+        console.error(`❌ ${socket.username} 캐릭터 로드 실패:`, dbError);
+      }
+      
+      // 맵에 자동 재입장 (로드된 characterInfo 사용)
+      this.joinMap(socket, mapId, characterId, position, characterInfo);
       
       // 클라이언트에 자동 재입장 알림
       socket.emit('auto-rejoin', {

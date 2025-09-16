@@ -20,7 +20,7 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
     myDirectionRef.current = myDirection;
   }, [myDirection]);
   
-  // 맵 변경 시 위치 초기화
+  // 맵 변경 시 위치 초기화 및 서버 입장 알림
   useEffect(() => {
     if (currentMap?.spawnPoints && currentMap.spawnPoints.length > 0) {
       const spawnPoint = currentMap.spawnPoints[0];
@@ -32,7 +32,28 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
       console.log('🎯 기본 위치로 이동:', defaultPosition);
       setMyPosition(defaultPosition);
     }
-  }, [currentMap?.id]);
+
+    // 서버에 맵 입장 알림 (다른 사용자들과 실시간 동기화를 위해 필수)
+    if (socket && currentMap && currentCharacter) {
+      const joinData = {
+        mapId: currentMap.id,
+        characterId: currentCharacter.id,
+        position: myPositionRef.current,
+        characterInfo: currentCharacter
+      };
+      console.log('🏠 맵 입장 요청:', joinData);
+      console.log('📊 전송할 characterInfo 상세:', {
+        hasCharacterInfo: !!currentCharacter,
+        characterId: currentCharacter?.id,
+        characterName: currentCharacter?.name,
+        hasImages: !!currentCharacter?.images,
+        hasAppearance: !!currentCharacter?.appearance,
+        currentCharacterKeys: currentCharacter ? Object.keys(currentCharacter) : [],
+        fullCharacterInfo: currentCharacter
+      });
+      socket.emit('join-map', joinData);
+    }
+  }, [currentMap?.id, socket, currentCharacter]);
   
   // 벽 충돌 감지 함수 (정밀한 버전)
   const checkWallCollision = useCallback((from, to) => {
@@ -196,13 +217,16 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
     
     const handleCharacterMove = (data) => {
       if (data.characterId !== currentCharacter?.id) {
+        console.log('👥 다른 캐릭터 위치 업데이트:', data);
         setOtherCharacters(prev => ({
           ...prev,
           [data.characterId]: {
+            id: data.characterId,
+            username: data.username,
             position: data.position,
             direction: data.direction || 'down',
             isMoving: data.isMoving || false,
-            character: data.character,
+            characterInfo: data.characterInfo || data.character,
             lastUpdate: Date.now()
           }
         }));
@@ -225,6 +249,16 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
       socket.off('character-disconnected', handleCharacterDisconnect);
     };
   }, [socket, currentCharacter]);
+
+  // 컴포넌트 언마운트 시 맵에서 나가기
+  useEffect(() => {
+    return () => {
+      if (socket && currentMap) {
+        console.log('🚪 맵 퇴장:', currentMap.id);
+        socket.emit('leave-map');
+      }
+    };
+  }, [socket, currentMap]);
   
   return {
     myPosition,

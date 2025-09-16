@@ -17,6 +17,10 @@ const hasSSL = fs.existsSync(SSL_CERT_PATH) && fs.existsSync(SSL_KEY_PATH)
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    force: true,
+    include: ['agora-rtc-sdk-ng']
+  },
   server: {
     host: true,          // 0.0.0.0 바인딩 (LAN 접속용)
     port: 5173,          // 기본 포트
