@@ -4,12 +4,12 @@
 
 Forced re-optimization of dependencies
 
-  VITE v4.5.14  ready in 160 ms
+  VITE v4.5.14  ready in 155 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-6:00:32 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+8:20:57 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 151|              mapCreatorId: map.creatorId,
 152|              mapCreatedBy: map.createdBy,
 153|              mapCreatorId: map.creator?.id,
@@ -19,7 +19,7 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-6:00:32 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+8:20:57 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 165|                mapCreatorId: map.creatorId,
 166|                mapCreatedBy: map.createdBy,
 167|                mapCreatorId: map.creator?.id,
@@ -29,139 +29,10 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-(node:202809) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(node:295744) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-6:12:01 PM [vite] hmr update /src/components/MetaverseScene.jsx
-6:12:07 PM [vite] hmr update /src/components/MetaverseScene.jsx
-6:12:13 PM [vite] hmr update /src/components/MetaverseScene.jsx
-6:12:13 PM [vite] Internal server error: Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/wh/working/complete/mini-area/client/src/components/UnifiedTopBar.jsx:2:7
-  17 |  var _s = $RefreshSig$();
-  18 |  import React, { useState } from "react";
-  19 |  import "../styles/UnifiedTopBar.css";
-     |          ^
-  20 |  const UnifiedTopBar = ({
-  21 |    currentView,
-      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
-      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
-      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
-      at async Promise.all (index 4)
-      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
-      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
-      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-6:12:13 PM [vite] Internal server error: Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/wh/working/complete/mini-area/client/src/components/UnifiedTopBar.jsx:2:7
-  17 |  var _s = $RefreshSig$();
-  18 |  import React, { useState } from "react";
-  19 |  import "../styles/UnifiedTopBar.css";
-     |          ^
-  20 |  const UnifiedTopBar = ({
-  21 |    currentView,
-      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
-      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
-      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
-      at async Promise.all (index 4)
-      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
-      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
-      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
-      at async viteTransformMiddleware (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32)
-6:12:13 PM [vite] Internal server error: Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/wh/working/complete/mini-area/client/src/components/UnifiedTopBar.jsx:2:7
-  17 |  var _s = $RefreshSig$();
-  18 |  import React, { useState } from "react";
-  19 |  import "../styles/UnifiedTopBar.css";
-     |          ^
-  20 |  const UnifiedTopBar = ({
-  21 |    currentView,
-      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
-      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
-      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
-      at async Promise.all (index 4)
-      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
-      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
-      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
-      at async viteTransformMiddleware (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32)
-6:12:22 PM [vite] hmr update /src/components/MetaverseScene.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-6:12:38 PM [vite] hmr update /src/components/MetaverseScene.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:11:47 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:11:53 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:12:24 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:12:34 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:12:51 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:13:01 PM [vite] hmr update /src/components/MetaverseScene.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:13:07 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:13:48 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:17:33 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:17:43 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:17:50 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:17:59 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:18:05 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:18:32 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:18:45 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:18:53 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-7:32:28 PM [vite] Internal server error: Failed to resolve import "../styles/UnifiedTopBar.css" from "src/components/UnifiedTopBar.jsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/wh/working/complete/mini-area/client/src/components/UnifiedTopBar.jsx:2:7
-  17 |  var _s = $RefreshSig$();
-  18 |  import React, { useState } from "react";
-  19 |  import "../styles/UnifiedTopBar.css";
-     |          ^
-  20 |  const UnifiedTopBar = ({
-  21 |    currentView,
-      at formatError (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
-      at TransformContext.error (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
-      at normalizeUrl (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
-      at async Promise.all (index 4)
-      at async TransformContext.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
-      at async Object.transform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
-      at async loadAndTransform (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
-      at async viteTransformMiddleware (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32)
-7:33:53 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-7:34:03 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-7:34:12 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-7:34:52 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-7:35:04 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
-7:44:16 PM [vite] hmr update /src/components/SNSBoard.jsx
-7:44:37 PM [vite] hmr update /src/components/SNSBoard.jsx
-7:44:51 PM [vite] hmr update /src/components/SNSBoard.jsx
-7:45:08 PM [vite] hmr update /src/styles/SNSBoard.css
-7:45:20 PM [vite] hmr update /src/styles/SNSBoard.css
-7:45:30 PM [vite] hmr update /src/styles/SNSBoard.css
-7:45:38 PM [vite] hmr update /src/styles/SNSBoard.css
-7:45:56 PM [vite] hmr update /src/components/MetaverseScene.jsx
-7:46:13 PM [vite] hmr update /src/components/MetaverseScene.jsx
-7:46:48 PM [vite] hmr update /src/components/PersonalShop.jsx
-7:52:29 PM [vite] hmr update /src/components/UnifiedTopBar.jsx
-7:53:01 PM [vite] hmr update /src/styles/UnifiedTopBar.css
-7:53:23 PM [vite] hmr update /src/styles/MetaverseScene.css
-7:53:33 PM [vite] hmr update /src/styles/SNSBoard.css
+8:24:27 PM [vite] hmr update /src/components/MetaverseScene.jsx
+8:24:40 PM [vite] hmr update /src/components/MetaverseScene.jsx
+8:25:59 PM [vite] hmr update /src/components/MetaverseScene.jsx
+8:26:12 PM [vite] hmr update /src/components/MetaverseScene.jsx
+8:26:20 PM [vite] hmr update /src/components/MetaverseScene.jsx

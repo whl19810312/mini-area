@@ -269,13 +269,28 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
       // 채팅 풍선말 표시
       const bubbleId = `${data.username}_${Date.now()}`;
-      const messageText = data.content || data.message || data.text || '';
+      // 문자열 메시지만 처리
+      let messageText = '';
+      if (data.content && typeof data.content === 'string') {
+        messageText = data.content;
+      } else if (data.message && typeof data.message === 'string') {
+        messageText = data.message;
+      } else if (data.text && typeof data.text === 'string') {
+        messageText = data.text;
+      }
+      
+      // 유효한 문자열 메시지가 없으면 말풍선을 표시하지 않음
+      if (!messageText || messageText.trim() === '') {
+        return;
+      }
+      
       console.log('💬 말풍선 생성:', { 
         bubbleId, 
         username: data.username, 
         message: data.message,
         text: data.text,
         messageText: messageText,
+        messageTextType: typeof messageText,
         originalData: data
       });
       setChatBubbles(prev => {
@@ -860,7 +875,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                   fontWeight: 'bold',
                   textAlign: 'center'
                 }}>
-                  {bubble.message}
+                  {typeof bubble.message === 'string' ? bubble.message : ''}
                 </div>
                 {/* 말풍선 꼬리 */}
                 <div
@@ -947,18 +962,20 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         />
       )}
 
-      {/* 하단 채팅 입력창 */}
+      {/* 하단 채팅 입력창 - 화상회의 바 위에 위치 */}
       {showChatInput && (
         <div
           style={{
             position: 'fixed',
-            bottom: '20px',
+            bottom: '160px', /* 화상회의 바 위에 위치하도록 조정 */
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 1000,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            borderRadius: '20px',
-            padding: '10px'
+            zIndex: 1001, /* 화상회의 바보다 위에 */
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            borderRadius: '25px',
+            padding: '12px 20px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}
         >
           <form onSubmit={handleChatSubmit} style={{ display: 'flex', alignItems: 'center' }}>
@@ -981,25 +998,31 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
               style={{
                 border: 'none',
                 outline: 'none',
-                backgroundColor: 'transparent',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 color: 'white',
-                fontSize: '14px',
-                width: '300px',
-                padding: '5px 10px'
+                fontSize: '16px',
+                width: '350px',
+                padding: '8px 12px',
+                borderRadius: '15px',
+                marginRight: '8px'
               }}
             />
             <button
               type="submit"
               style={{
-                background: 'none',
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
                 border: 'none',
                 color: 'white',
-                fontSize: '16px',
+                fontSize: '14px',
                 cursor: 'pointer',
-                padding: '5px'
+                padding: '8px 12px',
+                borderRadius: '15px',
+                transition: 'all 0.2s ease'
               }}
+              onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
             >
-              ↵
+              전송
             </button>
           </form>
         </div>
