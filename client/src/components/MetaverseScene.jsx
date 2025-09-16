@@ -38,6 +38,10 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [roomParticipants, setRoomParticipants] = useState([]);
   const [chatBubbles, setChatBubbles] = useState(new Map());
   
+  // 채팅 입력 상태
+  const [showChatInput, setShowChatInput] = useState(false);
+  const [chatInputValue, setChatInputValue] = useState('');
+  
   // 마우스 드래그 상태 관리
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -189,8 +193,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const handleWheel = (e) => {
     if (isEditMode) return;
     
-    e.preventDefault();
-    
     const zoomFactor = 0.1;
     const delta = e.deltaY > 0 ? -zoomFactor : zoomFactor;
     const newScale = Math.max(0.5, Math.min(3, zoomScale + delta));
@@ -217,11 +219,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
     const handleChatMessage = (data) => {
       console.log('📨 채팅 메시지 수신:', data);
+      console.log('📨 메시지 내용 상세:', {
+        message: data.message,
+        username: data.username,
+        type: data.type,
+        timestamp: data.timestamp
+      });
       
       const newMessage = {
         id: Date.now(),
         username: data.username || 'Unknown',
-        message: data.message,
+        message: data.content || data.message,
         timestamp: data.timestamp || new Date().toISOString(),
         mapId: data.mapId
       };
@@ -238,13 +246,23 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
       // 채팅 풍선말 표시
       const bubbleId = `${data.username}_${Date.now()}`;
+      const messageText = data.content || data.message || data.text || '';
+      console.log('💬 말풍선 생성:', { 
+        bubbleId, 
+        username: data.username, 
+        message: data.message,
+        text: data.text,
+        messageText: messageText,
+        originalData: data
+      });
       setChatBubbles(prev => {
         const newBubbles = new Map(prev);
         newBubbles.set(bubbleId, {
           username: data.username,
-          message: data.message,
+          message: messageText,
           timestamp: Date.now()
         });
+        console.log('💬 말풍선 Map 업데이트:', newBubbles);
         return newBubbles;
       });
 
@@ -305,6 +323,25 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Enter 키로 채팅 입력창 토글
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 입력창이 포커스된 상태가 아닐 때만 Enter 키 감지
+      if (e.key === 'Enter' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        setShowChatInput(true);
+      }
+      // ESC 키로 채팅 입력창 닫기
+      if (e.key === 'Escape') {
+        setShowChatInput(false);
+        setChatInputValue('');
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // 채팅창 표시/숨김에 따른 읽지 않은 메시지 수 초기화
   useEffect(() => {
     isChatVisibleRef.current = isChatVisible;
@@ -334,6 +371,25 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
     };
 
     socket.emit('chat-message', chatData);
+  };
+
+  // 채팅 입력 처리
+  const handleChatSubmit = (e) => {
+    e.preventDefault();
+    console.log('📝 채팅 전송 시도:', { 
+      chatInputValue, 
+      trimmed: chatInputValue.trim(), 
+      length: chatInputValue.length 
+    });
+    
+    if (chatInputValue.trim()) {
+      console.log('✅ 메시지 전송:', chatInputValue);
+      handleChatSend(chatInputValue.trim());
+      setChatInputValue('');
+      setShowChatInput(false);
+    } else {
+      console.log('❌ 빈 메시지 - 전송 취소');
+    }
   };
 
   // SNS 뷰 관련 함수들
@@ -379,6 +435,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
+        onWheelCapture={(e) => e.preventDefault()}
         style={{ 
           overflow: 'visible', // 캐릭터 머리와 이름표가 잘리지 않도록 변경
           position: 'relative',
@@ -477,7 +534,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 style={{
                   position: 'absolute',
                   left: `${charSync.myPosition.x - 50}px`, // 캐릭터 너비에 맞게 조정
-                  top: `${charSync.myPosition.y - 80}px`, // 캐릭터 위쪽으로 더 멀리 띄움 (새 높이 고려)
+                  top: `${charSync.myPosition.y - 55}px`, // 캐릭터 머리 바로 위
                   fontSize: '12px', // 폰트 크기도 약간 증가
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
@@ -569,7 +626,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 style={{
                   position: 'absolute',
                   left: `${character.position.x - 50}px`, // 캐릭터 너비에 맞게 조정
-                  top: `${character.position.y - 80}px`, // 캐릭터 위쪽으로 더 멀리 띄움 (새 높이 고려)
+                  top: `${character.position.y - 55}px`, // 캐릭터 머리 바로 위
                   fontSize: '12px', // 폰트 크기도 약간 증가
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
@@ -647,13 +704,21 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
 
           {/* 채팅 풍선말 */}
           {Array.from(chatBubbles.entries()).map(([bubbleId, bubble]) => {
+            console.log('💬 말풍선 렌더링:', { bubbleId, bubble, chatBubblesSize: chatBubbles.size });
+            
             const character = Object.values(charSync.otherCharacters)
               .find(char => char.username === bubble.username);
             
             const isMyBubble = bubble.username === user?.username;
             const position = isMyBubble ? charSync.myPosition : character?.position;
             
-            if (!position) return null;
+            console.log('💬 말풍선 위치 계산:', { isMyBubble, position, myPosition: charSync.myPosition, character });
+            console.log('💬 말풍선 메시지:', bubble.message);
+            
+            if (!position) {
+              console.log('💬 말풍선 위치 없음 - 렌더링 건너뜀');
+              return null;
+            }
 
             return (
               <div
@@ -661,21 +726,69 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 className="chat-bubble"
                 style={{
                   position: 'absolute',
-                  left: `${position.x - 50}px`,
-                  top: `${position.y - 60}px`,
-                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                  color: 'white',
-                  padding: '5px 10px',
-                  borderRadius: '10px',
-                  fontSize: '12px',
-                  maxWidth: '100px',
-                  wordWrap: 'break-word',
+                  left: `${position.x - 60}px`,
+                  top: `${position.y - 110}px`,
+                  backgroundColor: 'rgba(144, 238, 144, 0.95)',
+                  color: '#000000',
+                  padding: '12px 18px',
+                  borderRadius: '20px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  minWidth: '100px',
+                  maxWidth: '250px',
                   textAlign: 'center',
-                  zIndex: 102,
-                  animation: 'fadeIn 0.3s ease-out'
+                  zIndex: 200,
+                  border: '3px solid rgba(100, 200, 100, 1)',
+                  boxShadow: '0 6px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.7)',
+                  wordBreak: 'break-word',
+                  lineHeight: '1.3',
+                  fontFamily: 'Arial, sans-serif',
+                  display: 'block',
+                  visibility: 'visible'
                 }}
               >
-                {bubble.message}
+                <div style={{ 
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#000000', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}>
+                  {bubble.message}
+                </div>
+                {/* 말풍선 꼬리 */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '-8px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '0',
+                    height: '0',
+                    borderLeft: '8px solid transparent',
+                    borderRight: '8px solid transparent',
+                    borderTop: '8px solid rgba(100, 200, 100, 1)',
+                    zIndex: 199
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '-6px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '0',
+                    height: '0',
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: '6px solid rgba(144, 238, 144, 0.9)',
+                    zIndex: 200
+                  }}
+                />
               </div>
             );
           })}
@@ -730,6 +843,64 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           onClose={() => setIsUsersVisible(false)}
           currentUser={user}
         />
+      )}
+
+      {/* 하단 채팅 입력창 */}
+      {showChatInput && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            borderRadius: '20px',
+            padding: '10px'
+          }}
+        >
+          <form onSubmit={handleChatSubmit} style={{ display: 'flex', alignItems: 'center' }}>
+            <input
+              type="text"
+              value={chatInputValue}
+              onChange={(e) => {
+                console.log('⌨️ 입력 변경:', e.target.value);
+                setChatInputValue(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                console.log('🔑 키 입력:', e.key, 'Value:', e.target.value);
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleChatSubmit(e);
+                }
+              }}
+              placeholder="메시지를 입력하세요... (ESC로 닫기)"
+              autoFocus
+              style={{
+                border: 'none',
+                outline: 'none',
+                backgroundColor: 'transparent',
+                color: 'white',
+                fontSize: '14px',
+                width: '300px',
+                padding: '5px 10px'
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '16px',
+                cursor: 'pointer',
+                padding: '5px'
+              }}
+            >
+              ↵
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );
