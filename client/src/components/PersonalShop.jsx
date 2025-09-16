@@ -10,6 +10,25 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
   const [externalLinks, setExternalLinks] = useState([]);
   const [isEditingLinks, setIsEditingLinks] = useState(false);
   const [newLink, setNewLink] = useState({ name: '', url: '', description: '' });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    price: '',
+    image: '',
+    category: 'avatar',
+    description: '',
+    stock: '',
+    tags: []
+  });
+  const [orders, setOrders] = useState([]);
+  const [salesData, setSalesData] = useState({
+    todayVisitors: 24,
+    totalSales: 156,
+    totalRevenue: 2340000,
+    monthlyRevenue: 890000
+  });
 
   // 메타버스 전용 상품 데이터
   const sampleProducts = [
@@ -126,7 +145,22 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
   useEffect(() => {
     if (isOpen) {
+      loadShopData();
+    }
+  }, [isOpen, userId]);
+
+  const loadShopData = async () => {
+    setIsLoading(true);
+    try {
+      // 상품 데이터 로드
       setProducts(sampleProducts);
+      
+      // 사용자별 장바구니 복원
+      const savedCart = localStorage.getItem(`cart_${userId}`);
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+      
       // 로컬 스토리지에서 외부 링크 불러오기
       const savedLinks = localStorage.getItem(`externalLinks_${userId}`);
       if (savedLinks) {
@@ -134,35 +168,68 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
       } else {
         setExternalLinks(defaultExternalLinks);
       }
-    }
-  }, [isOpen, userId]);
-
-  const addToCart = (product) => {
-    const existingItem = cart.find(item => item.id === product.id);
-    if (existingItem) {
-      setCart(cart.map(item => 
-        item.id === product.id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
+    } catch (error) {
+      console.error('쇼핑몰 데이터 로드 실패:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    let newCart;
+    if (existingItem) {
+      newCart = cart.map(item => 
+        item.id === product.id 
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      newCart = [...cart, { ...product, quantity: 1 }];
+    }
+    setCart(newCart);
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
+    
+    // 성공 알림 (토스트 메시지)
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      z-index: 3000;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      animation: slideInRight 0.3s ease-out;
+    `;
+    notification.textContent = `${product.name}이(가) 장바구니에 추가되었습니다!`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  };
+
   const removeFromCart = (productId) => {
-    setCart(cart.filter(item => item.id !== productId));
+    const newCart = cart.filter(item => item.id !== productId);
+    setCart(newCart);
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
   };
 
   const updateQuantity = (productId, newQuantity) => {
     if (newQuantity <= 0) {
       removeFromCart(productId);
     } else {
-      setCart(cart.map(item => 
+      const newCart = cart.map(item => 
         item.id === productId 
           ? { ...item, quantity: newQuantity }
           : item
-      ));
+      );
+      setCart(newCart);
+      localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
     }
   };
 
@@ -173,14 +240,84 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
   const handlePurchase = async () => {
     if (cart.length === 0) return;
     
+    const total = getTotalPrice();
+    const confirmed = window.confirm(
+      `총 ${total.toLocaleString()}원의 상품을 구매하시겠습니까?\n\n구매 완료 후 해당 아이템들이 "내 아이템"에서 확인 가능합니다.`
+    );
+    
+    if (!confirmed) return;
+    
     setIsLoading(true);
     try {
-      // 여기에 실제 결제 API 호출 추가
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+      // 결제 시뮬레이션
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      alert('구매가 완료되었습니다!');
+      // 구매한 아이템을 "내 아이템"에 추가
+      const purchasedItems = localStorage.getItem(`myItems_${userId}`) || '[]';
+      const currentItems = JSON.parse(purchasedItems);
+      const newItems = cart.map(item => ({
+        id: `${Date.now()}_${item.id}`,
+        name: item.name,
+        category: item.category,
+        image: item.image,
+        purchaseDate: new Date().toISOString(),
+        quantity: item.quantity
+      }));
+      localStorage.setItem(`myItems_${userId}`, JSON.stringify([...currentItems, ...newItems]));
+
+      // 주문 기록 추가
+      const newOrder = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        amount: total,
+        items: cart.length,
+        status: 'pending'
+      };
+      const currentOrders = JSON.parse(localStorage.getItem(`orders_${userId}`) || '[]');
+      localStorage.setItem(`orders_${userId}`, JSON.stringify([...currentOrders, newOrder]));
+
+      // 매출 데이터 업데이트
+      setSalesData(prev => ({
+        ...prev,
+        totalSales: prev.totalSales + cart.length,
+        totalRevenue: prev.totalRevenue + total,
+        monthlyRevenue: prev.monthlyRevenue + total
+      }));
+      
+      // 장바구니 비우기
       setCart([]);
-      setActiveTab('products');
+      localStorage.setItem(`cart_${userId}`, '[]');
+      
+      // 성공 알림
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 30px 40px;
+        border-radius: 20px;
+        z-index: 3000;
+        font-weight: 600;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: bounceIn 0.5s ease-out;
+        font-size: 18px;
+      `;
+      notification.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+        <div>구매가 완료되었습니다!</div>
+        <div style="font-size: 14px; margin-top: 10px; opacity: 0.9;">구매한 아이템은 '내 아이템'에서 확인할 수 있습니다.</div>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 4000);
+      
+      setActiveTab('myitems');
     } catch (error) {
       alert('구매 중 오류가 발생했습니다.');
     } finally {
@@ -226,6 +363,92 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
   const openExternalLink = (url) => {
     window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // 관리자 함수들
+  const handleAdminLogin = () => {
+    if (adminPassword === 'admin123') {
+      setIsAdmin(true);
+      setAdminPassword('');
+      
+      // 주문 데이터 로드
+      const savedOrders = localStorage.getItem(`orders_${userId}`) || '[]';
+      setOrders(JSON.parse(savedOrders));
+    } else {
+      alert('잘못된 비밀번호입니다.');
+      setAdminPassword('');
+    }
+  };
+
+  const updateProductStock = (productId, newStock) => {
+    const updatedProducts = products.map(product =>
+      product.id === productId ? { ...product, stock: newStock } : product
+    );
+    setProducts(updatedProducts);
+    localStorage.setItem(`products_${userId}`, JSON.stringify(updatedProducts));
+  };
+
+  const deleteProduct = (productId) => {
+    if (window.confirm('정말 이 상품을 삭제하시겠습니까?')) {
+      const updatedProducts = products.filter(product => product.id !== productId);
+      setProducts(updatedProducts);
+      localStorage.setItem(`products_${userId}`, JSON.stringify(updatedProducts));
+    }
+  };
+
+  const updateProductField = (field, value) => {
+    if (editingProduct === 'new') {
+      setNewProduct({ ...newProduct, [field]: value });
+    } else {
+      setEditingProduct({ ...editingProduct, [field]: value });
+    }
+  };
+
+  const saveProduct = () => {
+    if (editingProduct === 'new') {
+      if (!newProduct.name || !newProduct.price || !newProduct.description) {
+        alert('필수 정보를 모두 입력해주세요.');
+        return;
+      }
+      
+      const product = {
+        ...newProduct,
+        id: Date.now(),
+        price: parseInt(newProduct.price) || 0,
+        stock: parseInt(newProduct.stock) || 0,
+        featured: false,
+        tags: ['신상품']
+      };
+      
+      const updatedProducts = [...products, product];
+      setProducts(updatedProducts);
+      localStorage.setItem(`products_${userId}`, JSON.stringify(updatedProducts));
+      setNewProduct({
+        name: '',
+        price: '',
+        image: '',
+        category: 'avatar',
+        description: '',
+        stock: '',
+        tags: []
+      });
+    } else {
+      const updatedProducts = products.map(product =>
+        product.id === editingProduct.id ? editingProduct : product
+      );
+      setProducts(updatedProducts);
+      localStorage.setItem(`products_${userId}`, JSON.stringify(updatedProducts));
+    }
+    
+    setEditingProduct(null);
+  };
+
+  const updateOrderStatus = (orderId, newStatus) => {
+    const updatedOrders = orders.map(order =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrders(updatedOrders);
+    localStorage.setItem(`orders_${userId}`, JSON.stringify(updatedOrders));
   };
 
   const filteredProducts = products.filter(product =>
@@ -278,6 +501,13 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
             onClick={() => setActiveTab('settings')}
           >
             ⚙️ 설정
+          </button>
+          <button 
+            className={`tab ${activeTab === 'admin' ? 'active' : ''}`}
+            onClick={() => setActiveTab('admin')}
+            style={{ display: isAdmin ? 'block' : 'none' }}
+          >
+            🔧 관리자
           </button>
         </div>
 
@@ -442,26 +672,86 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
           {activeTab === 'myitems' && (
             <div className="myitems-tab">
-              <div className="my-items-grid">
-                <div className="item-category">
-                  <h3>👔 내 의상</h3>
-                  <div className="items-list">
-                    <div className="owned-item">기본 의상</div>
+              {(() => {
+                const myItems = JSON.parse(localStorage.getItem(`myItems_${userId}`) || '[]');
+                const groupedItems = myItems.reduce((acc, item) => {
+                  if (!acc[item.category]) acc[item.category] = [];
+                  acc[item.category].push(item);
+                  return acc;
+                }, {});
+
+                const categoryIcons = {
+                  avatar: '✨',
+                  emoticon: '😎',
+                  space: '🏰', 
+                  effect: '💫',
+                  voice: '🎙️',
+                  chat: '💬',
+                  companion: '🐉'
+                };
+
+                const categoryNames = {
+                  avatar: '아바타 스킨',
+                  emoticon: '이모티콘',
+                  space: '가상 공간',
+                  effect: '특수 효과',
+                  voice: '음성 효과',
+                  chat: '채팅 효과',
+                  companion: '컴패니언'
+                };
+
+                return (
+                  <div className="my-items-grid">
+                    {Object.keys(groupedItems).length === 0 ? (
+                      <div className="no-items">
+                        <div style={{ fontSize: '48px', marginBottom: '20px' }}>📦</div>
+                        <h3>아직 구매한 아이템이 없습니다</h3>
+                        <p>상품을 구매하면 여기에서 확인할 수 있습니다.</p>
+                        <button 
+                          onClick={() => setActiveTab('products')}
+                          style={{
+                            padding: '12px 24px',
+                            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '25px',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            marginTop: '15px'
+                          }}
+                        >
+                          상품 보러가기
+                        </button>
+                      </div>
+                    ) : (
+                      Object.entries(groupedItems).map(([category, items]) => (
+                        <div key={category} className="item-category">
+                          <h3>
+                            {categoryIcons[category] || '🎁'} {categoryNames[category] || category}
+                            <span className="item-count">({items.length}개)</span>
+                          </h3>
+                          <div className="items-list">
+                            {items.map((item, index) => (
+                              <div key={`${item.id}_${index}`} className="owned-item">
+                                <div className="item-icon">{item.image}</div>
+                                <div className="item-info">
+                                  <div className="item-name">{item.name}</div>
+                                  <div className="item-date">
+                                    {new Date(item.purchaseDate).toLocaleDateString()}
+                                  </div>
+                                  {item.quantity > 1 && (
+                                    <div className="item-quantity">x{item.quantity}</div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-                </div>
-                <div className="item-category">
-                  <h3>😎 내 이모티콘</h3>
-                  <div className="items-list">
-                    <div className="owned-item">기본 이모티콘 팩</div>
-                  </div>
-                </div>
-                <div className="item-category">
-                  <h3>🏠 내 테마</h3>
-                  <div className="items-list">
-                    <div className="owned-item">기본 테마</div>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           )}
 
@@ -556,6 +846,284 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
                     <input type="checkbox" />
                     SNS 자동 홍보
                   </label>
+                </div>
+
+                <div className="setting-group">
+                  <h4>🔧 관리자 도구</h4>
+                  <p>상품, 주문, 매출 등을 관리할 수 있는 관리자 패널에 접근하세요.</p>
+                  <button 
+                    className="setting-btn admin-access-btn"
+                    onClick={() => setActiveTab('admin')}
+                    style={{
+                      background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                      color: 'white'
+                    }}
+                  >
+                    🔧 관리자 패널 접근
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'admin' && isAdmin && (
+            <div className="admin-tab">
+              <div className="admin-header">
+                <h3>🔧 관리자 패널</h3>
+                <button 
+                  className="logout-admin-btn"
+                  onClick={() => {
+                    setIsAdmin(false);
+                    setActiveTab('products');
+                    setAdminPassword('');
+                  }}
+                >
+                  로그아웃
+                </button>
+              </div>
+
+              <div className="admin-sections">
+                {/* 상품 관리 */}
+                <div className="admin-section">
+                  <h4>📦 상품 관리</h4>
+                  <div className="admin-actions">
+                    <button 
+                      className="admin-btn primary"
+                      onClick={() => setEditingProduct('new')}
+                    >
+                      ➕ 새 상품 추가
+                    </button>
+                  </div>
+                  
+                  <div className="products-table">
+                    <div className="table-header">
+                      <span>상품</span>
+                      <span>가격</span>
+                      <span>재고</span>
+                      <span>카테고리</span>
+                      <span>관리</span>
+                    </div>
+                    {products.map(product => (
+                      <div key={product.id} className="table-row">
+                        <div className="product-cell">
+                          <span className="product-emoji">{product.image}</span>
+                          {product.name}
+                        </div>
+                        <div>{product.price.toLocaleString()}원</div>
+                        <div>
+                          <input 
+                            type="number" 
+                            value={product.stock}
+                            onChange={(e) => updateProductStock(product.id, parseInt(e.target.value))}
+                            className="stock-input"
+                          />
+                        </div>
+                        <div>{product.category}</div>
+                        <div className="action-buttons">
+                          <button 
+                            className="edit-btn"
+                            onClick={() => setEditingProduct(product)}
+                          >
+                            ✏️
+                          </button>
+                          <button 
+                            className="delete-btn"
+                            onClick={() => deleteProduct(product.id)}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 주문 관리 */}
+                <div className="admin-section">
+                  <h4>📋 주문 관리</h4>
+                  <div className="orders-list">
+                    {orders.length === 0 ? (
+                      <div className="no-orders">
+                        <p>아직 주문이 없습니다.</p>
+                      </div>
+                    ) : (
+                      orders.map(order => (
+                        <div key={order.id} className="order-item">
+                          <div className="order-info">
+                            <span className="order-id">주문 #{order.id}</span>
+                            <span className="order-date">{order.date}</span>
+                            <span className="order-amount">{order.amount.toLocaleString()}원</span>
+                          </div>
+                          <div className="order-status">
+                            <select 
+                              value={order.status}
+                              onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                            >
+                              <option value="pending">대기중</option>
+                              <option value="processing">처리중</option>
+                              <option value="completed">완료</option>
+                              <option value="cancelled">취소</option>
+                            </select>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* 매출 분석 */}
+                <div className="admin-section">
+                  <h4>📊 매출 분석</h4>
+                  <div className="analytics-grid">
+                    <div className="analytics-card">
+                      <h5>오늘 방문자</h5>
+                      <div className="analytics-value">{salesData.todayVisitors}명</div>
+                    </div>
+                    <div className="analytics-card">
+                      <h5>총 판매량</h5>
+                      <div className="analytics-value">{salesData.totalSales}개</div>
+                    </div>
+                    <div className="analytics-card">
+                      <h5>이번 달 매출</h5>
+                      <div className="analytics-value">{salesData.monthlyRevenue.toLocaleString()}원</div>
+                    </div>
+                    <div className="analytics-card">
+                      <h5>총 매출</h5>
+                      <div className="analytics-value">{salesData.totalRevenue.toLocaleString()}원</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 재고 관리 */}
+                <div className="admin-section">
+                  <h4>📈 재고 현황</h4>
+                  <div className="inventory-grid">
+                    {products.map(product => (
+                      <div key={product.id} className="inventory-card">
+                        <div className="inventory-header">
+                          <span className="product-emoji">{product.image}</span>
+                          <span className="product-name">{product.name}</span>
+                        </div>
+                        <div className="inventory-status">
+                          <div className={`stock-level ${product.stock <= 5 ? 'low' : product.stock <= 10 ? 'medium' : 'high'}`}>
+                            재고: {product.stock}개
+                          </div>
+                          <div className="stock-actions">
+                            <button 
+                              className="stock-btn"
+                              onClick={() => updateProductStock(product.id, product.stock + 10)}
+                            >
+                              +10
+                            </button>
+                            <button 
+                              className="stock-btn"
+                              onClick={() => updateProductStock(product.id, Math.max(0, product.stock - 5))}
+                            >
+                              -5
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 관리자 로그인 모달 */}
+          {activeTab === 'admin' && !isAdmin && (
+            <div className="admin-login">
+              <div className="login-form">
+                <h3>🔐 관리자 로그인</h3>
+                <p>관리자 패널에 접근하려면 비밀번호를 입력하세요.</p>
+                <input
+                  type="password"
+                  placeholder="관리자 비밀번호"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                />
+                <div className="login-actions">
+                  <button 
+                    className="login-btn"
+                    onClick={handleAdminLogin}
+                  >
+                    로그인
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={() => setActiveTab('products')}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 상품 편집 모달 */}
+          {editingProduct && (
+            <div className="product-edit-modal">
+              <div className="edit-form">
+                <h3>{editingProduct === 'new' ? '새 상품 추가' : '상품 편집'}</h3>
+                <div className="form-grid">
+                  <input
+                    type="text"
+                    placeholder="상품명"
+                    value={editingProduct === 'new' ? newProduct.name : editingProduct.name}
+                    onChange={(e) => updateProductField('name', e.target.value)}
+                  />
+                  <input
+                    type="number"
+                    placeholder="가격"
+                    value={editingProduct === 'new' ? newProduct.price : editingProduct.price}
+                    onChange={(e) => updateProductField('price', parseInt(e.target.value))}
+                  />
+                  <input
+                    type="text"
+                    placeholder="이미지 (이모지)"
+                    value={editingProduct === 'new' ? newProduct.image : editingProduct.image}
+                    onChange={(e) => updateProductField('image', e.target.value)}
+                  />
+                  <select
+                    value={editingProduct === 'new' ? newProduct.category : editingProduct.category}
+                    onChange={(e) => updateProductField('category', e.target.value)}
+                  >
+                    <option value="avatar">아바타</option>
+                    <option value="emoticon">이모티콘</option>
+                    <option value="space">공간</option>
+                    <option value="effect">효과</option>
+                    <option value="voice">음성</option>
+                    <option value="chat">채팅</option>
+                    <option value="companion">컴패니언</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="재고"
+                    value={editingProduct === 'new' ? newProduct.stock : editingProduct.stock}
+                    onChange={(e) => updateProductField('stock', parseInt(e.target.value))}
+                  />
+                  <textarea
+                    placeholder="상품 설명"
+                    value={editingProduct === 'new' ? newProduct.description : editingProduct.description}
+                    onChange={(e) => updateProductField('description', e.target.value)}
+                    rows="3"
+                  />
+                </div>
+                <div className="modal-actions">
+                  <button 
+                    className="save-btn"
+                    onClick={saveProduct}
+                  >
+                    {editingProduct === 'new' ? '추가' : '저장'}
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={() => setEditingProduct(null)}
+                  >
+                    취소
+                  </button>
                 </div>
               </div>
             </div>
