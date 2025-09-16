@@ -84,8 +84,26 @@ const Character = ({
   const animationScale = isMoving ? 1.1 : 1.0;
   const animationRotation = direction === 'left' ? Math.PI : 0;
   
+  // 사용자별 고유 색상 생성
+  const getUserColor = (userName) => {
+    if (!userName) return '#2196F3';
+    
+    // 사용자 이름을 해시하여 고유한 색상 생성
+    let hash = 0;
+    for (let i = 0; i < userName.length; i++) {
+      hash = userName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    // HSL 색상 공간을 사용하여 밝은 색상들 생성
+    const hue = Math.abs(hash) % 360;
+    const saturation = 70 + (Math.abs(hash) % 30); // 70-100% 채도
+    const lightness = 50 + (Math.abs(hash) % 30);  // 50-80% 밝기
+    
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+
   // 캐릭터 색상
-  const characterColor = isCurrentUser ? '#4CAF50' : '#2196F3';
+  const characterColor = isCurrentUser ? '#4CAF50' : getUserColor(character?.name);
   
   return (
     <group 
@@ -101,7 +119,7 @@ const Character = ({
         <meshBasicMaterial 
           color={characterColor}
           transparent={true}
-          opacity={0.9}
+          opacity={0.7}
         />
       </mesh>
       
@@ -109,10 +127,10 @@ const Character = ({
       <Text
         position={[0, 0, 15]}
         fontSize={12}
-        color="white"
+        color="#FFFFFF"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.5}
+        outlineWidth={1}
         outlineColor="#000000"
       >
         {characterContent}

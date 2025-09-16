@@ -8,6 +8,8 @@ import VerifyEmail from './pages/VerifyEmail'
 import Metaverse from './pages/Metaverse'
 import MetaverseEdit from './pages/MetaverseEdit'
 import WaitingRoom from './pages/WaitingRoom'
+import SNSPage from './pages/SNSPage'
+import ShopPage from './pages/ShopPage'
 import PrivateRoute from './components/PrivateRoute'
 import MainPage from './pages/MainPage'
 import './App.css'
@@ -41,6 +43,16 @@ const App = () => {
             <Route path="/metaverse/edit/:mapId" element={
               <PrivateRoute>
                 <MetaverseEdit />
+              </PrivateRoute>
+            } />
+            <Route path="/sns" element={
+              <PrivateRoute>
+                <SNSPage />
+              </PrivateRoute>
+            } />
+            <Route path="/shop" element={
+              <PrivateRoute>
+                <ShopPage />
               </PrivateRoute>
             } />
             <Route path="/" element={

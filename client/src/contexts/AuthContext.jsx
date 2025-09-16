@@ -271,8 +271,12 @@ export const AuthProvider = ({ children }) => {
       console.log('🔄 자동 재입장 알림:', data)
       toast(data.message || '이전 입실 상태가 복원되었습니다.')
       
-      // 메타버스 페이지로 자동 이동
-      if (window.location.pathname !== `/metaverse/${data.mapId}`) {
+      // SNS나 Shop 페이지에서는 자동 리다이렉트하지 않음
+      const currentPath = window.location.pathname;
+      const isStandalonePage = currentPath === '/sns' || currentPath === '/shop';
+      
+      // 메타버스 페이지로 자동 이동 (독립 페이지가 아닌 경우만)
+      if (!isStandalonePage && currentPath !== `/metaverse/${data.mapId}`) {
         window.location.href = `/metaverse/${data.mapId}`
       }
     })

@@ -101,7 +101,7 @@
   border-color: rgba(255, 193, 7, 1);
 }
 
-.menu-btn.video.active {
+.menu-btn.fullscreen.active {
   background: rgba(76, 175, 80, 0.9);
   color: white;
   border-color: rgba(76, 175, 80, 1);
@@ -112,11 +112,11 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.9);
   padding: 8px 16px;
   border-radius: 25px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .location-item {
@@ -124,7 +124,7 @@
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: white;
+  color: #1f2937;
 }
 
 .location-icon {
@@ -134,6 +134,7 @@
 .location-text {
   font-weight: 500;
   white-space: nowrap;
+  color: #1f2937;
 }
 
 /* 네비게이션 섹션 */

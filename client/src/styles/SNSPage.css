@@ -1,0 +1,88 @@
+.sns-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a8e6a3 0%, #88d693 100%);
+  padding: 0;
+  margin: 0;
+}
+
+.sns-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 20px 20px;
+  background: rgba(200, 255, 190, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(168, 230, 163, 0.3);
+  box-shadow: 0 4px 20px rgba(136, 214, 147, 0.25);
+}
+
+.header-content {
+  flex: 1;
+  text-align: center;
+}
+
+.sns-page-header h1 {
+  margin: 0 0 15px 0;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.sns-page-header p {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* SNS 보드 컨테이너 조정 */
+.sns-page .sns-board {
+  padding-top: 20px;
+  background: transparent;
+  min-height: auto;
+}
+
+.sns-page .sns-header {
+  display: none; /* 중복 헤더 숨기기 */
+}
+
+.close-page-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.close-page-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .sns-page-header {
+    padding: 30px 15px 15px;
+  }
+  
+  .sns-page-header h1 {
+    font-size: 28px;
+  }
+  
+  .sns-page-header p {
+    font-size: 16px;
+  }
+}

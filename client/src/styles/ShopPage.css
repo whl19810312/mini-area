@@ -1,0 +1,115 @@
+.shop-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.shop-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 20px 15px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+}
+
+.header-content {
+  flex: 1;
+  text-align: center;
+}
+
+.shop-page-header h1 {
+  margin: 0 0 15px 0;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.shop-page-header p {
+  margin: 0;
+  color: #555;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.shop-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 120px);
+}
+
+/* PersonalShop 컴포넌트가 새 창에서 전체 화면을 차지하도록 조정 */
+.shop-page .personal-shop-overlay {
+  position: static;
+  background: transparent;
+  backdrop-filter: none;
+  display: block;
+  z-index: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.shop-page .personal-shop-modal {
+  position: static;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+  background: white;
+}
+
+.shop-page .shop-header {
+  display: none; /* 중복 헤더 숨기기 */
+}
+
+.close-page-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.close-page-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .shop-page-header {
+    padding: 25px 15px 10px;
+  }
+  
+  .shop-page-header h1 {
+    font-size: 28px;
+  }
+  
+  .shop-page-header p {
+    font-size: 16px;
+  }
+  
+  .shop-page .personal-shop-overlay {
+    padding: 10px;
+  }
+}

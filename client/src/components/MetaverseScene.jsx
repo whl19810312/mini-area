@@ -11,6 +11,7 @@ import UnifiedTopBar from './UnifiedTopBar';
 import UserList from './UserList';
 import IntegratedVideoBar from './IntegratedVideoBar';
 import PersonalShop from './PersonalShop';
+import MetaverseSocialFeed from './MetaverseSocialFeed';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -42,10 +43,41 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [roomParticipants, setRoomParticipants] = useState([]);
   const [chatBubbles, setChatBubbles] = useState(new Map());
   const [isShopVisible, setIsShopVisible] = useState(false);
+  const [isSocialFeedVisible, setIsSocialFeedVisible] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // 채팅 입력 상태
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatInputValue, setChatInputValue] = useState('');
+
+  // 전체화면 토글 함수
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.log('전체화면 진입 실패:', err);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(err => {
+        console.log('전체화면 종료 실패:', err);
+      });
+    }
+  };
+
+  // 전체화면 상태 변화 감지
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
   
   
   // 마우스 드래그 상태 관리
@@ -533,11 +565,13 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           }}
           onToggleChat={() => setIsChatVisible(!isChatVisible)}
           onToggleUsers={() => setIsUsersVisible(!isUsersVisible)}
-          onToggleVideo={() => {}}
+          onToggleFullscreen={toggleFullscreen}
           onToggleShop={() => setIsShopVisible(!isShopVisible)}
+          onToggleSocialFeed={() => setIsSocialFeedVisible(!isSocialFeedVisible)}
           isChatVisible={isChatVisible}
           isUsersVisible={isUsersVisible}
-          isVideoActive={false}
+          isFullscreen={isFullscreen}
+          isSocialFeedVisible={isSocialFeedVisible}
           isShopVisible={isShopVisible}
           participantCount={roomParticipants.length}
         />
@@ -1045,6 +1079,15 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         onClose={() => setIsShopVisible(false)}
         userId={user?.id || 'guest'}
         username={user?.username || '게스트'}
+      />
+
+      {/* 메타버스 소셜 피드 */}
+      <MetaverseSocialFeed
+        isOpen={isSocialFeedVisible}
+        onClose={() => setIsSocialFeedVisible(false)}
+        userId={user?.id || 'guest'}
+        username={user?.username || '게스트'}
+        avatarEmoji={currentCharacter?.emoji || '👤'}
       />
     </div>
   );

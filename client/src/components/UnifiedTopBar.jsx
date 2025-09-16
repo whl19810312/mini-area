@@ -9,12 +9,14 @@ const UnifiedTopBar = ({
   onReturnToLobby,
   onToggleChat,
   onToggleUsers,
-  onToggleVideo,
+  onToggleFullscreen,
   onToggleShop,
+  onToggleSocialFeed,
   isChatVisible,
   isUsersVisible,
-  isVideoActive,
+  isFullscreen,
   isShopVisible,
+  isSocialFeedVisible,
   participantCount = 0
 }) => {
   return (
@@ -32,9 +34,9 @@ const UnifiedTopBar = ({
               🎮 공간
             </button>
             <button 
-              className={`menu-btn ${currentView === 'sns' ? 'active' : ''}`}
-              onClick={() => onViewChange('sns')}
-              title="SNS 게시판"
+              className="menu-btn"
+              onClick={() => window.open('/sns', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes')}
+              title="SNS 게시판 (새 창)"
             >
               📱 SNS
             </button>
@@ -91,11 +93,11 @@ const UnifiedTopBar = ({
               👥 사용자
             </button>
             <button 
-              className={`menu-btn video ${isVideoActive ? 'active' : ''}`}
-              onClick={onToggleVideo}
-              title="화상통화"
+              className={`menu-btn fullscreen ${isFullscreen ? 'active' : ''}`}
+              onClick={onToggleFullscreen}
+              title="전체화면"
             >
-              📹 화상통화
+              🖥️ 전체화면
             </button>
           </div>
         </div>
@@ -107,11 +109,18 @@ const UnifiedTopBar = ({
           <span className="menu-label">서비스</span>
           <div className="menu-buttons">
             <button 
-              className={`menu-btn shop ${isShopVisible ? 'active' : ''}`}
-              onClick={onToggleShop}
-              title="개인 쇼핑몰"
+              className="menu-btn shop"
+              onClick={() => window.open('/shop', '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes')}
+              title="개인 쇼핑몰 (새 창)"
             >
               🛍️ 쇼핑
+            </button>
+            <button 
+              className={`menu-btn social ${isSocialFeedVisible ? 'active' : ''}`}
+              onClick={onToggleSocialFeed}
+              title="메타버스 소셜"
+            >
+              🌐 소셜
             </button>
             <button 
               className="menu-btn settings"
