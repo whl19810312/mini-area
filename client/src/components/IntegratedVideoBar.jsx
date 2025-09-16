@@ -13,10 +13,25 @@ const IntegratedVideoBar = ({
   socket
 }) => {
   const { token } = useAuth();
+  // localStorage에서 마이크/카메라 상태 읽어오기
+  const getStoredMicState = () => {
+    const stored = localStorage.getItem('miniarea-mic-state');
+    const state = stored !== null ? JSON.parse(stored) : true; // 기본값: 켜짐
+    console.log('🎤 저장된 마이크 상태 로드:', state);
+    return state;
+  };
+  
+  const getStoredCameraState = () => {
+    const stored = localStorage.getItem('miniarea-camera-state');
+    const state = stored !== null ? JSON.parse(stored) : true; // 기본값: 켜짐
+    console.log('📷 저장된 카메라 상태 로드:', state);
+    return state;
+  };
+
   // 상태 관리
   const [isJoined, setIsJoined] = useState(false);
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [isCameraOn, setIsCameraOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(getStoredMicState);
+  const [isCameraOn, setIsCameraOn] = useState(getStoredCameraState);
   const [remoteUsers, setRemoteUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isBarVisible, setIsBarVisible] = useState(true);
@@ -26,6 +41,7 @@ const IntegratedVideoBar = ({
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [userMapping, setUserMapping] = useState({}); // UID -> username 매핑
+  const [fullscreenVideo, setFullscreenVideo] = useState(null); // 전체화면 비디오 상태 { uid, type: 'local'|'remote' }
   
   const screenShareTrackRef = useRef(null);
   
@@ -597,7 +613,94 @@ const IntegratedVideoBar = ({
     };
   }, [socket, channelName, isJoined, username, userId]);
 
-  // 자동 숨김 기능 제거 - 이제 수동 토글만 사용
+  // 전체화면 더블클릭 핸들러
+  const handleVideoDoubleClick = (uid, type) => {
+    console.log('🎬 비디오 더블클릭:', { uid, type, currentFullscreen: fullscreenVideo });
+    
+    if (fullscreenVideo && fullscreenVideo.uid === uid && fullscreenVideo.type === type) {
+      // 이미 전체화면이면 해제
+      setFullscreenVideo(null);
+    } else {
+      // 전체화면으로 설정
+      setFullscreenVideo({ uid, type });
+    }
+  };
+
+  // ESC 키로 전체화면 해제
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && fullscreenVideo) {
+        setFullscreenVideo(null);
+      }
+    };
+
+    if (fullscreenVideo) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [fullscreenVideo]);
+
+  // 전체화면 비디오 재생
+  useEffect(() => {
+    if (!fullscreenVideo) return;
+
+    const fullscreenContainer = document.getElementById(`fullscreen-video-${fullscreenVideo.uid}`);
+    if (!fullscreenContainer) return;
+
+    console.log('🎬 전체화면 비디오 재생 시작:', fullscreenVideo);
+
+    const playFullscreenVideo = () => {
+      if (fullscreenVideo.type === 'local') {
+        // 로컬 비디오 재생
+        if (localVideoTrackRef.current) {
+          console.log('🎬 로컬 비디오를 전체화면에 재생');
+          localVideoTrackRef.current.play(fullscreenContainer);
+        } else if (screenShareTrackRef.current) {
+          console.log('🎬 화면 공유를 전체화면에 재생');
+          screenShareTrackRef.current.play(fullscreenContainer);
+        }
+      } else {
+        // 원격 비디오 재생
+        const remoteUser = remoteUsers.find(user => user.uid === fullscreenVideo.uid);
+        if (remoteUser && remoteUser.videoTrack) {
+          console.log('🎬 원격 비디오를 전체화면에 재생');
+          remoteUser.videoTrack.play(fullscreenContainer);
+        }
+      }
+    };
+
+    // 약간의 지연 후 재생 (DOM이 완전히 렌더링된 후)
+    const timer = setTimeout(playFullscreenVideo, 100);
+
+    return () => {
+      clearTimeout(timer);
+      // 전체화면 해제 시 원래 컨테이너로 비디오 복원
+      if (fullscreenVideo.type === 'local') {
+        if (localVideoTrackRef.current && localVideoContainerRef.current) {
+          localVideoTrackRef.current.play(localVideoContainerRef.current);
+        } else if (screenShareTrackRef.current && localVideoContainerRef.current) {
+          screenShareTrackRef.current.play(localVideoContainerRef.current);
+        }
+      } else {
+        const remoteUser = remoteUsers.find(user => user.uid === fullscreenVideo.uid);
+        const originalContainer = document.getElementById(`integrated-remote-video-${fullscreenVideo.uid}`);
+        if (remoteUser && remoteUser.videoTrack && originalContainer) {
+          remoteUser.videoTrack.play(originalContainer);
+        }
+      }
+    };
+  }, [fullscreenVideo, remoteUsers, localVideoTrackRef.current, screenShareTrackRef.current]);
+
+  // 마이크/카메라 상태를 localStorage에 저장
+  useEffect(() => {
+    console.log('💾 마이크 상태 저장:', isMicOn);
+    localStorage.setItem('miniarea-mic-state', JSON.stringify(isMicOn));
+  }, [isMicOn]);
+
+  useEffect(() => {
+    console.log('💾 카메라 상태 저장:', isCameraOn);
+    localStorage.setItem('miniarea-camera-state', JSON.stringify(isCameraOn));
+  }, [isCameraOn]);
 
   if (!isEnabled || !currentMap) {
     console.log('🎥 IntegratedVideoBar 렌더링 안됨:', { isEnabled, currentMap: !!currentMap, userPosition: !!userPosition });
@@ -621,18 +724,67 @@ const IntegratedVideoBar = ({
   const needsScroll = totalParticipants > maxVisibleCameras;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        transform: isBarVisible ? 'translateY(0)' : 'translateY(calc(100% - 50px))',
-        transition: 'transform 0.3s ease-in-out',
-        pointerEvents: 'auto'
-      }}
-    >
+    <>
+      {/* 전체화면 비디오 오버레이 */}
+      {fullscreenVideo && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2000,
+            backgroundColor: 'black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+          onDoubleClick={() => setFullscreenVideo(null)}
+        >
+          <div
+            id={`fullscreen-video-${fullscreenVideo.uid}`}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          />
+          {/* 전체화면 컨트롤 */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              padding: '10px 15px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              pointerEvents: 'none'
+            }}
+          >
+            {userMapping[fullscreenVideo.uid] || `사용자 ${fullscreenVideo.uid}`} 
+            • 더블클릭 또는 ESC로 나가기
+          </div>
+        </div>
+      )}
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          transform: isBarVisible ? 'translateY(0)' : 'translateY(calc(100% - 50px))',
+          transition: 'transform 0.3s ease-in-out',
+          pointerEvents: 'auto'
+        }}
+      >
       {/* 화상회의 히든 상태일 때 토글 버튼 */}
       {!isBarVisible && (
         <div
@@ -958,8 +1110,10 @@ const IntegratedVideoBar = ({
                   backgroundColor: (isCameraOn || isScreenSharing) ? 'transparent' : '#333',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  cursor: 'pointer'
                 }}
+                onDoubleClick={() => handleVideoDoubleClick(generateUidFromUsername(username), 'local')}
               >
                 {/* 로컬 비디오가 없을 때 디버깅 메시지 */}
                 {!isCameraOn && !isScreenSharing && (
@@ -1088,8 +1242,10 @@ const IntegratedVideoBar = ({
                 style={{
                   width: '100%',
                   height: '100%',
-                  backgroundColor: user.videoTrack ? 'transparent' : '#333'
+                  backgroundColor: user.videoTrack ? 'transparent' : '#333',
+                  cursor: 'pointer'
                 }}
+                onDoubleClick={() => handleVideoDoubleClick(user.uid, 'remote')}
               />
 
               {/* 비디오 꺼짐 아이콘 */}
@@ -1201,6 +1357,7 @@ const IntegratedVideoBar = ({
         )}
       </div>
     </div>
+    </>
   );
 };
 

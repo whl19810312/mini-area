@@ -36,3 +36,817 @@ Forced re-optimization of dependencies
 8:25:59 PM [vite] hmr update /src/components/MetaverseScene.jsx
 8:26:12 PM [vite] hmr update /src/components/MetaverseScene.jsx
 8:26:20 PM [vite] hmr update /src/components/MetaverseScene.jsx
+8:28:47 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:29:09 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:29:30 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:29:30 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1278:10)
+
+  1276 |         )}
+  1277 |       </div>
+> 1278 |     </div>
+       |           ^
+  1279 |   );
+  1280 | };
+  1281 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1278:10
+  1276|          )}
+  1277|        </div>
+  1278|      </div>
+     |            ^
+  1279|    );
+  1280|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:29:30 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1278:10)
+
+  1276 |         )}
+  1277 |       </div>
+> 1278 |     </div>
+       |           ^
+  1279 |   );
+  1280 | };
+  1281 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1278:10
+  1276|          )}
+  1277|        </div>
+  1278|      </div>
+     |            ^
+  1279|    );
+  1280|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:29:30 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1278:10)
+
+  1276 |         )}
+  1277 |       </div>
+> 1278 |     </div>
+       |           ^
+  1279 |   );
+  1280 | };
+  1281 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1278:10
+  1276|          )}
+  1277|        </div>
+  1278|      </div>
+     |            ^
+  1279|    );
+  1280|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:29:49 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:29:49 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1280:10)
+
+  1278 |         )}
+  1279 |       </div>
+> 1280 |     </div>
+       |           ^
+  1281 |   );
+  1282 | };
+  1283 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1280:10
+  1278|          )}
+  1279|        </div>
+  1280|      </div>
+     |            ^
+  1281|    );
+  1282|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:29:49 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1280:10)
+
+  1278 |         )}
+  1279 |       </div>
+> 1280 |     </div>
+       |           ^
+  1281 |   );
+  1282 | };
+  1283 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1280:10
+  1278|          )}
+  1279|        </div>
+  1280|      </div>
+     |            ^
+  1281|    );
+  1282|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:29:49 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1280:10)
+
+  1278 |         )}
+  1279 |       </div>
+> 1280 |     </div>
+       |           ^
+  1281 |   );
+  1282 | };
+  1283 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1280:10
+  1278|          )}
+  1279|        </div>
+  1280|      </div>
+     |            ^
+  1281|    );
+  1282|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:05 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:30:05 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1282:10)
+
+  1280 |         )}
+  1281 |       </div>
+> 1282 |     </div>
+       |           ^
+  1283 |   );
+  1284 | };
+  1285 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1282:10
+  1280|          )}
+  1281|        </div>
+  1282|      </div>
+     |            ^
+  1283|    );
+  1284|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:05 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1282:10)
+
+  1280 |         )}
+  1281 |       </div>
+> 1282 |     </div>
+       |           ^
+  1283 |   );
+  1284 | };
+  1285 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1282:10
+  1280|          )}
+  1281|        </div>
+  1282|      </div>
+     |            ^
+  1283|    );
+  1284|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:05 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1282:10)
+
+  1280 |         )}
+  1281 |       </div>
+> 1282 |     </div>
+       |           ^
+  1283 |   );
+  1284 | };
+  1285 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1282:10
+  1280|          )}
+  1281|        </div>
+  1282|      </div>
+     |            ^
+  1283|    );
+  1284|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:21 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:30:21 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1333:10)
+
+  1331 |         )}
+  1332 |       </div>
+> 1333 |     </div>
+       |           ^
+  1334 |   );
+  1335 | };
+  1336 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1333:10
+  1331|          )}
+  1332|        </div>
+  1333|      </div>
+     |            ^
+  1334|    );
+  1335|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:21 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1333:10)
+
+  1331 |         )}
+  1332 |       </div>
+> 1333 |     </div>
+       |           ^
+  1334 |   );
+  1335 | };
+  1336 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1333:10
+  1331|          )}
+  1332|        </div>
+  1333|      </div>
+     |            ^
+  1334|    );
+  1335|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:21 PM [vite] Internal server error: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx: Unterminated JSX contents. (1333:10)
+
+  1331 |         )}
+  1332 |       </div>
+> 1333 |     </div>
+       |           ^
+  1334 |   );
+  1335 | };
+  1336 |
+  Plugin: vite:react-babel
+  File: /home/wh/working/complete/mini-area/client/src/components/IntegratedVideoBar.jsx:1333:10
+  1331|          )}
+  1332|        </div>
+  1333|      </div>
+     |            ^
+  1334|    );
+  1335|  };
+      at constructor (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:367:19)
+      at JSXParserMixin.raise (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6627:19)
+      at JSXParserMixin.jsxReadToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4478:20)
+      at JSXParserMixin.getTokenFromCode (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4804:12)
+      at JSXParserMixin.nextToken (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5810:10)
+      at JSXParserMixin.next (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5720:10)
+      at JSXParserMixin.eat (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:5724:12)
+      at JSXParserMixin.expect (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:6926:15)
+      at JSXParserMixin.jsxParseClosingElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4710:10)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4725:37)
+      at JSXParserMixin.jsxParseElementAt (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4728:32)
+      at JSXParserMixin.jsxParseElement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4779:17)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4789:19)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12427:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10795:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12494:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11674:28)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+      at JSXParserMixin.parseExprSubscripts (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11076:23)
+      at JSXParserMixin.parseUpdate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11061:21)
+      at JSXParserMixin.parseMaybeUnary (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11041:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10894:61)
+      at JSXParserMixin.parseExprOps (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10899:23)
+      at JSXParserMixin.parseMaybeConditional (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10876:23)
+      at JSXParserMixin.parseMaybeAssign (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10826:21)
+      at JSXParserMixin.parseExpressionBase (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10779:23)
+      at /home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:39
+      at JSXParserMixin.allowInAnd (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12422:16)
+      at JSXParserMixin.parseExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:10775:17)
+      at JSXParserMixin.parseReturnStatement (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13309:10)
+      at JSXParserMixin.parseBlock (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12101:24)
+      at JSXParserMixin.parseArrowExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:12076:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11686:12)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:11326:23)
+      at JSXParserMixin.parseExprAtom (/home/wh/working/complete/mini-area/client/node_modules/@babel/parser/lib/index.js:4794:20)
+8:30:34 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:31:55 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:32:09 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+8:32:55 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
