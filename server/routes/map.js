@@ -299,11 +299,18 @@ router.post('/', auth, async (req, res) => {
   try {
     const { name, description, isPublic, walls, privateAreas, spawnPoints, backgroundLayer, size } = req.body;
     
+    // 해당 생성자가 만든 맵의 개수를 조회하여 다음 순서 결정
+    const existingMapsCount = await Map.count({
+      where: { creatorId: req.user.id }
+    });
+    const nextMapIndex = existingMapsCount + 1;
+    
     const mapData = {
       name,
       description,
       isPublic: true, // 항상 공개로 설정
       creatorId: req.user.id,
+      creatorMapIndex: nextMapIndex,
       creatorInfo: {
         id: req.user.id,
         username: req.user.username,

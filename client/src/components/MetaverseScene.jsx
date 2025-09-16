@@ -8,7 +8,7 @@ import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
 import UserList from './UserList';
-import VideoConference from './VideoConference';
+import IntegratedVideoBar from './IntegratedVideoBar';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -44,8 +44,6 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatInputValue, setChatInputValue] = useState('');
   
-  // 화상회의 상태
-  const [showVideoConference, setShowVideoConference] = useState(false);
   
   // 마우스 드래그 상태 관리
   const [isDragging, setIsDragging] = useState(false);
@@ -357,24 +355,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           e.preventDefault();
           setShowChatInput(true);
         }
-        // V 키로 화상회의 토글
-        if (e.key === 'v' || e.key === 'V') {
-          e.preventDefault();
-          console.log('🎥 V키 눌림 - 화상회의 토글:', !showVideoConference);
-          setShowVideoConference(prev => !prev);
-        }
       }
       // ESC 키로 모든 창 닫기
       if (e.key === 'Escape') {
         setShowChatInput(false);
         setChatInputValue('');
-        setShowVideoConference(false);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [showVideoConference]);
+  }, []);
 
   // 채팅창 표시/숨김에 따른 읽지 않은 메시지 수 초기화
   useEffect(() => {
@@ -460,8 +451,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
           onSwitchToSNS={handleSwitchToSNS}
           onToggleChat={() => setIsChatVisible(!isChatVisible)}
           onToggleUsers={() => setIsUsersVisible(!isUsersVisible)}
-          onToggleVideoConference={() => setShowVideoConference(!showVideoConference)}
-          videoConferenceActive={showVideoConference}
+          onToggleVideoConference={() => {}}
+          videoConferenceActive={false}
           unreadCount={unreadMessageCount}
           participantCount={roomParticipants.length}
         />
@@ -945,13 +936,13 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
         </div>
       )}
 
-      {/* 화상회의 */}
-      <VideoConference
-        isOpen={showVideoConference}
-        onClose={() => setShowVideoConference(false)}
-        roomId={currentMap?.id || 'default'}
+
+      {/* 통합 화상회의 바 (자동 시작) */}
+      <IntegratedVideoBar
+        currentMap={currentMap}
         userId={user?.id || Date.now()}
         username={user?.username || '익명'}
+        isEnabled={currentMap && user}
       />
     </div>
   );

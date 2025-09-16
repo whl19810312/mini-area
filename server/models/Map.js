@@ -25,6 +25,12 @@ const Map = sequelize.define('Map', {
     allowNull: true,
     comment: '방 생성자의 사용자 정보 (username, id 등)'
   },
+  creatorMapIndex: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    comment: '해당 생성자가 만든 몇 번째 맵인지 (1부터 시작)'
+  },
   isPublic: {
     type: DataTypes.BOOLEAN,
     defaultValue: false

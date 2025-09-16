@@ -4,12 +4,12 @@
 
 Forced re-optimization of dependencies
 
-  VITE v4.5.14  ready in 158 ms
+  VITE v4.5.14  ready in 166 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-12:04:02 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+3:05:46 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 151|              mapCreatorId: map.creatorId,
 152|              mapCreatedBy: map.createdBy,
 153|              mapCreatorId: map.creator?.id,
@@ -19,7 +19,7 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-12:04:02 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+3:05:46 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 165|                mapCreatorId: map.creatorId,
 166|                mapCreatedBy: map.createdBy,
 167|                mapCreatorId: map.creator?.id,
@@ -29,4 +29,44 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-12:05:52 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:13:58 PM [vite] hmr update /src/components/MetaverseVideoConference.jsx
+3:14:11 PM [vite] hmr update /src/components/MetaverseVideoConference.jsx
+3:14:20 PM [vite] hmr update /src/components/MetaverseVideoConference.jsx
+3:14:31 PM [vite] hmr update /src/components/VideoConference.jsx
+3:14:40 PM [vite] hmr update /src/components/VideoConference.jsx
+3:14:50 PM [vite] hmr update /src/components/VideoConference.jsx
+3:14:58 PM [vite] .env.tmp.41604.1758003298814 changed, restarting server...
+3:14:58 PM [vite] .env changed, restarting server...
+Forced re-optimization of dependencies
+3:14:58 PM [vite] server restarted.
+3:14:59 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+151|              mapCreatorId: map.creatorId,
+152|              mapCreatedBy: map.createdBy,
+153|              mapCreatorId: map.creator?.id,
+   |              ^
+154|              userId: user?.id,
+155|              creatorIdMatch: map.creatorId === user?.id,
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:14:59 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
+165|                mapCreatorId: map.creatorId,
+166|                mapCreatedBy: map.createdBy,
+167|                mapCreatorId: map.creator?.id,
+   |                ^
+168|                userId: user?.id,
+169|                userName: user?.username
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+3:20:21 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:20:28 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:20:35 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:20:44 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:20:52 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:21:07 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:21:22 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:21:31 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:23:04 PM [vite] hmr update /src/components/IntegratedVideoBar.jsx
+3:23:33 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:35:07 PM [vite] hmr update /src/components/MetaverseScene.jsx

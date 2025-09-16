@@ -36,6 +36,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "agora-access-token": "^2.0.4",
     "bcryptjs": "^2.4.3",
     "bull": "^4.16.5",
     "concurrently": "^8.2.0",

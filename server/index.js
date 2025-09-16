@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const mapRoutes = require('./routes/map');
 const characterRoutes = require('./routes/character');
 const userRoutes = require('./routes/user');
+const agoraRoutes = require('./routes/agora');
 const PrivateAreaHandler = require('./websocket/privateAreaHandler');
 const MetaverseHandler = require('./websocket/metaverseHandler');
 
@@ -102,6 +103,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/maps', mapRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/agora', agoraRoutes);
 
 // 클라이언트 호환성을 위한 추가 라우트 (api 접두사 없이)
 app.use('/maps', mapRoutes);

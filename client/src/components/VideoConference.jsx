@@ -20,18 +20,56 @@ const VideoConference = ({
   const localVideoContainerRef = useRef(null);
 
   // Agora 설정
-  const APP_ID = '4fdc24d11417437785bfc1d7ddb78c96';
-  const TOKEN = null; // 개발용으로 null 사용, 프로덕션에서는 토큰 필요
+  const APP_ID = import.meta.env.VITE_AGORA_APP_ID || '4fdc24d11417437785bfc1d7ddb78c96';
 
-  // Agora 채널명 생성 (규칙: 1-64자, a-z A-Z 0-9 및 특정 특수문자만 허용)
+  // Agora 채널명 생성 (생성자 ID와 맵 순서 기반)
   const generateChannelName = (roomId) => {
-    // roomId를 문자열로 변환하고 접두사 추가
+    // 단순한 roomId 기반 채널명 (기존 호환성 유지)
     const channelName = `room_${roomId}`;
     // Agora 규칙에 맞게 검증 및 수정
     return channelName.replace(/[^a-zA-Z0-9\s!#$%&()+\-:;<=>?@\[\]^_{|}~,]/g, '_');
   };
 
   const channelName = generateChannelName(roomId);
+
+  // Agora 토큰 요청 함수
+  const requestAgoraToken = async (channelName, userId, role = 'publisher') => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await fetch('/api/agora/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          channelName,
+          userId,
+          role
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Token request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Token generation failed');
+      }
+
+      console.log('✅ Agora 토큰 요청 성공:', { channelName, userId });
+      return data.token;
+
+    } catch (error) {
+      console.error('❌ Agora 토큰 요청 실패:', error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -119,9 +157,13 @@ const VideoConference = ({
     setIsLoading(true);
     
     try {
+      // 토큰 요청
+      console.log('🎫 Agora 토큰 요청 중:', { channelName, userId });
+      const token = await requestAgoraToken(channelName, userId, 'publisher');
+      
       // 채널 입장
       console.log('🔗 Agora 채널 입장 시도:', { channelName, userId });
-      await clientRef.current.join(APP_ID, channelName, TOKEN, userId);
+      await clientRef.current.join(APP_ID, channelName, token, userId);
       console.log('✅ 채널 입장 성공:', channelName);
 
       // 로컬 오디오/비디오 트랙 생성
