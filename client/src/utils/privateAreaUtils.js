@@ -114,3 +114,113 @@ export const doPrivateAreasOverlap = (area1, area2) => {
            rect1.bottom < rect2.top || 
            rect1.top > rect2.bottom);
 };
+
+/**
+ * 점이 어떤 타입의 영역에 있는지 확인
+ * @param {Object} point - 확인할 점 {x, y}
+ * @param {Array} privateAreas - Private Area 배열
+ * @returns {string} 영역 타입 ('public', 'private', 'restricted')
+ */
+export const getAreaTypeAtPoint = (point, privateAreas = []) => {
+  if (!point || !Array.isArray(privateAreas)) return 'public';
+  
+  const normalizedAreas = normalizePrivateAreas(privateAreas);
+  
+  for (const area of normalizedAreas) {
+    if (isPointInPrivateArea(point, area)) {
+      // area.type이 있으면 사용, 없으면 기본값 'private'
+      return area.type || 'private';
+    }
+  }
+  
+  return 'public';
+};
+
+/**
+ * 무지개 색상 팔레트 (ROYGBIV 순서)
+ */
+const RAINBOW_COLORS = [
+  { name: 'Red', fill: 'rgba(255, 99, 132, 0.3)', stroke: 'rgba(255, 99, 132, 0.8)' },      // 빨강
+  { name: 'Orange', fill: 'rgba(255, 159, 64, 0.3)', stroke: 'rgba(255, 159, 64, 0.8)' },   // 주황
+  { name: 'Yellow', fill: 'rgba(255, 205, 86, 0.3)', stroke: 'rgba(255, 205, 86, 0.8)' },   // 노랑
+  { name: 'Green', fill: 'rgba(75, 192, 192, 0.3)', stroke: 'rgba(75, 192, 192, 0.8)' },     // 초록
+  { name: 'Blue', fill: 'rgba(54, 162, 235, 0.3)', stroke: 'rgba(54, 162, 235, 0.8)' },      // 파랑
+  { name: 'Indigo', fill: 'rgba(153, 102, 255, 0.3)', stroke: 'rgba(153, 102, 255, 0.8)' }, // 남색
+  { name: 'Violet', fill: 'rgba(255, 99, 255, 0.3)', stroke: 'rgba(255, 99, 255, 0.8)' }    // 보라
+];
+
+/**
+ * 확장 색상 팔레트 (무지개 색상 수를 초과하는 경우 사용)
+ */
+const EXTENDED_COLORS = [
+  { name: 'Pink', fill: 'rgba(255, 192, 203, 0.3)', stroke: 'rgba(255, 192, 203, 0.8)' },
+  { name: 'Cyan', fill: 'rgba(0, 255, 255, 0.3)', stroke: 'rgba(0, 255, 255, 0.8)' },
+  { name: 'Lime', fill: 'rgba(50, 205, 50, 0.3)', stroke: 'rgba(50, 205, 50, 0.8)' },
+  { name: 'Magenta', fill: 'rgba(255, 0, 255, 0.3)', stroke: 'rgba(255, 0, 255, 0.8)' },
+  { name: 'Teal', fill: 'rgba(0, 128, 128, 0.3)', stroke: 'rgba(0, 128, 128, 0.8)' },
+  { name: 'Navy', fill: 'rgba(0, 0, 128, 0.3)', stroke: 'rgba(0, 0, 128, 0.8)' },
+  { name: 'Maroon', fill: 'rgba(128, 0, 0, 0.3)', stroke: 'rgba(128, 0, 0, 0.8)' },
+  { name: 'Olive', fill: 'rgba(128, 128, 0, 0.3)', stroke: 'rgba(128, 128, 0, 0.8)' }
+];
+
+/**
+ * 프라이빗 영역 인덱스에 따른 색상 반환
+ * @param {number} index - 프라이빗 영역 인덱스 (0부터 시작)
+ * @returns {Object} 색상 객체 {name, fill, stroke}
+ */
+export const getPrivateAreaColor = (index) => {
+  if (index < RAINBOW_COLORS.length) {
+    return RAINBOW_COLORS[index];
+  }
+  
+  // 무지개 색상을 초과하는 경우 확장 색상 사용
+  const extendedIndex = (index - RAINBOW_COLORS.length) % EXTENDED_COLORS.length;
+  const extendedColor = EXTENDED_COLORS[extendedIndex];
+  
+  // 여러 번 반복되는 경우 투명도를 조절하여 구분
+  const cycleCount = Math.floor((index - RAINBOW_COLORS.length) / EXTENDED_COLORS.length);
+  const opacityMultiplier = Math.max(0.2, 1 - (cycleCount * 0.1));
+  
+  return {
+    name: `${extendedColor.name} ${cycleCount > 0 ? `(${cycleCount + 1})` : ''}`,
+    fill: extendedColor.fill.replace(/0\.\d+/, `${0.3 * opacityMultiplier}`),
+    stroke: extendedColor.stroke.replace(/0\.\d+/, `${0.8 * opacityMultiplier}`)
+  };
+};
+
+/**
+ * 모든 사용 가능한 색상 개수 반환
+ * @returns {number} 총 색상 개수
+ */
+export const getTotalAvailableColors = () => {
+  return RAINBOW_COLORS.length + EXTENDED_COLORS.length;
+};
+
+/**
+ * 무지개 색상 정보 반환
+ * @returns {Array} 무지개 색상 배열
+ */
+export const getRainbowColors = () => {
+  return [...RAINBOW_COLORS];
+};
+
+/**
+ * 영역 타입에 따른 이름표 배경색 반환
+ * @param {string} areaType - 영역 타입 ('public', 'private', 'restricted')
+ * @param {boolean} isCurrentUser - 현재 사용자인지 여부
+ * @param {number} privateAreaIndex - 프라이빗 영역인 경우 인덱스
+ * @returns {string} 배경색 (rgba 형식)
+ */
+export const getNametagBackgroundColor = (areaType, isCurrentUser = false, privateAreaIndex = 0) => {
+  if (areaType === 'private') {
+    const color = getPrivateAreaColor(privateAreaIndex);
+    return color.fill;
+  }
+  
+  const colors = {
+    public: isCurrentUser ? 'rgba(76, 175, 80, 0.3)' : 'rgba(33, 150, 243, 0.3)', // 초록/파랑 70% 투명
+    restricted: isCurrentUser ? 'rgba(231, 76, 60, 0.3)' : 'rgba(231, 76, 60, 0.3)' // 빨강 70% 투명
+  };
+  
+  return colors[areaType] || colors.public;
+};

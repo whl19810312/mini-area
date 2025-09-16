@@ -48,7 +48,7 @@ const io = socketIo(server, {
   forceBase64: false
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7000;
 
 // 미들웨어
 app.use(cors({

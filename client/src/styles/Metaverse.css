@@ -55,7 +55,7 @@
 
 .metaverse-content {
   flex: 1;
-  overflow: hidden;
+  overflow: visible; /* 캐릭터 머리와 이름표가 잘리지 않도록 변경 */
   position: relative;
 }
 

@@ -3,7 +3,7 @@ const createCharacterImages = () => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = 32;
-  canvas.height = 32;
+  canvas.height = 48;
 
   const characters = {
     up: {
@@ -36,37 +36,37 @@ const createCharacterImages = () => {
 
   // 각 방향별로 캐릭터 이미지 생성
   Object.keys(characters).forEach(direction => {
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
     
     // 투명 배경 설정 (완전 투명)
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
 
     const char = characters[direction];
     
-    // 머리 (상단)
+    // 머리 (상단) - Y 위치를 더 아래로 이동하여 잘림 방지
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#000000';
-    ctx.fillText(char.head, 16, 8);
+    ctx.fillText(char.head, 16, 16);
 
     // 몸 (중간)
     ctx.font = '10px Arial';
-    ctx.fillText(char.body, 16, 18);
+    ctx.fillText(char.body, 16, 28);
 
     // 팔 (양쪽)
     ctx.font = '8px Arial';
     if (direction === 'left') {
-      ctx.fillText(char.arms, 8, 18);
+      ctx.fillText(char.arms, 8, 28);
     } else if (direction === 'right') {
-      ctx.fillText(char.arms, 24, 18);
+      ctx.fillText(char.arms, 24, 28);
     } else {
-      ctx.fillText(char.arms, 12, 18);
-      ctx.fillText(char.arms, 20, 18);
+      ctx.fillText(char.arms, 12, 28);
+      ctx.fillText(char.arms, 20, 28);
     }
 
     // 다리 (하단)
     ctx.font = '8px Arial';
-    ctx.fillText(char.legs, 16, 28);
+    ctx.fillText(char.legs, 16, 40);
 
     images[direction] = canvas.toDataURL('image/png');
   });
@@ -81,7 +81,7 @@ export const createDefaultCharacter = (name = '기본 캐릭터') => {
   return {
     name: name,
     images: images,
-    size: 32,
+    size: 48,
     position: { x: 0, y: 0 }
   };
 };
@@ -91,7 +91,7 @@ export const createAdvancedCharacter = (name = '향상된 캐릭터') => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = 32;
-  canvas.height = 32;
+  canvas.height = 48;
 
   const characters = {
     up: {
@@ -124,37 +124,37 @@ export const createAdvancedCharacter = (name = '향상된 캐릭터') => {
 
   // 각 방향별로 캐릭터 이미지 생성
   Object.keys(characters).forEach(direction => {
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
     
     // 투명 배경 설정 (완전 투명)
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
 
     const char = characters[direction];
     
-    // 머리 (상단)
+    // 머리 (상단) - Y 위치를 더 아래로 이동하여 잘림 방지
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#000000';
-    ctx.fillText(char.head, 16, 8);
+    ctx.fillText(char.head, 16, 16);
 
     // 몸 (중간)
     ctx.font = '10px Arial';
-    ctx.fillText(char.body, 16, 18);
+    ctx.fillText(char.body, 16, 28);
 
     // 팔 (양쪽)
     ctx.font = '8px Arial';
     if (direction === 'left') {
-      ctx.fillText(char.arms, 8, 18);
+      ctx.fillText(char.arms, 8, 28);
     } else if (direction === 'right') {
-      ctx.fillText(char.arms, 24, 18);
+      ctx.fillText(char.arms, 24, 28);
     } else {
-      ctx.fillText(char.arms, 12, 18);
-      ctx.fillText(char.arms, 20, 18);
+      ctx.fillText(char.arms, 12, 28);
+      ctx.fillText(char.arms, 20, 28);
     }
 
     // 다리 (하단)
     ctx.font = '8px Arial';
-    ctx.fillText(char.legs, 16, 28);
+    ctx.fillText(char.legs, 16, 40);
 
     images[direction] = canvas.toDataURL('image/png');
   });
@@ -162,7 +162,7 @@ export const createAdvancedCharacter = (name = '향상된 캐릭터') => {
   return {
     name: name,
     images: images,
-    size: 32,
+    size: 48,
     position: { x: 0, y: 0 }
   };
 };
@@ -172,43 +172,43 @@ export const createCustomCharacter = (name, customChars) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = 32;
-  canvas.height = 32;
+  canvas.height = 48;
 
   const images = {};
 
   // 각 방향별로 커스텀 캐릭터 이미지 생성
   Object.keys(customChars).forEach(direction => {
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
     
     // 투명 배경 설정 (완전 투명)
-    ctx.clearRect(0, 0, 32, 32);
+    ctx.clearRect(0, 0, 32, 48);
 
     const char = customChars[direction];
     
-    // 머리
+    // 머리 - Y 위치를 더 아래로 이동하여 잘림 방지
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#000000';
-    ctx.fillText(char.head || '😊', 16, 8);
+    ctx.fillText(char.head || '😊', 16, 16);
 
     // 몸
     ctx.font = '10px Arial';
-    ctx.fillText(char.body || '👕', 16, 18);
+    ctx.fillText(char.body || '👕', 16, 28);
 
     // 팔
     ctx.font = '8px Arial';
     if (direction === 'left') {
-      ctx.fillText(char.arms || '👐', 8, 18);
+      ctx.fillText(char.arms || '👐', 8, 28);
     } else if (direction === 'right') {
-      ctx.fillText(char.arms || '👐', 24, 18);
+      ctx.fillText(char.arms || '👐', 24, 28);
     } else {
-      ctx.fillText(char.arms || '👐', 12, 18);
-      ctx.fillText(char.arms || '👐', 20, 18);
+      ctx.fillText(char.arms || '👐', 12, 28);
+      ctx.fillText(char.arms || '👐', 20, 28);
     }
 
     // 다리
     ctx.font = '8px Arial';
-    ctx.fillText(char.legs || '👖', 16, 28);
+    ctx.fillText(char.legs || '👖', 16, 40);
 
     images[direction] = canvas.toDataURL('image/png');
   });
@@ -216,7 +216,7 @@ export const createCustomCharacter = (name, customChars) => {
   return {
     name: name,
     images: images,
-    size: 32,
+    size: 48,
     position: { x: 0, y: 0 }
   };
 };

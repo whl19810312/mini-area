@@ -175,7 +175,7 @@ const MetaverseViewport = ({
       style={{
         width: '100%',
         height: '100%',
-        overflow: 'hidden',
+        overflow: 'visible', // 캐릭터 머리와 이름표가 잘리지 않도록 변경
         cursor: isDragging ? 'grabbing' : 'grab',
         position: 'relative',
         touchAction: 'none' // 브라우저의 기본 터치 동작 방지
@@ -187,16 +187,17 @@ const MetaverseViewport = ({
         style={{
           transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`,
           transformOrigin: '0 0',
-          width: sceneSize.width ? `${sceneSize.width}px` : '100vw',
-          height: sceneSize.height ? `${sceneSize.height}px` : 'calc(100vh - 60px)',
-          minWidth: '100vw',
-          minHeight: 'calc(100vh - 60px)',
+          width: sceneSize.width ? `${sceneSize.width + 100}px` : 'calc(100vw + 100px)', // 좌우 50px씩 여백 추가
+          height: sceneSize.height ? `${sceneSize.height + 100}px` : 'calc(100vh - 60px + 100px)', // 상하 50px씩 여백 추가
+          minWidth: 'calc(100vw + 100px)',
+          minHeight: 'calc(100vh - 60px + 100px)',
           position: 'relative',
           backgroundImage: mapImage ? `url(${mapImage})` : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundColor: '#1a1a1a'
+          backgroundColor: '#1a1a1a',
+          padding: '50px' // 모든 방향에 50px 패딩 추가
         }}
         onLoad={() => setBackgroundLoaded(true)}
       >

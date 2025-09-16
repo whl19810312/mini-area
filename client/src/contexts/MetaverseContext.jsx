@@ -132,11 +132,25 @@ export const MetaverseProvider = ({ children }) => {
       
       if (response.data.success) {
         const charactersData = response.data.characters || [];
-        setCharacters(charactersData);
+        
+        // 각 캐릭터의 appearance 데이터를 이미지로 변환
+        const processedCharacters = charactersData.map(character => {
+          if (character.appearance && (!character.images || Object.values(character.images).some(img => !img))) {
+            console.log('🔄 캐릭터 이미지 업데이트:', character.name, character.appearance);
+            const generatedImages = generateImagesFromAppearance(character.appearance, character.size || 48);
+            return {
+              ...character,
+              images: generatedImages
+            };
+          }
+          return character;
+        });
+        
+        setCharacters(processedCharacters);
         
         // 첫 번째 캐릭터 자동 선택
-        if (charactersData.length > 0 && !currentCharacter) {
-          setCurrentCharacter(charactersData[0]);
+        if (processedCharacters.length > 0 && !currentCharacter) {
+          setCurrentCharacter(processedCharacters[0]);
         }
       }
     } catch (error) {
@@ -217,23 +231,32 @@ export const MetaverseProvider = ({ children }) => {
     if (!token || !characterId) return null;
     
     try {
+      console.log('🔄 캐릭터 업데이트 요청:', {
+        characterId,
+        characterData
+      });
+      
       const response = await axios.put(`/api/characters/${characterId}`, characterData);
+      
+      console.log('📡 캐릭터 업데이트 응답:', response.data);
       
       if (response.data.success) {
         const updatedCharacter = response.data.character;
         setCharacters(prev => prev.map(char => char.id === characterId ? updatedCharacter : char));
         
         if (currentCharacter && currentCharacter.id === characterId) {
+          console.log('✅ 현재 캐릭터 업데이트됨:', updatedCharacter);
           setCurrentCharacter(updatedCharacter);
         }
         
         return updatedCharacter;
       } else {
+        console.error('❌ 캐릭터 업데이트 실패:', response.data.message);
         setError('캐릭터 업데이트에 실패했습니다.');
         return null;
       }
     } catch (error) {
-      console.error('캐릭터 업데이트 오류:', error);
+      console.error('❌ 캐릭터 업데이트 오류:', error);
       setError('캐릭터 업데이트에 실패했습니다.');
       return null;
     }
@@ -244,18 +267,23 @@ export const MetaverseProvider = ({ children }) => {
     if (!token) return null;
     
     try {
+      console.log('🆕 캐릭터 생성 요청:', characterData);
+      
       const response = await axios.post('/api/characters', characterData);
+      
+      console.log('📡 캐릭터 생성 응답:', response.data);
       
       if (response.data.success) {
         const newCharacter = response.data.character;
         setCharacters(prev => [...prev, newCharacter]);
         return newCharacter;
       } else {
+        console.error('❌ 캐릭터 생성 실패:', response.data.message);
         setError('캐릭터 생성에 실패했습니다.');
         return null;
       }
     } catch (error) {
-      console.error('캐릭터 생성 오류:', error);
+      console.error('❌ 캐릭터 생성 오류:', error);
       setError('캐릭터 생성에 실패했습니다.');
       return null;
     }
@@ -263,6 +291,14 @@ export const MetaverseProvider = ({ children }) => {
 
   // 캐릭터 선택
   const selectCharacter = (character) => {
+    console.log('🎯 캐릭터 선택:', {
+      id: character?.id,
+      name: character?.name,
+      hasAppearance: !!character?.appearance,
+      hasImages: !!character?.images,
+      appearance: character?.appearance,
+      images: character?.images
+    });
     setCurrentCharacter(character);
   };
 
@@ -271,23 +307,135 @@ export const MetaverseProvider = ({ children }) => {
     setCurrentMap(map);
   };
 
-  // 이모지 기반 캐릭터 자동 생성
-  const createEmojiCharacter = async (emoji) => {
-    if (!token) return null;
+  // appearance 데이터를 이미지로 변환하는 함수
+  const generateImagesFromAppearance = (appearance, size = 48) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = size;
+    canvas.height = size;
+
+    const images = {};
+    const directions = ['down', 'up', 'left', 'right'];
+
+    directions.forEach(direction => {
+      ctx.clearRect(0, 0, size, size);
+      
+      const { head, body, arms, legs } = appearance;
+      
+      // 머리 (상단)
+      ctx.font = `${size/4}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#000000';
+      ctx.fillText(head || '😊', size/2, size/3);
+
+      // 몸 (중간)
+      ctx.font = `${size/5}px Arial`;
+      ctx.fillText(body || '👕', size/2, size*0.58);
+
+      // 팔 (방향에 따라 다름)
+      ctx.font = `${size/6}px Arial`;
+      if (direction === 'left') {
+        ctx.fillText(arms || '👐', size/4, size*0.58);
+      } else if (direction === 'right') {
+        ctx.fillText(arms || '👐', size*3/4, size*0.58);
+      } else {
+        ctx.fillText(arms || '👐', size/3, size*0.58);
+        ctx.fillText(arms || '👐', size*2/3, size*0.58);
+      }
+
+      // 다리 (하단)
+      ctx.font = `${size/6}px Arial`;
+      ctx.fillText(legs || '👖', size/2, size*0.83);
+
+      // 이미지를 base64로 변환 (data: 접두사 제거)
+      const imageData = canvas.toDataURL('image/png');
+      images[direction] = imageData.split(',')[1]; // base64 부분만 추출
+    });
+
+    return images;
+  };
+
+  // 통합된 캐릭터 생성/업데이트 함수
+  const createOrUpdateCharacter = async (characterName, characterData = null) => {
+    if (!token || !user) return null;
     
     try {
-      const characterData = createAdvancedCharacter(emoji);
-      const savedCharacter = await createCharacter(characterData);
+      const userName = characterName || user.username;
+      
+      // 기존 캐릭터 확인
+      const existingCharacter = characters.find(char => char.name === userName);
+      
+      let finalCharacterData;
+      if (characterData) {
+        // 커스터마이징 데이터가 제공된 경우
+        const characterSize = characterData.size || 48;
+        let characterImages = characterData.images;
+        
+        // appearance 데이터가 있으면 이미지 생성
+        if (characterData.appearance) {
+          console.log('🎨 appearance 데이터로 이미지 생성:', characterData.appearance);
+          characterImages = generateImagesFromAppearance(characterData.appearance, characterSize);
+        }
+        
+        finalCharacterData = {
+          name: userName,
+          ...characterData,
+          images: characterImages
+        };
+      } else {
+        // 자동 생성하는 경우 - 기존 캐릭터가 있으면 그 설정 유지, 없으면 기본값
+        const autoGeneratedData = createAdvancedCharacter(userName);
+        
+        // 기존 캐릭터의 appearance 설정이 있으면 유지
+        let appearanceData = {
+          head: '😊',
+          body: '👕', 
+          arms: '👐',
+          legs: '👖'
+        };
+        
+        if (existingCharacter?.appearance) {
+          console.log('✅ 기존 캐릭터의 appearance 설정 유지:', existingCharacter.appearance);
+          appearanceData = existingCharacter.appearance;
+        }
+        
+        // appearance 데이터로 이미지 생성
+        const characterSize = existingCharacter?.size || 48;
+        const generatedImages = generateImagesFromAppearance(appearanceData, characterSize);
+        
+        finalCharacterData = {
+          name: userName,
+          appearance: appearanceData,
+          images: generatedImages,
+          size: characterSize
+        };
+      }
+      
+      let savedCharacter;
+      if (existingCharacter) {
+        console.log('🔄 기존 캐릭터 업데이트:', userName);
+        savedCharacter = await updateCharacter(existingCharacter.id, finalCharacterData);
+      } else {
+        console.log('🆕 새 캐릭터 생성:', userName);
+        savedCharacter = await createCharacter(finalCharacterData);
+      }
       
       if (savedCharacter) {
+        // 캐릭터 목록 갱신
+        await fetchCharacters();
         setCurrentCharacter(savedCharacter);
         return savedCharacter;
       }
       return null;
     } catch (error) {
-      console.error('이모지 캐릭터 생성 오류:', error);
+      console.error('캐릭터 생성/업데이트 오류:', error);
       return null;
     }
+  };
+
+  // 이모지 기반 캐릭터 자동 생성 (레거시 호환용)
+  const createEmojiCharacter = async (characterName) => {
+    return await createOrUpdateCharacter(characterName);
   };
 
   // 사용자 로그인 시 데이터 로드
@@ -364,23 +512,53 @@ export const MetaverseProvider = ({ children }) => {
     };
   }, [user, socket]);
 
-  // 캐릭터 자동 선택
+  // 캐릭터 자동 선택 (개선된 로직)
   useEffect(() => {
-    if (characters.length > 0 && !currentCharacter) {
-      // 저장된 캐릭터가 있으면 선택
+    if (characters.length > 0 && !currentCharacter && user) {
+      console.log('🔍 캐릭터 자동 선택 시작:', {
+        charactersCount: characters.length,
+        username: user.username,
+        characterNames: characters.map(c => c.name)
+      });
+
+      // 1. 저장된 캐릭터 ID로 선택 시도
       const savedCharacterId = localStorage.getItem('selectedCharacterId');
       if (savedCharacterId) {
         const savedCharacter = characters.find(char => char.id.toString() === savedCharacterId);
         if (savedCharacter) {
+          console.log('✅ 저장된 캐릭터 ID로 선택:', savedCharacter.name);
           setCurrentCharacter(savedCharacter);
           return;
+        } else {
+          console.log('⚠️ 저장된 캐릭터 ID에 해당하는 캐릭터 없음:', savedCharacterId);
         }
       }
-      
-      // 첫 번째 캐릭터 선택
+
+      // 2. 사용자 이름과 일치하는 캐릭터 찾기
+      const userCharacter = characters.find(char => char.name === user.username);
+      if (userCharacter) {
+        console.log('✅ 사용자 이름으로 캐릭터 선택:', userCharacter.name);
+        setCurrentCharacter(userCharacter);
+        return;
+      }
+
+      // 3. 가장 최근에 생성된 캐릭터 선택 (appearance 데이터가 있는 것 우선)
+      const charactersWithAppearance = characters.filter(char => char.appearance);
+      if (charactersWithAppearance.length > 0) {
+        // createdAt 기준으로 내림차순 정렬하여 가장 최근 캐릭터 선택
+        const sortedCharacters = [...charactersWithAppearance].sort((a, b) => 
+          new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        );
+        console.log('✅ 가장 최근 캐릭터 선택 (appearance 있음):', sortedCharacters[0].name);
+        setCurrentCharacter(sortedCharacters[0]);
+        return;
+      }
+
+      // 4. 마지막 수단: 첫 번째 캐릭터 선택
+      console.log('✅ 첫 번째 캐릭터 선택 (기본값):', characters[0].name);
       setCurrentCharacter(characters[0]);
     }
-  }, [characters, currentCharacter]);
+  }, [characters, currentCharacter, user]);
 
   // 선택된 캐릭터 저장
   useEffect(() => {
@@ -417,6 +595,8 @@ export const MetaverseProvider = ({ children }) => {
     selectCharacter,
     selectMap,
     createEmojiCharacter,
+    createOrUpdateCharacter,
+    generateImagesFromAppearance,
     refreshMaps,
     setError
   };

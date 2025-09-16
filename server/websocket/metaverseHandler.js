@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { getAreaTypeAtPoint, findPrivateAreaAtPoint, getAreaDescription } = require('../utils/areaUtils');
 
 class MetaverseHandler {
   constructor(io) {
@@ -55,12 +56,18 @@ class MetaverseHandler {
               socketId: socketId,
               position: userInfo.position || { x: 200, y: 200 },
               direction: userInfo.direction || 'down',
-              characterInfo: userInfo.characterInfo
+              characterInfo: userInfo.characterInfo,
+              areaType: userInfo.areaType || 'public',
+              currentArea: userInfo.currentArea,
+              areaDescription: userInfo.areaDescription || '공개 영역'
             });
           }
         }
         
         // 해당 맵의 모든 사용자에게 전송
+        if (users.length > 0) {
+          console.log(`📡 맵 ${mapId}에 사용자 정보 브로드캐스트:`, users.map(u => u.username));
+        }
         this.io.to(`map-${mapId}`).emit('all-users-update', {
           mapId: mapId,
           users: users,
@@ -462,10 +469,37 @@ class MetaverseHandler {
       const userInfo = this.socketUsers.get(socket.id);
       if (!userInfo) return;
 
+      // 현재 맵 정보 가져오기
+      const currentMap = this.mapsList.get(userInfo.mapId);
+      
+      // 영역 정보 판단
+      let areaType = 'public';
+      let currentArea = null;
+      let areaDescription = '공개 영역';
+      
+      if (currentMap && currentMap.privateAreas && data.position) {
+        areaType = getAreaTypeAtPoint(data.position, currentMap.privateAreas);
+        currentArea = findPrivateAreaAtPoint(data.position, currentMap.privateAreas);
+        areaDescription = getAreaDescription(areaType, currentArea);
+      }
+
       // 위치 정보 업데이트 (브로드캐스트는 0.5초마다 일괄 처리)
       userInfo.position = data.position;
       userInfo.direction = data.direction;
+      userInfo.areaType = areaType;
+      userInfo.currentArea = currentArea;
+      userInfo.areaDescription = areaDescription;
       userInfo.lastPositionUpdate = new Date();
+      
+      // 로그인 사용자 정보에도 영역 정보 업데이트
+      this.updateLoggedInUserInfo(socket.userId, {
+        위치: data.position,
+        방향: data.direction,
+        영역타입: areaType,
+        현재영역: currentArea?.name || areaDescription,
+        영역설명: areaDescription,
+        마지막활동: new Date().toISOString()
+      });
       
       // 맵 정보가 포함되어 있으면 사용자 입실 상태 업데이트
       if (data.mapId && data.mapName) {
@@ -596,6 +630,21 @@ class MetaverseHandler {
 
     const socketUserInfo = this.socketUsers.get(socket.id);
     const initialPosition = position || { x: 200, y: 200 }; // 기본 시작점
+    
+    // 맵 정보 가져오기
+    const currentMap = this.mapsList.get(mapId);
+    
+    // 영역 정보 판단
+    let areaType = 'public';
+    let currentArea = null;
+    let areaDescription = '공개 영역';
+    
+    if (currentMap && currentMap.privateAreas && initialPosition) {
+      areaType = getAreaTypeAtPoint(initialPosition, currentMap.privateAreas);
+      currentArea = findPrivateAreaAtPoint(initialPosition, currentMap.privateAreas);
+      areaDescription = getAreaDescription(areaType, currentArea);
+    }
+    
     this.socketUsers.set(socket.id, {
         ...socketUserInfo,
         mapId,
@@ -603,10 +652,16 @@ class MetaverseHandler {
         position: initialPosition,
         direction: 'down',
         characterInfo: characterInfo,
+        areaType: areaType,
+        currentArea: currentArea,
+        areaDescription: areaDescription,
         lastPositionUpdate: new Date()
     });
     
-    console.log(`🏠 ${socket.username} 맵 입장 - 초기 위치 설정:`, initialPosition);
+    console.log(`🏠 ${socket.username} 맵 입장 - 초기 위치 및 영역 설정:`, {
+      position: initialPosition,
+      area: areaDescription
+    });
 
     socket.join(`map-${mapId}`);
     socket.mapId = mapId;
@@ -629,6 +684,9 @@ class MetaverseHandler {
         입장시간: new Date().toISOString(),
         위치: initialPosition,
         방향: 'down',
+        영역타입: areaType,
+        현재영역: currentArea?.name || areaDescription,
+        영역설명: areaDescription,
         마지막활동: new Date().toISOString()
     });
     

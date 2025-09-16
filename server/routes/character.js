@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-// 사용자의 캐릭터 목록 조회
+// 사용자의 캐릭터 목록 조회 (중복 정리 포함)
 router.get('/', auth, async (req, res) => {
   try {
     const characters = await Character.findAll({
@@ -14,13 +14,35 @@ router.get('/', auth, async (req, res) => {
         model: User,
         as: 'owner',
         attributes: ['username', 'profile']
-      }]
+      }],
+      order: [['updatedAt', 'DESC']] // 최신 업데이트 순으로 정렬
     });
     
-    res.json({
-      success: true,
-      characters
-    });
+    // 중복 캐릭터 정리: 사용자당 하나만 유지 (가장 최근 것)
+    if (characters.length > 1) {
+      console.log(`🧹 사용자 ${req.user.id}의 중복 캐릭터 정리: ${characters.length}개 → 1개`);
+      
+      const keepCharacter = characters[0]; // 가장 최근 캐릭터 유지
+      const deleteCharacters = characters.slice(1); // 나머지 삭제
+      
+      // 중복 캐릭터들 삭제
+      for (const char of deleteCharacters) {
+        await char.destroy();
+        console.log(`🗑️ 중복 캐릭터 삭제: ${char.name} (ID: ${char.id})`);
+      }
+      
+      // 정리된 캐릭터 목록 반환
+      res.json({
+        success: true,
+        characters: [keepCharacter],
+        message: `중복 캐릭터가 정리되었습니다. (${deleteCharacters.length}개 삭제)`
+      });
+    } else {
+      res.json({
+        success: true,
+        characters
+      });
+    }
   } catch (error) {
     console.error('캐릭터 목록 조회 오류:', error)
     res.status(500).json({
@@ -111,21 +133,21 @@ router.post('/', auth, async (req, res) => {
   try {
     const { name, appearance, currentMap, images, size } = req.body;
     
-    // 같은 이름의 캐릭터가 있는지 확인
+    // 사용자의 기존 캐릭터 확인 (사용자당 하나의 캐릭터만 허용)
     const existingCharacter = await Character.findOne({
       where: {
-        userId: req.user.id,
-        name
+        userId: req.user.id
       }
     });
     
     let character;
     if (existingCharacter) {
-      // 같은 이름의 캐릭터가 있으면 업데이트
+      // 기존 캐릭터가 있으면 업데이트 (이름도 업데이트)
       await existingCharacter.update({
+        name,
         appearance,
-        images: images || { down: null, up: null, left: null, right: null },
-        size: size || 32,
+        images: images || existingCharacter.images || { down: null, up: null, left: null, right: null },
+        size: size || existingCharacter.size || 32,
         currentMapId: currentMap
       });
       character = existingCharacter;

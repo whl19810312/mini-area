@@ -16,9 +16,17 @@ const MetaverseHandler = require('./websocket/metaverseHandler');
 
 const app = express();
 
-// HTTP 서버 생성
-const http = require('http');
-const server = http.createServer(app);
+// HTTPS 서버 생성 (WebRTC 요구사항)
+const https = require('https');
+const fs = require('fs');
+
+// SSL 인증서 로드
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, '../ssl/key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, '../ssl/cert.pem'))
+};
+
+const server = https.createServer(sslOptions, app);
 
 // Socket.IO 설정
 const io = socketIo(server, {
@@ -38,7 +46,7 @@ const io = socketIo(server, {
   forceBase64: false
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7000;
 
 // 요청 로깅 미들웨어
 app.use((req, res, next) => {
@@ -190,8 +198,8 @@ const getServerIP = () => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 Mini Area 서버 시작!');
-  console.log(`📡 HTTP 서버가 포트 ${PORT}에서 실행 중입니다.`);
+  console.log(`🔒 HTTPS 서버가 포트 ${PORT}에서 실행 중입니다. (WebRTC 지원)`);
   const serverIP = getServerIP();
-  console.log(`LAN 접속: http://${serverIP}:${PORT}`);
-  console.log(`WebSocket 접속: ws://${serverIP}:${PORT}`);
+  console.log(`LAN 접속: https://${serverIP}:${PORT}`);
+  console.log(`WebSocket 접속: wss://${serverIP}:${PORT}`);
 }); 

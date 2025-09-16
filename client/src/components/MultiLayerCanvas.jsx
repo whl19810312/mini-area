@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { getPrivateAreaColor } from '../utils/privateAreaUtils'
 
 const MultiLayerCanvas = forwardRef(({ 
   width, 
@@ -33,6 +34,10 @@ const MultiLayerCanvas = forwardRef(({
     const canvas = backgroundCanvasRef.current
     if (!canvas) return
     
+    // 캔버스 크기를 명시적으로 설정
+    canvas.width = width
+    canvas.height = height
+    
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
@@ -40,8 +45,8 @@ const MultiLayerCanvas = forwardRef(({
       const img = new Image()
       img.onload = () => {
         ctx.globalAlpha = layerOpacity.background || 1
-        // 이미지를 (0, 0)부터 시작하도록 그림 - 잘림 방지
-        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height)
+        // 이미지를 캔버스 전체 크기에 맞춰 그리기
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
         ctx.globalAlpha = 1
         
         if (onSizeChange && (img.width !== canvas.width || img.height !== canvas.height)) {
@@ -55,6 +60,10 @@ const MultiLayerCanvas = forwardRef(({
   const drawWalls = () => {
     const canvas = wallsCanvasRef.current
     if (!canvas) return
+    
+    // 캔버스 크기를 명시적으로 설정
+    canvas.width = width
+    canvas.height = height
     
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -79,19 +88,45 @@ const MultiLayerCanvas = forwardRef(({
     const canvas = areasCanvasRef.current
     if (!canvas) return
     
+    // 캔버스 크기를 명시적으로 설정
+    canvas.width = width
+    canvas.height = height
+    
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
     ctx.globalAlpha = layerOpacity.privateAreas || 1
     
     if (layers.privateAreas) {
-      layers.privateAreas.forEach(area => {
-        ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
-        ctx.strokeStyle = 'rgba(0, 0, 255, 0.8)'
+      layers.privateAreas.forEach((area, index) => {
+        // 프라이빗 영역별 무지개 색상 적용
+        const color = getPrivateAreaColor(index)
+        ctx.fillStyle = color.fill
+        ctx.strokeStyle = color.stroke
         ctx.lineWidth = 2
         
         ctx.fillRect(area.position.x, area.position.y, area.size.width, area.size.height)
         ctx.strokeRect(area.position.x, area.position.y, area.size.width, area.size.height)
+        
+        // 영역 번호와 색상명 표시
+        const centerX = area.position.x + area.size.width / 2
+        const centerY = area.position.y + area.size.height / 2
+        const labelText = `영역 ${index + 1}`
+        const colorText = color.name
+        
+        // 텍스트 배경
+        ctx.font = 'bold 14px Arial'
+        const textWidth = Math.max(ctx.measureText(labelText).width, ctx.measureText(colorText).width)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+        ctx.fillRect(centerX - textWidth/2 - 5, centerY - 15, textWidth + 10, 30)
+        
+        // 텍스트 그리기
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(labelText, centerX, centerY - 7)
+        ctx.font = '12px Arial'
+        ctx.fillText(colorText, centerX, centerY + 7)
       })
     }
     
@@ -101,6 +136,10 @@ const MultiLayerCanvas = forwardRef(({
   const drawEntities = () => {
     const canvas = entitiesCanvasRef.current
     if (!canvas) return
+    
+    // 캔버스 크기를 명시적으로 설정
+    canvas.width = width
+    canvas.height = height
     
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)

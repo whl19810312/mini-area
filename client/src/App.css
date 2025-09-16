@@ -17,13 +17,13 @@ body {
 #root {
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible; /* 캐릭터 머리와 이름표가 잘리지 않도록 변경 */
 }
 
 .App {
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible; /* 캐릭터 머리와 이름표가 잘리지 않도록 변경 */
   position: relative;
 }
 

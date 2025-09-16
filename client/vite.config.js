@@ -7,9 +7,9 @@ import path from 'path'
 const SERVER_IP = process.env.VITE_SERVER_IP || 'localhost'
 const SERVER_PORT = process.env.VITE_SERVER_PORT || '7000'
 
-// SSL 인증서 경로 (공통 ssl 폴더 사용)
-const SSL_CERT_PATH = path.join(__dirname, '../ssl/cert.pem')
-const SSL_KEY_PATH = path.join(__dirname, '../ssl/key.pem')
+// SSL 인증서 경로 (클라이언트 ssl 폴더 사용)
+const SSL_CERT_PATH = path.join(__dirname, 'ssl/cert.pem')
+const SSL_KEY_PATH = path.join(__dirname, 'ssl/key.pem')
 
 // SSL 인증서 존재 여부 확인
 const hasSSL = fs.existsSync(SSL_CERT_PATH) && fs.existsSync(SSL_KEY_PATH)

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMetaverse } from '../contexts/MetaverseContext'
 import { useAuth } from '../contexts/AuthContext'
+import { getPrivateAreaColor } from '../utils/privateAreaUtils'
 import toast from 'react-hot-toast'
 import '../styles/MetaverseEditor.css'
 
@@ -40,12 +41,13 @@ const MetaverseEdit = () => {
   const [editingPrivateArea, setEditingPrivateArea] = useState(null)
   const [editingSpawnPoint, setEditingSpawnPoint] = useState(null)
 
-  // 레이어 투명도 (Z축 순서: 1→2→3→4)
+  // 레이어 투명도 (Z축 순서: 1→2→3→4→5)
   const [layerOpacity, setLayerOpacity] = useState({
     background: 0.3,    // 레이어 1 (가장 아래)
     walls: 0.7,         // 레이어 2
     privateAreas: 0.5,  // 레이어 3
-    spawnPoints: 1.0    // 레이어 4 (가장 위)
+    spawnPoints: 1.0,   // 레이어 4
+    foreground: 0.8     // 레이어 5 (가장 위)
   })
 
   // 폼 데이터
@@ -71,6 +73,7 @@ const MetaverseEdit = () => {
     walls: [],
     privateAreas: [],
     spawnPoints: [],
+    foregroundLayer: { objects: [] },
     isPublic: true,
     viewCount: 0,
     createdBy: user?.id
@@ -164,7 +167,9 @@ const MetaverseEdit = () => {
             privateAreas: Array.isArray(map.private_boxes) ? map.private_boxes : 
                           Array.isArray(map.privateAreas) ? map.privateAreas : [],
                       // 시작점 데이터 구조 통일
-          spawnPoints: Array.isArray(map.spawnPoints) ? map.spawnPoints : []
+          spawnPoints: Array.isArray(map.spawnPoints) ? map.spawnPoints : [],
+          // 전경 레이어 초기화
+          foregroundLayer: map.foregroundLayer || { objects: [] }
           }
           
           console.log('🗺️ 맵 데이터 로드 완료:', {
@@ -411,6 +416,91 @@ const MetaverseEdit = () => {
 
     // 🚨 레이어 4: 시작점 렌더링 (Layer 2로 이동됨 - 비활성화)
     console.log('🚨 레이어 4 (시작점) 렌더링 - Layer 2로 이동되어 비활성화됨')
+
+    // 🚨 레이어 5: 전경 이미지 렌더링 (시작점 레이어 위)
+    console.log('🚨 레이어 5 (전경 이미지) 렌더링 시작')
+    try {
+      if (currentMap.foregroundLayer?.objects && Array.isArray(currentMap.foregroundLayer.objects)) {
+        console.log('✅ 전경 이미지 데이터 존재, 개수:', currentMap.foregroundLayer.objects.length)
+        
+        // 투명도 적용
+        ctx.globalAlpha = layerOpacity.foreground
+        
+        currentMap.foregroundLayer.objects.forEach((obj, index) => {
+          console.log(`전경 이미지 ${index}:`, obj)
+          
+          const x = obj.position?.x || 0
+          const y = obj.position?.y || 0
+          
+          // 이미지가 있는 경우 이미지로 렌더링
+          if (obj.image && obj.image.data) {
+            const img = new Image()
+            img.onload = () => {
+              // 이미지 크기 적용 (원본 크기 또는 설정된 크기)
+              const width = obj.size?.width || img.naturalWidth
+              const height = obj.size?.height || img.naturalHeight
+              
+              // 이미지 그리기
+              ctx.save()
+              ctx.globalAlpha = layerOpacity.foreground * (obj.opacity || 1.0)
+              
+              // 회전 적용 (필요한 경우)
+              if (obj.rotation) {
+                ctx.translate(x + width/2, y + height/2)
+                ctx.rotate(obj.rotation * Math.PI / 180)
+                ctx.drawImage(img, -width/2, -height/2, width, height)
+              } else {
+                ctx.drawImage(img, x, y, width, height)
+              }
+              
+              ctx.restore()
+              
+              console.log(`✅ 전경 이미지 ${index} 렌더링 완료: (${x}, ${y}), 크기: ${width}x${height}`)
+            }
+            img.src = obj.image.data
+          } else {
+            // 이미지가 없는 경우 기본 사각형으로 렌더링
+            const width = obj.size?.width || 50
+            const height = obj.size?.height || 50
+            
+            ctx.fillStyle = 'rgba(255, 165, 0, 0.7)' // 오렌지색
+            ctx.strokeStyle = '#FF8800'
+            ctx.lineWidth = 2
+            
+            // 사각형 그리기
+            ctx.fillRect(x, y, width, height)
+            ctx.strokeRect(x, y, width, height)
+            
+            // 중앙에 라벨 그리기
+            const centerX = x + width / 2
+            const centerY = y + height / 2
+            const labelText = obj.name || `전경 이미지 ${index + 1}`
+            
+            // 텍스트 배경 (흰색 반투명)
+            ctx.font = 'bold 12px Arial'
+            const textWidth = ctx.measureText(labelText).width
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+            ctx.fillRect(centerX - textWidth/2 - 3, centerY - 8, textWidth + 6, 16)
+            
+            // 텍스트 그리기
+            ctx.fillStyle = '#CC6600'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.fillText(labelText, centerX, centerY)
+          }
+        })
+        
+        // 투명도 원래대로 복원
+        ctx.globalAlpha = 1.0
+        console.log('✅ 레이어 5 (전경 이미지) 렌더링 완료')
+      } else {
+        console.log('❌ 전경 이미지 데이터 없음')
+      }
+    } catch (error) {
+      console.error('❌ 레이어 5 렌더링 오류:', error)
+      // 투명도 원래대로 복원 (오류 시에도)
+      ctx.globalAlpha = 1.0
+    }
 
     // === 현재 그리고 있는 요소들 (임시 표시) ===
     // 레이어 2: 현재 그리고 있는 벽
@@ -659,6 +749,72 @@ const MetaverseEdit = () => {
     }))
   }
 
+  // 전경 이미지 추가
+  const handleAddForegroundImage = (x, y) => {
+    // 파일 입력 창 열기
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.accept = 'image/*'
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const img = new Image()
+          img.onload = () => {
+            const newObject = {
+              id: `fg_${Date.now()}`,
+              type: 'image',
+              position: { x, y },
+              size: { width: img.width, height: img.height },
+              name: `전경 이미지 ${(currentMap.foregroundLayer?.objects?.length || 0) + 1}`,
+              image: {
+                data: event.target.result,
+                contentType: file.type,
+                width: img.width,
+                height: img.height,
+                filename: file.name
+              },
+              rotation: 0,
+              opacity: 1.0
+            }
+
+            setCurrentMap(prev => ({
+              ...prev,
+              foregroundLayer: {
+                ...prev.foregroundLayer,
+                objects: [...(prev.foregroundLayer?.objects || []), newObject]
+              }
+            }))
+          }
+          img.src = event.target.result
+        }
+        reader.readAsDataURL(file)
+      }
+    }
+    fileInput.click()
+  }
+
+  // 전경 오브젝트 삭제
+  const handleDeleteForegroundObject = (objectId) => {
+    setCurrentMap(prev => ({
+      ...prev,
+      foregroundLayer: {
+        ...prev.foregroundLayer,
+        objects: (prev.foregroundLayer?.objects || []).filter(obj => obj.id !== objectId)
+      }
+    }))
+  }
+
+
+  // 전경 이미지 클릭 핸들러
+  const handleCanvasClickForeground = (e) => {
+    if (selectedTool !== 'foreground') return
+    
+    const coords = convertMouseToImageCoords(e)
+    handleAddForegroundImage(coords.x, coords.y)
+  }
+
   // 벽 편집
   const handleEditWall = (wall) => {
     setEditingWall(wall)
@@ -830,6 +986,13 @@ const MetaverseEdit = () => {
       console.log('✅✅✅ addSpawnPoint 호출 완료')
       // 시작점 모달 자동 오픈
       setShowSpawnPointsList(true)
+    }
+    
+    // 전경 이미지 도구가 선택되었는지 확인
+    if (selectedTool === 'foreground') {
+      console.log('✅✅✅ 전경 이미지 도구 선택됨!')
+      console.log('전달할 좌표:', { x: coords.x, y: coords.y })
+      handleAddForegroundImage(coords.x, coords.y)
     } else {
       console.log('❌❌❌ 시작점 도구가 선택되지 않음!')
       console.log('현재 도구:', selectedTool)
@@ -985,15 +1148,19 @@ const MetaverseEdit = () => {
         // 레이어 3: 프라이빗 영역
         privateAreas: currentMap.privateAreas || [],
         
-        // 레이어 4 (가장 위): 시작점 (spawnPoints)
-        spawnPoints: currentMap.spawnPoints || []
+        // 레이어 4: 시작점 (spawnPoints)
+        spawnPoints: currentMap.spawnPoints || [],
+        
+        // 레이어 5 (가장 위): 전경 오브젝트 (foregroundLayer)
+        foregroundLayer: currentMap.foregroundLayer || { objects: [] }
       }
 
       console.log('편집할 데이터 (Z축 레이어 구조):', {
         '레이어 1 (배경)': mapData.backgroundLayer?.image ? '있음' : '없음',
         '레이어 2 (벽)': mapData.walls?.length || 0,
         '레이어 3 (프라이빗)': mapData.privateAreas?.length || 0,
-        '레이어 4 (시작점)': mapData.spawnPoints?.length || 0
+        '레이어 4 (시작점)': mapData.spawnPoints?.length || 0,
+        '레이어 5 (전경)': mapData.foregroundLayer?.objects?.length || 0
       })
 
       const updatedMap = await updateMap(mapId, mapData)
@@ -1223,6 +1390,16 @@ const MetaverseEdit = () => {
                 <span style={{ fontSize: '14px' }}>📋</span>
                 <span>시작점 정보</span>
               </button>
+              
+              {/* 전경 이미지 도구 */}
+              <button 
+                className={`tool-btn ${selectedTool === 'foreground' ? 'active' : ''}`}
+                onClick={() => setSelectedTool('foreground')}
+                title="전경 이미지 추가"
+              >
+                <span style={{ fontSize: '14px' }}>🖼️</span>
+                <span>전경 이미지</span>
+              </button>
             </div>
           </div>
 
@@ -1275,6 +1452,18 @@ const MetaverseEdit = () => {
                   step="0.1" 
                   value={layerOpacity.spawnPoints} 
                   onChange={(e) => setLayerOpacity(prev => ({...prev, spawnPoints: parseFloat(e.target.value)}))}
+                />
+              </label>
+              <label title="전경 이미지 투명도">
+                <span style={{ fontSize: '10px' }}>🖼️</span>
+                <span>전경</span>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.1" 
+                  value={layerOpacity.foreground} 
+                  onChange={(e) => setLayerOpacity(prev => ({...prev, foreground: parseFloat(e.target.value)}))}
                 />
               </label>
             </div>
@@ -1557,6 +1746,7 @@ const MetaverseEdit = () => {
             </div>
           </div>
         )}
+        
       </div>
     </div>
   )

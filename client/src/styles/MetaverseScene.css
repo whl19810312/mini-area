@@ -2,7 +2,7 @@
   width: 100vw;
   height: 100vh;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* 상단 툴바 스타일 */
@@ -393,8 +393,8 @@
 /* 캐릭터 컨테이너 스타일 */
 .character-container {
   position: absolute;
-  width: 32px;
-  height: 48px;
+  width: 8px;
+  height: 12px;
   transform: translate(-50%, -50%);
   transition: all 0.1s ease-out;
   pointer-events: none;
@@ -416,13 +416,13 @@
 
 .username-label {
   position: absolute;
-  top: -25px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: bold;
   white-space: nowrap;
@@ -469,6 +469,8 @@
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  overflow: visible; /* 머리 부분이 잘리지 않도록 */
+  padding: 2px; /* 여백 추가 */
 }
 
 /* 좌우 방향 캐릭터 스타일 */
@@ -488,11 +490,12 @@
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
 }
 
-/* 캐릭터 컨테이너 크기 조정 (1.5배 확대) */
+/* 캐릭터 컨테이너 크기 조정 (더 크게 확대) */
 .character-container {
-  width: 60px;
-  height: 75px;
+  width: 16px; /* 더더욱 작게 조정 */
+  height: 20px; /* 더더욱 작게 조정 */
   overflow: visible; /* 손이 몸통 옆으로 나갈 수 있도록 */
+  position: relative; /* 위치 조정을 위해 */
 }
 
 /* 이모지 캐릭터 애니메이션 */
@@ -535,8 +538,8 @@
 /* 반응형 디자인 - 모바일에서 캐릭터 크기 조정 */
 @media (max-width: 768px) {
   .character-container {
-    width: 35px;
-    height: 45px;
+    width: 10px;
+    height: 12px;
   }
   
   .emoji-character {

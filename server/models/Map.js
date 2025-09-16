@@ -54,6 +54,11 @@ const Map = sequelize.define('Map', {
     type: DataTypes.JSON,
     allowNull: true
   },
+  foregroundLayer: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: '전경 오브젝트 레이어 (시작점 위에 렌더링)'
+  },
   currentUsers: {
     type: DataTypes.INTEGER,
     defaultValue: 0

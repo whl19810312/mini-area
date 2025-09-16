@@ -8,7 +8,7 @@ const CharacterCreator = ({ onSave, onClose }) => {
     body: '👕',
     arms: '👐',
     legs: '👖',
-    size: 32
+    size: 48
   })
   
   const canvasRef = useRef(null)
@@ -46,30 +46,30 @@ const CharacterCreator = ({ onSave, onClose }) => {
     // 투명 배경 설정 (완전 투명)
     ctx.clearRect(0, 0, size, size)
     
-    // 머리
+    // 머리 - Y 위치를 더 아래로 이동하여 잘림 방지
     ctx.font = '12px Arial'
     ctx.textAlign = 'center'
     ctx.fillStyle = '#000000'
-    ctx.fillText(characterData.head, size/2, size/4)
+    ctx.fillText(characterData.head, size/2, size/3)
     
     // 몸
     ctx.font = '10px Arial'
-    ctx.fillText(characterData.body, size/2, size/2)
+    ctx.fillText(characterData.body, size/2, size*0.58)
     
     // 팔
     ctx.font = '8px Arial'
     if (direction === 'left') {
-      ctx.fillText(characterData.arms, size/4, size/2)
+      ctx.fillText(characterData.arms, size/4, size*0.58)
     } else if (direction === 'right') {
-      ctx.fillText(characterData.arms, size*3/4, size/2)
+      ctx.fillText(characterData.arms, size*3/4, size*0.58)
     } else {
-      ctx.fillText(characterData.arms, size/3, size/2)
-      ctx.fillText(characterData.arms, size*2/3, size/2)
+      ctx.fillText(characterData.arms, size/3, size*0.58)
+      ctx.fillText(characterData.arms, size*2/3, size*0.58)
     }
     
     // 다리
     ctx.font = '8px Arial'
-    ctx.fillText(characterData.legs, size/2, size*3/4)
+    ctx.fillText(characterData.legs, size/2, size*0.83)
     
     // 투명 배경으로 PNG 이미지 생성
     const imageData = canvas.toDataURL('image/png')

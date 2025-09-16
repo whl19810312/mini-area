@@ -30,7 +30,7 @@ html, body {
   height: 100%;
   min-width: 320px;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: visible; /* 캐릭터 머리와 이름표가 잘리지 않도록 변경 */
 }
 
 body {

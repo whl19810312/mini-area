@@ -22,46 +22,61 @@ const Character = ({
   
   // 캐릭터 내용 생성
   const characterContent = useMemo(() => {
-    // 4방향 이미지가 있는 경우
-    if (character?.images && character.images[direction]) {
-      return '🎭'; // 이미지가 있는 경우 특별한 이모지
+    console.log('🎨 캐릭터 렌더링 데이터:', {
+      character: character,
+      hasImages: !!character?.images,
+      hasAppearance: !!character?.appearance,
+      images: character?.images,
+      appearance: character?.appearance,
+      direction: direction
+    });
+
+    // 이모지 기반 캐릭터인 경우 (우선순위 1)
+    if (character?.appearance) {
+      const result = generateEmojiCharacter(character.appearance, direction);
+      console.log('✅ appearance 기반 캐릭터 생성:', result);
+      return result;
     }
     
-    // 단일 이미지가 있는 경우
+    // 4방향 이미지가 있는 경우 (우선순위 2)
+    if (character?.images && character.images[direction]) {
+      console.log('🖼️ 이미지 기반 캐릭터');
+      // 실제 이미지가 있으면 렌더링하지 않음 (별도로 처리됨)
+      return null;
+    }
+    
+    // 단일 이미지가 있는 경우 (우선순위 3)
     if (character?.image) {
+      console.log('🖼️ 단일 이미지 기반 캐릭터');
       return '🎭';
     }
     
-    // 이모지 기반 캐릭터인 경우
-    if (character?.appearance) {
-      return generateEmojiCharacter(character.appearance, direction);
-    }
-    
+    console.log('😀 기본 이모지 사용');
     return '😀'; // 기본 이모지
   }, [character, direction]);
   
   // 이모지 기반 캐릭터 생성
   const generateEmojiCharacter = (appearance, direction) => {
-    const { head, body, hands, feet } = appearance;
+    const { head, body, arms, legs } = appearance;
     
     // 방향에 따른 레이아웃 결정
     const isHorizontal = direction === 'left' || direction === 'right';
     
-    // 오른쪽 방향일 때 손 이모지 반전
-    const displayHands = hands;
+    // 오른쪽 방향일 때 팔 이모지 반전
+    const displayArms = arms;
     
     if (isHorizontal) {
-      // 좌우 방향: 손을 몸통 옆에 배치
+      // 좌우 방향: 팔을 몸통 옆에 배치
       if (direction === 'right') {
-        // 오른쪽 방향: 손을 반대쪽에 배치 (시각적 반전 효과)
-        return `${feet}${body}${head}${displayHands}`;
+        // 오른쪽 방향: 팔을 반대쪽에 배치 (시각적 반전 효과)
+        return `${legs}${body}${head}${displayArms}`;
       } else {
         // 왼쪽 방향: 일반 배치
-        return `${displayHands}${head}${body}${feet}`;
+        return `${displayArms}${head}${body}${legs}`;
       }
     } else {
-      // 상하 방향: 손을 몸통 위아래에 배치
-      return `${displayHands}${head}${body}${feet}`;
+      // 상하 방향: 팔을 몸통 위아래에 배치
+      return `${displayArms}${head}${body}${legs}`;
     }
   };
   
@@ -82,7 +97,7 @@ const Character = ({
     >
       {/* 캐릭터 메시 */}
       <mesh ref={meshRef}>
-        <boxGeometry args={[50, 50, 10]} />
+        <boxGeometry args={[25, 25, 10]} />
         <meshBasicMaterial 
           color={characterColor}
           transparent={true}
@@ -93,11 +108,11 @@ const Character = ({
       {/* 캐릭터 이모지 */}
       <Text
         position={[0, 0, 15]}
-        fontSize={24}
+        fontSize={12}
         color="white"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={1}
+        outlineWidth={0.5}
         outlineColor="#000000"
       >
         {characterContent}
@@ -106,12 +121,12 @@ const Character = ({
       {/* 사용자 이름 */}
       {character?.name && hovered && (
         <Text
-          position={[0, 40, 0]}
-          fontSize={12}
+          position={[0, 20, 0]}
+          fontSize={8}
           color={characterColor}
           anchorX="center"
           anchorY="middle"
-          outlineWidth={0.5}
+          outlineWidth={0.3}
           outlineColor="#000000"
         >
           {character.name}
@@ -120,8 +135,8 @@ const Character = ({
       
       {/* 현재 사용자 표시 */}
       {isCurrentUser && (
-        <mesh position={[0, -35, 0]}>
-          <ringGeometry args={[25, 30, 16]} />
+        <mesh position={[0, -18, 0]}>
+          <ringGeometry args={[12, 15, 16]} />
           <meshBasicMaterial 
             color="#4CAF50" 
             transparent 

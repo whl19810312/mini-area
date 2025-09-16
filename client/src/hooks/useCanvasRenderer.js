@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getPrivateAreaColor } from '../utils/privateAreaUtils';
 
 // 레이어 투명도 설정
 const DEFAULT_LAYER_OPACITY = {
@@ -95,18 +96,43 @@ const renderPrivateAreas = (ctx, privateAreas, opacity) => {
   if (!privateAreas || !Array.isArray(privateAreas)) return;
   
   ctx.globalAlpha = opacity;
-  ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
-  ctx.strokeStyle = 'blue';
   ctx.lineWidth = 2;
   
-  privateAreas.forEach((area) => {
+  privateAreas.forEach((area, index) => {
     const x = area.position?.x || area.x1 || area.x || 0;
     const y = area.position?.y || area.y1 || area.y || 0;
     const width = area.size?.width || (area.x2 - area.x1) || 100;
     const height = area.size?.height || (area.y2 - area.y1) || 100;
     
+    // 프라이빗 영역별 무지개 색상 적용
+    const color = getPrivateAreaColor(index);
+    ctx.fillStyle = color.fill;
+    ctx.strokeStyle = color.stroke;
+    
     ctx.fillRect(x, y, width, height);
     ctx.strokeRect(x, y, width, height);
+    
+    // 영역 번호와 색상명 표시
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
+    const labelText = `영역 ${index + 1}`;
+    const colorText = color.name;
+    
+    // 텍스트 배경
+    const textWidth = Math.max(ctx.measureText(labelText).width, ctx.measureText(colorText).width);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillRect(centerX - textWidth/2 - 5, centerY - 15, textWidth + 10, 30);
+    
+    // 텍스트 그리기
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillText(labelText, centerX, centerY - 7);
+    ctx.font = '12px Arial';
+    ctx.fillText(colorText, centerX, centerY + 7);
   });
   
   ctx.globalAlpha = 1.0;

@@ -16,10 +16,13 @@ const Metaverse = () => {
     fetchMaps, 
     fetchMap,
     selectMap,
-    selectCharacter
+    selectCharacter,
+    createEmojiCharacter,
+    createOrUpdateCharacter
   } = useMetaverse()
   const { 
     user, 
+    socket,
     hasMediaPermission, 
     localStream, 
     isCameraOn, 
@@ -54,7 +57,45 @@ const Metaverse = () => {
           if (data.success) {
             selectMap(data.map)
             const userName = user?.username || '사용자'
-            const userCharacter = characters.find(char => char.name === userName)
+            console.log('🔍 공개 링크 입장 - 캐릭터 검색 시작:', {
+              userName,
+              charactersCount: characters.length,
+              characterNames: characters.map(c => ({ id: c.id, name: c.name, hasAppearance: !!c.appearance }))
+            });
+
+            // 개선된 캐릭터 검색 로직
+            let userCharacter = null;
+
+            // 1. 현재 선택된 캐릭터가 유효하면 사용
+            if (currentCharacter && characters.find(c => c.id === currentCharacter.id)) {
+              userCharacter = currentCharacter;
+              console.log('✅ 현재 선택된 캐릭터 사용:', userCharacter.name);
+            }
+            // 2. 사용자 이름과 일치하는 캐릭터 찾기
+            else {
+              userCharacter = characters.find(char => char.name === userName);
+              if (userCharacter) {
+                console.log('✅ 사용자 이름으로 캐릭터 찾음:', userCharacter.name);
+              }
+            }
+            // 3. 사용자 소유의 캐릭터 중 appearance 데이터가 있는 것 우선 선택
+            if (!userCharacter && characters.length > 0) {
+              const charactersWithAppearance = characters.filter(char => char.appearance);
+              if (charactersWithAppearance.length > 0) {
+                userCharacter = charactersWithAppearance[0];
+                console.log('✅ appearance 데이터가 있는 캐릭터 선택:', userCharacter.name);
+              } else {
+                userCharacter = characters[0];
+                console.log('✅ 첫 번째 캐릭터 선택:', userCharacter.name);
+              }
+            }
+            
+            // 4. 마지막 수단: 캐릭터 생성 (기존 설정 유지)
+            if (!userCharacter) {
+              console.log('🎭 사용자 캐릭터가 없어 기존 설정 유지하며 캐릭터 생성:', userName)
+              userCharacter = await createOrUpdateCharacter(userName)
+            }
+            
             if (userCharacter && (!currentCharacter || currentCharacter.name !== userName)) {
               selectCharacter(userCharacter)
             } else if (characters.length > 0 && !currentCharacter) {
@@ -86,7 +127,45 @@ const Metaverse = () => {
           if (map) {
             selectMap(map)
             const userName = user?.username || '사용자'
-            const userCharacter = characters.find(char => char.name === userName)
+            console.log('🔍 특정 맵 입장 - 캐릭터 검색 시작:', {
+              userName,
+              charactersCount: characters.length,
+              characterNames: characters.map(c => ({ id: c.id, name: c.name, hasAppearance: !!c.appearance }))
+            });
+
+            // 개선된 캐릭터 검색 로직
+            let userCharacter = null;
+
+            // 1. 현재 선택된 캐릭터가 유효하면 사용
+            if (currentCharacter && characters.find(c => c.id === currentCharacter.id)) {
+              userCharacter = currentCharacter;
+              console.log('✅ 현재 선택된 캐릭터 사용:', userCharacter.name);
+            }
+            // 2. 사용자 이름과 일치하는 캐릭터 찾기
+            else {
+              userCharacter = characters.find(char => char.name === userName);
+              if (userCharacter) {
+                console.log('✅ 사용자 이름으로 캐릭터 찾음:', userCharacter.name);
+              }
+            }
+            // 3. 사용자 소유의 캐릭터 중 appearance 데이터가 있는 것 우선 선택
+            if (!userCharacter && characters.length > 0) {
+              const charactersWithAppearance = characters.filter(char => char.appearance);
+              if (charactersWithAppearance.length > 0) {
+                userCharacter = charactersWithAppearance[0];
+                console.log('✅ appearance 데이터가 있는 캐릭터 선택:', userCharacter.name);
+              } else {
+                userCharacter = characters[0];
+                console.log('✅ 첫 번째 캐릭터 선택:', userCharacter.name);
+              }
+            }
+            
+            // 4. 마지막 수단: 캐릭터 생성 (기존 설정 유지)
+            if (!userCharacter) {
+              console.log('🎭 사용자 캐릭터가 없어 기존 설정 유지하며 캐릭터 생성:', userName)
+              userCharacter = await createOrUpdateCharacter(userName)
+            }
+            
             if (userCharacter && (!currentCharacter || currentCharacter.name !== userName)) {
               selectCharacter(userCharacter)
             } else if (characters.length > 0 && !currentCharacter) {
@@ -108,10 +187,12 @@ const Metaverse = () => {
   }, [mapId, fetchMap, selectMap, navigate, characters, currentCharacter, selectCharacter, user])
 
   const handleReturnToLobby = () => {
-    if (currentMap && metaverseSceneRef.current) {
-      metaverseSceneRef.current.leaveMapAndReturnToLobby(currentMap.id || currentMap._id)
-      toast.success('대기실로 돌아갔습니다.')
+    // 소켓 이벤트로 맵에서 나가기 처리
+    if (socket && currentMap) {
+      const mapId = currentMap.id || currentMap._id
+      socket.emit('leave-map', { mapId })
     }
+    toast.success('대기실로 돌아갔습니다.')
     navigate('/metaverse/waiting-room')
   }
 

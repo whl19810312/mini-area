@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import './CharacterCustomizer.css'
 
 const CharacterCustomizer = ({ isOpen, onClose }) => {
-  const { currentCharacter, createCharacter, selectCharacter, fetchCharacters, updateCharacter, characters } = useMetaverse()
+  const { currentCharacter, createCharacter, selectCharacter, fetchCharacters, updateCharacter, characters, createEmojiCharacter, createOrUpdateCharacter } = useMetaverse()
   const { user, socket } = useAuth()
   const location = useLocation()
   const isWaitingRoom = location.pathname === '/metaverse/waiting-room'
@@ -44,42 +44,26 @@ const CharacterCustomizer = ({ isOpen, onClose }) => {
     }))
   }
 
-  // 캐릭터 저장
+  // 캐릭터 저장 (통합된 방식 사용)
   const handleSaveCharacter = async () => {
-    // 대기실에서는 캐릭터 관련 명령(저장/선택/소켓 알림) 수행하지 않음
+    // 대기실에서도 캐릭터 저장은 허용하되, 소켓 관련 명령만 제한
     if (isWaitingRoom) {
-      toast('대기실에서는 캐릭터 저장이 적용되지 않습니다.');
-      return;
+      console.log('대기실에서 캐릭터 저장 시도');
     }
     try {
       const userName = user?.username || '사용자'
       
       const characterData = {
-        name: userName,
         appearance: appearance,
-        size: 32
+        size: 48
       }
       
-      // 기존 사용자 이름 캐릭터가 있는지 확인
-      const existingCharacter = characters.find(char => char.name === userName)
+      console.log('💾 통합된 캐릭터 저장 시도:', characterData);
       
-      let savedCharacter
-      if (existingCharacter) {
-        // 기존 캐릭터 업데이트
-        savedCharacter = await updateCharacter(existingCharacter.id, characterData)
-      } else {
-        // 새 캐릭터 생성
-        savedCharacter = await createCharacter(characterData)
-      }
-      
+      // 통합된 캐릭터 생성/업데이트 함수 사용
+      const savedCharacter = await createOrUpdateCharacter(userName, characterData);
       
       if (savedCharacter) {
-        // 캐릭터 목록 새로고침 및 선택
-        if (!isWaitingRoom) {
-          await fetchCharacters()
-          selectCharacter(savedCharacter)
-        }
-        
         // 대기실에서는 캐릭터 관련 실시간 명령 불필요 → 소켓 알림 생략
         if (socket && !isWaitingRoom) {
           socket.emit('character-updated', {
