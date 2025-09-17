@@ -27,13 +27,6 @@ const UnifiedTopBar = ({
           <span className="menu-label">이동</span>
           <div className="menu-buttons">
             <button 
-              className={`menu-btn ${currentView === 'metaverse' ? 'active' : ''}`}
-              onClick={() => onViewChange('metaverse')}
-              title="메타버스 공간"
-            >
-              🎮 공간
-            </button>
-            <button 
               className="menu-btn home-btn"
               onClick={onReturnToLobby}
               title="대기실로 돌아가기"
@@ -66,37 +59,7 @@ const UnifiedTopBar = ({
         </div>
       </div>
 
-      {/* 메뉴 섹션 3: 커뮤니케이션 도구 */}
-      <div className="menu-section communication">
-        <div className="menu-group">
-          <span className="menu-label">소통</span>
-          <div className="menu-buttons">
-            <button 
-              className={`menu-btn ${isChatVisible ? 'active' : ''}`}
-              onClick={onToggleChat}
-              title="채팅창 열기/닫기"
-            >
-              💬 채팅
-            </button>
-            <button 
-              className={`menu-btn ${isUsersVisible ? 'active' : ''}`}
-              onClick={onToggleUsers}
-              title="사용자 목록"
-            >
-              👥 사용자
-            </button>
-            <button 
-              className={`menu-btn fullscreen ${isFullscreen ? 'active' : ''}`}
-              onClick={onToggleFullscreen}
-              title="전체화면"
-            >
-              🖥️ 전체화면
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 메뉴 섹션 4: 부가 서비스 */}
+      {/* 메뉴 섹션 3: 부가 서비스 */}
       <div className="menu-section services">
         <div className="menu-group">
           <span className="menu-label">서비스</span>
@@ -116,16 +79,11 @@ const UnifiedTopBar = ({
               🌐 소셜
             </button>
             <button 
-              className="menu-btn settings"
-              title="설정"
+              className={`menu-btn fullscreen ${isFullscreen ? 'active' : ''}`}
+              onClick={onToggleFullscreen}
+              title="전체화면"
             >
-              ⚙️ 설정
-            </button>
-            <button 
-              className="menu-btn help"
-              title="도움말"
-            >
-              ❓ 도움말
+              🖥️ 전체화면
             </button>
           </div>
         </div>
