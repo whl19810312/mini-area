@@ -1,0 +1,92 @@
+import type { Address } from './Address.js';
+import { Gender } from './Gender.js';
+export type Customer = {
+    /**
+     * **구매자 ID**
+     *
+     * 스마트로, KG이니시스 SBPS 일본결제에서 사용합니다.
+     *
+     * 토스페이먼츠와 스마트로의 빌링키 발급에서 사용합니다.
+     */
+    customerId?: string | undefined;
+    /**
+     * **구매자 전체 이름**
+     *
+     * `fullName`이 사용되는 PG에서 `fullName`이 없고 `firstName`과 `lastName`이 있는 경우 `${lastName} ${firstName}`이 대신 사용됩니다.
+     */
+    fullName?: string | undefined;
+    /**
+     * **구매자 성이 아닌 이름**
+     *
+     * 페이팔에서 구매자 페이팔 계정 소유자의 이름을 지정합니다.
+     */
+    firstName?: string | undefined;
+    /**
+     * **구매자 성**
+     *
+     * 페이팔에서 구매자 페이팔 계정 소유자의 성을 지정합니다.
+     */
+    lastName?: string | undefined;
+    /**
+     * **구매자 휴대전화 번호**
+     *
+     * 숫자만 입력합니다.
+     */
+    phoneNumber?: string | undefined;
+    /**
+     * **구매자 이메일 주소**
+     *
+     * 올바른 형식의 이메일 주소여야 합니다.
+     */
+    email?: string | undefined;
+    /**
+     * **구매자 주소**
+     */
+    address?: Address | undefined;
+    /**
+     * **구매자 우편번호**
+     */
+    zipcode?: string | undefined;
+    /**
+     * **구매자 성별**
+     *
+     * 정보성 필드입니다.
+     */
+    gender?: Gender | undefined;
+    /**
+     * **구매자 출생년도**
+     *
+     * `"1990"`과 같은 형식입니다.
+     *
+     * KG이니시스 통합인증에서 `flgFixedUser`가 `Y`인 경우 필수입니다.
+     */
+    birthYear?: string | undefined;
+    /**
+     * **구매자 출생월**
+     *
+     * `"12"`, `"07"`과 같은 형식입니다.
+     *
+     * KG이니시스 통합인증에서 `flgFixedUser`가 `Y`인 경우 필수입니다.
+     */
+    birthMonth?: string | undefined;
+    /**
+     * **구매자 출생일**
+     *
+     * `"25"`, `"08"`과 같은 형식입니다.
+     *
+     * KG이니시스 통합인증에서 `flgFixedUser`가 `Y`인 경우 필수입니다.
+     */
+    birthDay?: string | undefined;
+    /**
+     * **구매자 일본어 성이 아닌 이름 후리가나(읽는 법)**
+     *
+     * KG이니시스 JPPG 일본 편의점 결제에서 필수입니다. 최대 20바이트입니다.
+     */
+    firstNameKana?: string | undefined;
+    /**
+     * **구매자 일본어 성 후리가나(읽는 법)**
+     *
+     * KG이니시스 JPPG 일본 편의점 결제에서 필수입니다. 최대 20바이트입니다.
+     */
+    lastNameKana?: string | undefined;
+};

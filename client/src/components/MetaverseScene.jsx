@@ -1174,6 +1174,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
         onClose={() => setIsShopVisible(false)}
         userId={user?.id || 'guest'}
         username={user?.username || '게스트'}
+        currentMap={currentMap}
+        roomData={currentMap}
       />
 
       {/* 메타버스 소셜 피드 */}

@@ -13,8 +13,10 @@
     "preview:https": "vite preview --port 4174 --host"
   },
   "dependencies": {
+    "@portone/browser-sdk": "^0.1.0",
     "@react-three/drei": "^9.88.13",
     "@react-three/fiber": "^8.15.11",
+    "@tosspayments/payment-sdk": "^1.9.1",
     "agora-rtc-sdk-ng": "^4.24.0",
     "axios": "^1.5.0",
     "pathfinding": "^0.4.18",

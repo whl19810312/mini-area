@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './PersonalShop.css';
+import paymentService from '../services/paymentService';
+import MultiPayment from './MultiPayment';
+import paymentConfigService from '../services/paymentConfigService';
 
-const PersonalShop = ({ isOpen, onClose, userId, username }) => {
+const PersonalShop = ({ isOpen, onClose, userId, username, currentMap, roomData }) => {
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
@@ -28,6 +31,15 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
     totalSales: 156,
     totalRevenue: 2340000,
     monthlyRevenue: 890000
+  });
+
+  // 쇼핑몰 정보
+  const [shopInfo, setShopInfo] = useState({
+    ownerId: null,
+    ownerName: '',
+    isOwnShop: false,
+    canManage: false,
+    paymentEnabled: false
   });
 
   // 메타버스 전용 상품 데이터
@@ -145,28 +157,67 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
   useEffect(() => {
     if (isOpen) {
+      initializeShopInfo();
       loadShopData();
     }
-  }, [isOpen, userId]);
+  }, [isOpen, userId, currentMap, roomData]);
+
+  // 쇼핑몰 정보 초기화
+  const initializeShopInfo = () => {
+    const mapData = currentMap || roomData;
+    const ownerId = mapData?.creatorId || mapData?.creator?.id || mapData?.userId;
+    const ownerName = mapData?.createdBy || mapData?.creator?.username || username;
+    
+    const isOwnShop = ownerId === userId;
+    const canManage = isOwnShop || isAdmin;
+    const paymentEnabled = paymentConfigService.canProcessPayments(ownerId);
+
+    console.log('🏪 쇼핑몰 정보 초기화:', {
+      mapData,
+      ownerId,
+      ownerName,
+      currentUserId: userId,
+      isOwnShop,
+      canManage,
+      paymentEnabled
+    });
+
+    setShopInfo({
+      ownerId,
+      ownerName,
+      isOwnShop,
+      canManage,
+      paymentEnabled
+    });
+  };
 
   const loadShopData = async () => {
     setIsLoading(true);
     try {
       // 상품 데이터 로드
-      setProducts(sampleProducts);
+      // 쇼핑몰 소유자의 상품 데이터 로드
+      const shopOwnerId = shopInfo.ownerId || userId;
+      const savedProducts = localStorage.getItem(`products_${shopOwnerId}`);
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts));
+      } else {
+        setProducts(sampleProducts);
+        localStorage.setItem(`products_${shopOwnerId}`, JSON.stringify(sampleProducts));
+      }
       
-      // 사용자별 장바구니 복원
+      // 사용자별 장바구니 복원 (구매자의 장바구니)
       const savedCart = localStorage.getItem(`cart_${userId}`);
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       }
       
-      // 로컬 스토리지에서 외부 링크 불러오기
-      const savedLinks = localStorage.getItem(`externalLinks_${userId}`);
+      // 쇼핑몰 소유자의 외부 링크 불러오기
+      const savedLinks = localStorage.getItem(`externalLinks_${shopOwnerId}`);
       if (savedLinks) {
         setExternalLinks(JSON.parse(savedLinks));
       } else {
         setExternalLinks(defaultExternalLinks);
+        localStorage.setItem(`externalLinks_${shopOwnerId}`, JSON.stringify(defaultExternalLinks));
       }
     } catch (error) {
       console.error('쇼핑몰 데이터 로드 실패:', error);
@@ -239,90 +290,352 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
   const handlePurchase = async () => {
     if (cart.length === 0) return;
-    
+    setShowPaymentModal(true);
+  };
+
+  // 멀티 결제 성공 처리
+  const handlePaymentSuccess = (result) => {
     const total = getTotalPrice();
-    const confirmed = window.confirm(
-      `총 ${total.toLocaleString()}원의 상품을 구매하시겠습니까?\n\n구매 완료 후 해당 아이템들이 "내 아이템"에서 확인 가능합니다.`
-    );
     
-    if (!confirmed) return;
+    // 구매한 아이템을 "내 아이템"에 추가
+    const purchasedItems = localStorage.getItem(`myItems_${userId}`) || '[]';
+    const currentItems = JSON.parse(purchasedItems);
+    const newItems = cart.map(item => ({
+      id: `${Date.now()}_${item.id}`,
+      name: item.name,
+      category: item.category,
+      image: item.image,
+      purchaseDate: new Date().toISOString(),
+      quantity: item.quantity,
+      paymentId: result.paymentKey || result.impUid || result.orderId,
+      transactionId: result.paymentKey || result.impUid || result.orderId,
+      provider: result.provider
+    }));
+    localStorage.setItem(`myItems_${userId}`, JSON.stringify([...currentItems, ...newItems]));
+
+    // 주문 기록 추가
+    const newOrder = {
+      id: result.paymentKey || result.impUid || result.orderId,
+      date: new Date().toLocaleDateString(),
+      amount: total,
+      items: cart.length,
+      status: 'completed',
+      transactionId: result.paymentKey || result.impUid || result.orderId,
+      provider: result.provider,
+      processingFee: Math.floor(total * 0.025), // 2.5% 수수료
+      netAmount: Math.floor(total * 0.975)
+    };
+    const currentOrders = JSON.parse(localStorage.getItem(`orders_${userId}`) || '[]');
+    localStorage.setItem(`orders_${userId}`, JSON.stringify([...currentOrders, newOrder]));
+
+    // 매출 데이터 업데이트
+    setSalesData(prev => ({
+      ...prev,
+      totalSales: prev.totalSales + cart.length,
+      totalRevenue: prev.totalRevenue + total,
+      monthlyRevenue: prev.monthlyRevenue + total
+    }));
     
+    // 장바구니 비우기
+    setCart([]);
+    localStorage.setItem(`cart_${userId}`, '[]');
+    
+    // 모달 닫기 및 내 아이템 탭으로 이동
+    setShowPaymentModal(false);
+    setActiveTab('myitems');
+    
+    // 성공 알림
+    showPaymentSuccessNotification(result);
+  };
+
+  // 멀티 결제 에러 처리
+  const handlePaymentError = (error) => {
+    console.error('결제 실패:', error);
+    
+    // 에러 알림
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      z-index: 3000;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+      animation: slideInRight 0.3s ease-out;
+    `;
+    notification.textContent = `결제 실패: ${error}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  };
+
+  // 멀티 결제 취소 처리
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+  };
+
+  // 결제 성공 알림 표시
+  const showPaymentSuccessNotification = (result) => {
+    const providerName = {
+      'toss': '토스페이먼츠',
+      'portone': 'PortOne',
+      'simulation_toss': '토스페이먼츠 (시뮬레이션)',
+      'simulation_portone': 'PortOne (시뮬레이션)'
+    }[result.provider] || '결제 시스템';
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 30px 40px;
+      border-radius: 20px;
+      z-index: 3000;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: bounceIn 0.5s ease-out;
+      font-size: 18px;
+      max-width: 400px;
+    `;
+    notification.innerHTML = `
+      <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+      <div>${providerName} 결제가 완료되었습니다!</div>
+      <div style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+        결제 ID: ${result.paymentKey || result.impUid || result.orderId}
+      </div>
+      <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">
+        구매한 아이템은 '내 아이템'에서 확인할 수 있습니다.
+      </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  };
+
+  const processPayment = async () => {
+    const total = getTotalPrice();
+    
+    // 결제 데이터 유효성 검사
+    const validation = paymentService.validatePaymentData({
+      ...paymentForm,
+      amount: total
+    });
+
+    if (!validation.isValid) {
+      alert(validation.errors.join('\n'));
+      return;
+    }
+
+    setPaymentProgress({ step: 'processing', message: '결제를 진행하고 있습니다...', paymentId: null, transactionId: null });
     setIsLoading(true);
+
     try {
-      // 결제 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 구매한 아이템을 "내 아이템"에 추가
-      const purchasedItems = localStorage.getItem(`myItems_${userId}`) || '[]';
-      const currentItems = JSON.parse(purchasedItems);
-      const newItems = cart.map(item => ({
-        id: `${Date.now()}_${item.id}`,
-        name: item.name,
-        category: item.category,
-        image: item.image,
-        purchaseDate: new Date().toISOString(),
-        quantity: item.quantity
-      }));
-      localStorage.setItem(`myItems_${userId}`, JSON.stringify([...currentItems, ...newItems]));
-
-      // 주문 기록 추가
-      const newOrder = {
-        id: Date.now(),
-        date: new Date().toLocaleDateString(),
+      // 1단계: 결제 요청 생성
+      const paymentData = {
         amount: total,
-        items: cart.length,
-        status: 'pending'
+        orderId: `order_${userId}_${Date.now()}`,
+        customerName: paymentForm.cardHolder,
+        customerEmail: `${userId}@miniarea.com`,
+        cardNumber: paymentForm.cardNumber,
+        expiryDate: paymentForm.expiryDate,
+        cvv: paymentForm.cvv,
+        cardHolder: paymentForm.cardHolder
       };
-      const currentOrders = JSON.parse(localStorage.getItem(`orders_${userId}`) || '[]');
-      localStorage.setItem(`orders_${userId}`, JSON.stringify([...currentOrders, newOrder]));
 
-      // 매출 데이터 업데이트
-      setSalesData(prev => ({
-        ...prev,
-        totalSales: prev.totalSales + cart.length,
-        totalRevenue: prev.totalRevenue + total,
-        monthlyRevenue: prev.monthlyRevenue + total
-      }));
+      paymentService.log('info', '결제 요청 시작', paymentData);
       
-      // 장바구니 비우기
-      setCart([]);
-      localStorage.setItem(`cart_${userId}`, '[]');
+      const paymentRequest = await paymentService.createPaymentRequest(paymentData);
       
-      // 성공 알림
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 30px 40px;
-        border-radius: 20px;
-        z-index: 3000;
-        font-weight: 600;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        animation: bounceIn 0.5s ease-out;
-        font-size: 18px;
-      `;
-      notification.innerHTML = `
-        <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
-        <div>구매가 완료되었습니다!</div>
-        <div style="font-size: 14px; margin-top: 10px; opacity: 0.9;">구매한 아이템은 '내 아이템'에서 확인할 수 있습니다.</div>
-      `;
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 4000);
-      
-      setActiveTab('myitems');
+      if (!paymentRequest.success) {
+        throw new Error(paymentRequest.message || '결제 요청 생성 실패');
+      }
+
+      setPaymentProgress({ 
+        step: 'processing', 
+        message: '결제 승인을 처리하고 있습니다...', 
+        paymentId: paymentRequest.payment_id,
+        transactionId: null 
+      });
+
+      // 2단계: 결제 승인 처리
+      const confirmationData = {
+        amount: total,
+        order_items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+
+      const paymentResult = await paymentService.processPayment(paymentRequest.payment_id, confirmationData);
+
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.message || '결제 처리 실패');
+      }
+
+      // 3단계: 결제 성공 처리
+      paymentService.log('info', '결제 완료', paymentResult);
+
+      setPaymentProgress({ 
+        step: 'success', 
+        message: '결제가 성공적으로 완료되었습니다!', 
+        paymentId: paymentResult.payment_id,
+        transactionId: paymentResult.transaction_id 
+      });
+
+      // 구매한 아이템을 "내 아이템"에 추가
+      await handlePurchaseSuccess(paymentResult);
+
     } catch (error) {
-      alert('구매 중 오류가 발생했습니다.');
+      paymentService.log('error', '결제 실패', error.message);
+      
+      setPaymentProgress({ 
+        step: 'error', 
+        message: error.message || '결제 중 오류가 발생했습니다.', 
+        paymentId: null,
+        transactionId: null 
+      });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 결제 성공 후 처리
+  const handlePurchaseSuccess = async (paymentResult) => {
+    const total = getTotalPrice();
+    
+    // 구매한 아이템을 "내 아이템"에 추가
+    const purchasedItems = localStorage.getItem(`myItems_${userId}`) || '[]';
+    const currentItems = JSON.parse(purchasedItems);
+    const newItems = cart.map(item => ({
+      id: `${Date.now()}_${item.id}`,
+      name: item.name,
+      category: item.category,
+      image: item.image,
+      purchaseDate: new Date().toISOString(),
+      quantity: item.quantity,
+      paymentId: paymentResult.payment_id,
+      transactionId: paymentResult.transaction_id
+    }));
+    localStorage.setItem(`myItems_${userId}`, JSON.stringify([...currentItems, ...newItems]));
+
+    // 주문 기록 추가
+    const newOrder = {
+      id: paymentResult.payment_id,
+      date: new Date().toLocaleDateString(),
+      amount: total,
+      items: cart.length,
+      status: 'completed',
+      transactionId: paymentResult.transaction_id,
+      processingFee: paymentResult.processing_fee || 0,
+      netAmount: paymentResult.net_amount || total
+    };
+    const currentOrders = JSON.parse(localStorage.getItem(`orders_${userId}`) || '[]');
+    localStorage.setItem(`orders_${userId}`, JSON.stringify([...currentOrders, newOrder]));
+
+    // 매출 데이터 업데이트
+    setSalesData(prev => ({
+      ...prev,
+      totalSales: prev.totalSales + cart.length,
+      totalRevenue: prev.totalRevenue + total,
+      monthlyRevenue: prev.monthlyRevenue + total
+    }));
+    
+    // 결제 폼 초기화
+    setPaymentForm({
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: '',
+      bankAccount: '',
+      bankName: '',
+      accountHolder: '',
+      walletAddress: '',
+      walletType: 'bitcoin'
+    });
+    
+    // 장바구니 비우기
+    setCart([]);
+    localStorage.setItem(`cart_${userId}`, '[]');
+    
+    // 3초 후 모달 닫기 및 내 아이템 탭으로 이동
+    setTimeout(() => {
+      setShowPaymentModal(false);
+      setPaymentProgress({ step: 'form', message: '', paymentId: null, transactionId: null });
+      setActiveTab('myitems');
+      
+      // 성공 알림
+      showSuccessNotification(paymentResult);
+    }, 3000);
+  };
+
+  // 성공 알림 표시
+  const showSuccessNotification = (paymentResult) => {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 30px 40px;
+      border-radius: 20px;
+      z-index: 3000;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: bounceIn 0.5s ease-out;
+      font-size: 18px;
+      max-width: 400px;
+    `;
+    notification.innerHTML = `
+      <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+      <div>구매가 완료되었습니다!</div>
+      <div style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+        거래번호: ${paymentResult.transaction_id}
+      </div>
+      <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">
+        구매한 아이템은 '내 아이템'에서 확인할 수 있습니다.
+      </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  };
+
+  // 결제 재시도
+  const retryPayment = () => {
+    setPaymentProgress({ step: 'form', message: '', paymentId: null, transactionId: null });
+  };
+
+  // 결제 취소
+  const cancelPayment = async () => {
+    if (paymentProgress.paymentId) {
+      try {
+        await paymentService.cancelPayment(paymentProgress.paymentId, '사용자 취소');
+      } catch (error) {
+        console.error('결제 취소 실패:', error);
+      }
+    }
+    
+    setShowPaymentModal(false);
+    setPaymentProgress({ step: 'form', message: '', paymentId: null, transactionId: null });
   };
 
   // 외부 링크 관리 함수들
@@ -363,6 +676,82 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
 
   const openExternalLink = (url) => {
     window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // 이모지 선택기 상태
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  // 결제 관련 상태
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('credit-card');
+  const [paymentForm, setPaymentForm] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardHolder: '',
+    bankAccount: '',
+    bankName: '',
+    accountHolder: '',
+    walletAddress: '',
+    walletType: 'bitcoin'
+  });
+  const [paymentProgress, setPaymentProgress] = useState({
+    step: 'form', // 'form', 'processing', 'success', 'error'
+    message: '',
+    paymentId: null,
+    transactionId: null
+  });
+
+  // 이모지 목록
+  const emojiCategories = {
+    'avatar': ['✨', '👤', '💎', '🌟', '👑', '💫', '🎭', '🦄'],
+    'emoticon': ['🤖', '😎', '🥳', '😍', '🤩', '😊', '😄', '🤗'],
+    'space': ['🏰', '🌍', '🌎', '🌏', '🏝️', '🗻', '⛩️', '🎪'],
+    'effect': ['💫', '⚡', '🌈', '✨', '💥', '🔥', '❄️', '💧'],
+    'voice': ['🎙️', '🎵', '🎶', '📢', '📻', '🔊', '🔉', '🔈'],
+    'chat': ['💬', '💭', '💌', '📝', '📨', '💝', '🎉', '🎊'],
+    'companion': ['🐉', '🦋', '🐾', '🦊', '🐺', '🐸', '🌸', '🌺']
+  };
+
+  // 선택한 카테고리의 이모지 가져오기
+  const getCurrentEmojis = () => {
+    const category = editingProduct === 'new' ? newProduct.category : editingProduct.category;
+    return emojiCategories[category] || emojiCategories['avatar'];
+  };
+
+  // 이모지 선택 처리
+  const selectEmoji = (emoji) => {
+    updateProductField('image', emoji);
+    setShowEmojiPicker(false);
+  };
+
+  // 결제 폼 업데이트
+  const updatePaymentForm = (field, value) => {
+    setPaymentForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  // 카드 번호 포맷팅
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return v;
+    }
+  };
+
+  // 유효기간 포맷팅
+  const formatExpiryDate = (value) => {
+    const v = value.replace(/\D+/g, '');
+    const matches = v.match(/(\d{0,2})(\d{0,2})/);
+    if (!matches) return '';
+    return [matches[1], matches[2]].filter(x => x).join('/');
   };
 
   // 관리자 함수들
@@ -464,8 +853,22 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
         {/* 헤더 */}
         <div className="shop-header">
           <div className="shop-title">
-            <h2>🛍️ {username}의 개인 쇼핑몰</h2>
+            <h2>🛍️ {shopInfo.ownerName || username}의 개인 쇼핑몰</h2>
             <p>아바타 커스터마이징 & 디지털 아이템</p>
+            {!shopInfo.isOwnShop && (
+              <div className="visitor-badge">
+                👥 방문 중 • 운영자: {shopInfo.ownerName}
+              </div>
+            )}
+            {shopInfo.paymentEnabled ? (
+              <div className="payment-status enabled">
+                ✅ 결제 시스템 활성화
+              </div>
+            ) : (
+              <div className="payment-status disabled">
+                ⚠️ 결제 시스템 미설정
+              </div>
+            )}
           </div>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
@@ -771,22 +1174,30 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
                   </button>
                 </div>
 
+                {/* 멀티 결제 설정 */}
+                {shopInfo.isOwnShop && (
+                  <MultiPaymentSettingsSection 
+                    shopOwnerId={shopInfo.ownerId}
+                    onConfigUpdate={() => {
+                      initializeShopInfo(); // 설정 업데이트 후 쇼핑몰 정보 새로고침
+                    }}
+                  />
+                )}
+
                 <div className="setting-group">
-                  <h4>💳 결제 설정</h4>
-                  <p>결제 방식과 배송 정보를 설정합니다.</p>
-                  <div className="payment-options">
-                    <label>
-                      <input type="checkbox" defaultChecked />
-                      신용카드 결제
-                    </label>
-                    <label>
-                      <input type="checkbox" defaultChecked />
-                      계좌이체
-                    </label>
-                    <label>
-                      <input type="checkbox" />
-                      가상화폐 결제
-                    </label>
+                  <h4>💳 결제 시스템 상태</h4>
+                  <div className="payment-status-detail">
+                    {shopInfo.paymentEnabled ? (
+                      <div className="status-enabled">
+                        <span className="status-icon">✅</span>
+                        <span>결제 시스템이 활성화되어 있습니다.</span>
+                      </div>
+                    ) : (
+                      <div className="status-disabled">
+                        <span className="status-icon">⚠️</span>
+                        <span>결제 시스템이 설정되지 않았습니다.</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1080,12 +1491,46 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
                     value={editingProduct === 'new' ? newProduct.price : editingProduct.price}
                     onChange={(e) => updateProductField('price', parseInt(e.target.value))}
                   />
-                  <input
-                    type="text"
-                    placeholder="이미지 (이모지)"
-                    value={editingProduct === 'new' ? newProduct.image : editingProduct.image}
-                    onChange={(e) => updateProductField('image', e.target.value)}
-                  />
+                  <div className="emoji-input-container">
+                    <div className="emoji-preview">
+                      <span className="current-emoji">
+                        {editingProduct === 'new' ? newProduct.image || '🎁' : editingProduct.image || '🎁'}
+                      </span>
+                      <button 
+                        type="button"
+                        className="emoji-select-btn"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                      >
+                        이모지 선택
+                      </button>
+                    </div>
+                    {showEmojiPicker && (
+                      <div className="emoji-picker">
+                        <div className="emoji-picker-header">
+                          <h4>이모지를 선택하세요</h4>
+                          <button 
+                            type="button"
+                            className="close-picker-btn"
+                            onClick={() => setShowEmojiPicker(false)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div className="emoji-grid">
+                          {getCurrentEmojis().map((emoji, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              className="emoji-option"
+                              onClick={() => selectEmoji(emoji)}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <select
                     value={editingProduct === 'new' ? newProduct.category : editingProduct.category}
                     onChange={(e) => updateProductField('category', e.target.value)}
@@ -1128,8 +1573,307 @@ const PersonalShop = ({ isOpen, onClose, userId, username }) => {
               </div>
             </div>
           )}
+
+          {/* 멀티 결제 모달 */}
+          {showPaymentModal && (
+            <div className="payment-modal">
+              {shopInfo.paymentEnabled ? (
+                <MultiPayment
+                  amount={getTotalPrice()}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                  onCancel={handlePaymentCancel}
+                  shopOwnerId={shopInfo.ownerId}
+                  roomData={currentMap || roomData}
+                />
+              ) : (
+                <div className="payment-disabled">
+                  <h3>결제 시스템 미설정</h3>
+                  <p>이 쇼핑몰은 아직 결제 시스템이 설정되지 않았습니다.</p>
+                  {shopInfo.isOwnShop ? (
+                    <div>
+                      <p>설정 탭에서 토스페이먼츠 또는 PortOne 결제를 설정해주세요.</p>
+                      <button 
+                        onClick={() => {
+                          setShowPaymentModal(false);
+                          setActiveTab('settings');
+                        }}
+                        className="setup-payment-btn"
+                      >
+                        결제 설정하기
+                      </button>
+                    </div>
+                  ) : (
+                    <p>쇼핑몰 운영자가 결제 시스템을 설정해야 합니다.</p>
+                  )}
+                  <button onClick={handlePaymentCancel} className="cancel-button">
+                    닫기
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+    </div>
+  );
+};
+
+// 멀티 결제 설정 컴포넌트
+const MultiPaymentSettingsSection = ({ shopOwnerId, onConfigUpdate }) => {
+  const [paymentConfig, setPaymentConfig] = useState({
+    tossPayments: { clientKey: '', secretKey: '', isActive: false },
+    portOne: { storeId: '', channelKey: '', isActive: false },
+    preferredProvider: 'toss',
+    autoSelectByRegion: true
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('toss');
+
+  useEffect(() => {
+    // 현재 설정 로드
+    const currentConfig = paymentConfigService.getUserConfig(shopOwnerId);
+    setPaymentConfig(currentConfig);
+  }, [shopOwnerId]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // 설정 유효성 검사
+      const validation = paymentConfigService.validateConfig(paymentConfig);
+      if (!validation.isValid) {
+        alert(validation.errors.join('\n'));
+        return;
+      }
+
+      // 설정 저장
+      paymentConfigService.setUserConfig(shopOwnerId, paymentConfig);
+      setIsEditing(false);
+      onConfigUpdate();
+      
+      // 성공 알림
+      showSuccessNotification('결제 설정이 저장되었습니다!');
+    } catch (error) {
+      alert('설정 저장 중 오류가 발생했습니다: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTestConfig = () => {
+    // 테스트 설정 생성
+    const testConfig = paymentConfigService.createTestConfig(shopOwnerId);
+    setPaymentConfig(testConfig);
+    onConfigUpdate();
+    showSuccessNotification('테스트 설정이 생성되었습니다!');
+  };
+
+  const showSuccessNotification = (message) => {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      z-index: 3000;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  };
+
+  const updateTossConfig = (field, value) => {
+    setPaymentConfig(prev => ({
+      ...prev,
+      tossPayments: { ...prev.tossPayments, [field]: value }
+    }));
+  };
+
+  const updatePortOneConfig = (field, value) => {
+    setPaymentConfig(prev => ({
+      ...prev,
+      portOne: { ...prev.portOne, [field]: value }
+    }));
+  };
+
+  return (
+    <div className="setting-group payment-settings">
+      <h4>💳 결제 시스템 설정</h4>
+      <p>토스페이먼츠(국내)와 PortOne(해외) 결제 연동 설정</p>
+      
+      {isEditing ? (
+        <div className="payment-config-form">
+          {/* 결제 제공자 탭 */}
+          <div className="provider-tabs">
+            <button 
+              type="button"
+              className={`provider-tab ${activeTab === 'toss' ? 'active' : ''}`}
+              onClick={() => setActiveTab('toss')}
+            >
+              💳 토스페이먼츠
+            </button>
+            <button 
+              type="button"
+              className={`provider-tab ${activeTab === 'portone' ? 'active' : ''}`}
+              onClick={() => setActiveTab('portone')}
+            >
+              🌍 PortOne
+            </button>
+          </div>
+
+          {/* 토스페이먼츠 설정 */}
+          {activeTab === 'toss' && (
+            <div className="provider-config">
+              <h5>토스페이먼츠 설정 (국내 고객 추천)</h5>
+              <div className="form-group">
+                <label>클라이언트 키 *</label>
+                <input
+                  type="text"
+                  value={paymentConfig.tossPayments.clientKey}
+                  onChange={(e) => updateTossConfig('clientKey', e.target.value)}
+                  placeholder="test_ck_... 또는 live_ck_..."
+                />
+              </div>
+              <div className="form-group">
+                <label>시크릿 키</label>
+                <input
+                  type="password"
+                  value={paymentConfig.tossPayments.secretKey}
+                  onChange={(e) => updateTossConfig('secretKey', e.target.value)}
+                  placeholder="test_sk_... 또는 live_sk_..."
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={paymentConfig.tossPayments.isActive}
+                    onChange={(e) => updateTossConfig('isActive', e.target.checked)}
+                  />
+                  토스페이먼츠 활성화
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* PortOne 설정 */}
+          {activeTab === 'portone' && (
+            <div className="provider-config">
+              <h5>PortOne 설정 (해외 고객 추천)</h5>
+              <div className="form-group">
+                <label>스토어 ID *</label>
+                <input
+                  type="text"
+                  value={paymentConfig.portOne.storeId}
+                  onChange={(e) => updatePortOneConfig('storeId', e.target.value)}
+                  placeholder="store_..."
+                />
+              </div>
+              <div className="form-group">
+                <label>채널 키 *</label>
+                <input
+                  type="text"
+                  value={paymentConfig.portOne.channelKey}
+                  onChange={(e) => updatePortOneConfig('channelKey', e.target.value)}
+                  placeholder="channel_..."
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={paymentConfig.portOne.isActive}
+                    onChange={(e) => updatePortOneConfig('isActive', e.target.checked)}
+                  />
+                  PortOne 활성화
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* 공통 설정 */}
+          <div className="common-settings">
+            <h5>공통 설정</h5>
+            <div className="form-group">
+              <label>선호하는 결제 제공자</label>
+              <select
+                value={paymentConfig.preferredProvider}
+                onChange={(e) => setPaymentConfig({...paymentConfig, preferredProvider: e.target.value})}
+              >
+                <option value="toss">토스페이먼츠</option>
+                <option value="portone">PortOne</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={paymentConfig.autoSelectByRegion}
+                  onChange={(e) => setPaymentConfig({...paymentConfig, autoSelectByRegion: e.target.checked})}
+                />
+                지역별 자동 선택 (국내: 토스페이먼츠, 해외: PortOne)
+              </label>
+            </div>
+          </div>
+          
+          <div className="payment-actions">
+            <button 
+              onClick={handleSave}
+              disabled={saving}
+              className="save-btn"
+            >
+              {saving ? '저장 중...' : '저장'}
+            </button>
+            <button 
+              onClick={() => setIsEditing(false)}
+              className="cancel-btn"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="payment-config-display">
+          <div className="config-status">
+            <span className="config-label">토스페이먼츠:</span>
+            <span className={`config-value ${paymentConfig.tossPayments?.isActive ? 'active' : 'inactive'}`}>
+              {paymentConfig.tossPayments?.isActive ? '활성화됨' : '비활성화됨'}
+            </span>
+          </div>
+          
+          <div className="config-status">
+            <span className="config-label">PortOne:</span>
+            <span className={`config-value ${paymentConfig.portOne?.isActive ? 'active' : 'inactive'}`}>
+              {paymentConfig.portOne?.isActive ? '활성화됨' : '비활성화됨'}
+            </span>
+          </div>
+          
+          <div className="config-detail">
+            <span className="config-label">선호 제공자:</span>
+            <span className="config-value">
+              {paymentConfig.preferredProvider === 'toss' ? '토스페이먼츠' : 'PortOne'}
+            </span>
+          </div>
+          
+          <div className="payment-actions">
+            <button onClick={() => setIsEditing(true)} className="edit-btn">
+              설정 편집
+            </button>
+            <button onClick={handleTestConfig} className="test-btn">
+              테스트 설정 생성
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
