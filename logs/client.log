@@ -4,12 +4,12 @@
 
 Forced re-optimization of dependencies
 
-  VITE v4.5.14  ready in 166 ms
+  VITE v4.5.14  ready in 159 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-12:24:59 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+11:09:19 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 151|              mapCreatorId: map.creatorId,
 152|              mapCreatedBy: map.createdBy,
 153|              mapCreatorId: map.creator?.id,
@@ -19,7 +19,7 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-12:24:59 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+11:09:19 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
 165|                mapCreatorId: map.creatorId,
 166|                mapCreatedBy: map.createdBy,
 167|                mapCreatorId: map.creator?.id,
@@ -29,5 +29,48 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-(node:452758) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(node:130524) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
+11:13:30 AM [vite] hmr update /src/pages/MetaverseEdit.jsx, /src/components/MetaverseScene.jsx, /src/components/IntegratedVideoBar.jsx
+11:13:31 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+151|              mapCreatorId: map.creatorId,
+152|              mapCreatedBy: map.createdBy,
+153|              mapCreatorId: map.creator?.id,
+   |              ^
+154|              userId: user?.id,
+155|              creatorIdMatch: map.creatorId === user?.id,
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+11:13:31 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+165|                mapCreatorId: map.creatorId,
+166|                mapCreatedBy: map.createdBy,
+167|                mapCreatorId: map.creator?.id,
+   |                ^
+168|                userId: user?.id,
+169|                userName: user?.username
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+11:13:44 AM [vite] hmr update /src/pages/MetaverseEdit.jsx, /src/components/MetaverseScene.jsx, /src/components/IntegratedVideoBar.jsx
+11:13:44 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+151|              mapCreatorId: map.creatorId,
+152|              mapCreatedBy: map.createdBy,
+153|              mapCreatorId: map.creator?.id,
+   |              ^
+154|              userId: user?.id,
+155|              creatorIdMatch: map.creatorId === user?.id,
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+11:13:44 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+165|                mapCreatorId: map.creatorId,
+166|                mapCreatedBy: map.createdBy,
+167|                mapCreatorId: map.creator?.id,
+   |                ^
+168|                userId: user?.id,
+169|                userName: user?.username
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
+11:16:24 AM [vite] hmr update /src/components/MetaverseScene.jsx

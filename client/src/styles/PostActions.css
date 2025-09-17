@@ -1,0 +1,244 @@
+.post-actions-container {
+  position: relative;
+  display: inline-block;
+}
+
+.post-menu-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-menu-btn:hover {
+  background: rgba(107, 114, 128, 0.1);
+  color: #374151;
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.post-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  min-width: 150px;
+  overflow: hidden;
+  animation: menu-appear 0.2s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes menu-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menu-item {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-item:hover {
+  background: #f9fafb;
+}
+
+.menu-item.edit-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.menu-item.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.menu-item.report-btn:hover {
+  background: rgba(245, 101, 101, 0.1);
+  color: #f56565;
+}
+
+.menu-item.cancel-btn:hover {
+  background: rgba(156, 163, 175, 0.1);
+  color: #6b7280;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 4px 0;
+}
+
+.delete-confirm-dialog {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  width: 300px;
+  overflow: hidden;
+  animation: dialog-appear 0.3s ease-out;
+}
+
+@keyframes dialog-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dialog-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fef2f2;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  color: #dc2626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dialog-content {
+  padding: 16px 20px;
+}
+
+.dialog-content p {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.warning-text {
+  color: #dc2626 !important;
+  font-size: 13px !important;
+  font-weight: 500;
+}
+
+.dialog-actions {
+  padding: 12px 20px 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancel-delete-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-delete-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.confirm-delete-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-delete-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .post-actions-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    border-radius: 20px 20px 0 0;
+    min-width: auto;
+    width: 100%;
+    animation: menu-slide-up 0.3s ease-out;
+  }
+  
+  @keyframes menu-slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  .menu-item {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+  
+  .delete-confirm-dialog {
+    position: fixed;
+    bottom: 50%;
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translate(-50%, 50%);
+    width: calc(100% - 40px);
+    max-width: 320px;
+  }
+}

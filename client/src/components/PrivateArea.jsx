@@ -1,22 +1,13 @@
 import { Box } from '@react-three/drei'
+import { getPrivateAreaColor } from '../utils/privateAreaUtils'
 
 const PrivateArea = ({ area }) => {
-  const { position, size, rotation, type, currentOccupants, maxOccupants } = area
+  const { position, size, rotation, type, currentOccupants, maxOccupants, areaNumber } = area
 
-  // 영역 타입에 따른 색상 결정
-  const getAreaColor = (type) => {
-    switch (type) {
-      case 'room':
-        return '#32CD32'
-      case 'office':
-        return '#FFD700'
-      case 'meeting':
-        return '#9370DB'
-      case 'lounge':
-        return '#FF69B4'
-      default:
-        return '#20B2AA'
-    }
+  // 영역 번호에 따른 색상 결정 (1=빨강, 2=주황, 3=노랑, 4=초록, 5=파랑, 6=남색, 7=보라, 8이상=랜덤색)
+  const getAreaColor = (areaNumber) => {
+    const colorInfo = getPrivateAreaColor(areaNumber || 1)
+    return colorInfo.fill.replace('0.3', '1.0') // 투명도 제거하여 solid 색상으로 변경
   }
 
   // 사용률에 따른 투명도 결정
@@ -42,7 +33,7 @@ const PrivateArea = ({ area }) => {
       receiveShadow
     >
       <meshStandardMaterial 
-        color={getAreaColor(type)}
+        color={getAreaColor(areaNumber)}
         transparent
         opacity={getAreaOpacity()}
       />

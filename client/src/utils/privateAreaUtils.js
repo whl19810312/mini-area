@@ -164,28 +164,37 @@ const EXTENDED_COLORS = [
 ];
 
 /**
- * 프라이빗 영역 인덱스에 따른 색상 반환
- * @param {number} index - 프라이빗 영역 인덱스 (0부터 시작)
+ * 랜덤 색상 생성
  * @returns {Object} 색상 객체 {name, fill, stroke}
  */
-export const getPrivateAreaColor = (index) => {
-  if (index < RAINBOW_COLORS.length) {
+const generateRandomColor = () => {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  
+  return {
+    name: `Random-${r}-${g}-${b}`,
+    fill: `rgba(${r}, ${g}, ${b}, 0.3)`,
+    stroke: `rgba(${r}, ${g}, ${b}, 0.8)`
+  };
+};
+
+/**
+ * 프라이빗 영역 번호에 따른 색상 반환 (1부터 시작)
+ * 1=빨강, 2=주황, 3=노랑, 4=초록, 5=파랑, 6=남색, 7=보라, 8이상=랜덤색
+ * @param {number} areaNumber - 프라이빗 영역 번호 (1부터 시작)
+ * @returns {Object} 색상 객체 {name, fill, stroke}
+ */
+export const getPrivateAreaColor = (areaNumber) => {
+  // 1부터 시작하므로 인덱스는 -1
+  const index = areaNumber - 1;
+  
+  if (index >= 0 && index < RAINBOW_COLORS.length) {
     return RAINBOW_COLORS[index];
   }
   
-  // 무지개 색상을 초과하는 경우 확장 색상 사용
-  const extendedIndex = (index - RAINBOW_COLORS.length) % EXTENDED_COLORS.length;
-  const extendedColor = EXTENDED_COLORS[extendedIndex];
-  
-  // 여러 번 반복되는 경우 투명도를 조절하여 구분
-  const cycleCount = Math.floor((index - RAINBOW_COLORS.length) / EXTENDED_COLORS.length);
-  const opacityMultiplier = Math.max(0.2, 1 - (cycleCount * 0.1));
-  
-  return {
-    name: `${extendedColor.name} ${cycleCount > 0 ? `(${cycleCount + 1})` : ''}`,
-    fill: extendedColor.fill.replace(/0\.\d+/, `${0.3 * opacityMultiplier}`),
-    stroke: extendedColor.stroke.replace(/0\.\d+/, `${0.8 * opacityMultiplier}`)
-  };
+  // 무지개 색상을 초과하는 경우 랜덤 색상 생성
+  return generateRandomColor();
 };
 
 /**
@@ -208,12 +217,12 @@ export const getRainbowColors = () => {
  * 영역 타입에 따른 이름표 배경색 반환
  * @param {string} areaType - 영역 타입 ('public', 'private', 'restricted')
  * @param {boolean} isCurrentUser - 현재 사용자인지 여부
- * @param {number} privateAreaIndex - 프라이빗 영역인 경우 인덱스
+ * @param {number} privateAreaNumber - 프라이빗 영역인 경우 번호 (1부터 시작)
  * @returns {string} 배경색 (rgba 형식)
  */
-export const getNametagBackgroundColor = (areaType, isCurrentUser = false, privateAreaIndex = 0) => {
+export const getNametagBackgroundColor = (areaType, isCurrentUser = false, privateAreaNumber = 1) => {
   if (areaType === 'private') {
-    const color = getPrivateAreaColor(privateAreaIndex);
+    const color = getPrivateAreaColor(privateAreaNumber);
     return color.fill;
   }
   

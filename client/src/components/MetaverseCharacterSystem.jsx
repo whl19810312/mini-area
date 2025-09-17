@@ -82,23 +82,53 @@ const MetaverseCharacterSystem = forwardRef(({
       characters.push(userCharacter);
     }
 
-    // 다른 사용자 캐릭터들만 추가 (otherCharacters 사용)
-    if (charSync?.otherCharacters && typeof charSync.otherCharacters.forEach === 'function') {
-      charSync.otherCharacters.forEach((char, id) => {
+    // 다른 사용자 캐릭터들 추가 (입실한 모든 사용자 포함)
+    if (charSync?.otherCharacters) {
+      Object.values(charSync.otherCharacters).forEach((char) => {
         // 현재 사용자가 아닌 경우만 추가
-        if (id !== user?.username) {
-          // 다른 사용자도 기본 캐릭터 이미지 사용
-          const otherDefaultChar = createDefaultCharacter(char.username || id);
-          const direction = char.direction || 'down';
+        if (char.id !== user?.username && char.username !== user?.username) {
+          // 캐릭터 정보가 있으면 사용, 없으면 기본 캐릭터 생성
+          let characterSprite = null;
+          let characterName = char.username || char.id;
           
-          characters.push({ 
-            ...char, 
-            sprite: char.characterInfo?.images?.[direction] || otherDefaultChar.images[direction],
-            isCurrentUser: false 
-          });
+          if (char.characterInfo && char.characterInfo.images) {
+            // 서버에서 받은 캐릭터 정보 사용
+            const direction = char.direction || 'down';
+            characterSprite = char.characterInfo.images[direction];
+            characterName = char.characterInfo.name || characterName;
+          } else {
+            // 기본 캐릭터 생성
+            const otherDefaultChar = createDefaultCharacter(characterName);
+            const direction = char.direction || 'down';
+            characterSprite = otherDefaultChar.images[direction];
+          }
+          
+          const otherCharacter = {
+            id: char.id,
+            name: characterName,
+            username: char.username,
+            sprite: characterSprite,
+            direction: char.direction || 'down',
+            position: char.position || { x: 200, y: 200 },
+            isCurrentUser: false,
+            areaType: char.areaType || 'public',
+            currentArea: char.currentArea,
+            areaDescription: char.areaDescription || '공개 영역',
+            lastUpdate: char.lastUpdate
+          };
+          
+          characters.push(otherCharacter);
         }
       });
     }
+    
+    console.log('🎨 최종 렌더링 캐릭터 목록:', characters.map(c => ({ 
+      name: c.name, 
+      id: c.id, 
+      position: c.position, 
+      isCurrentUser: c.isCurrentUser,
+      hasSprite: !!c.sprite
+    })));
     
     return characters;
   }, [user?.username, charSync?.myPosition, charSync?.myDirection, charSync?.otherCharacters, currentCharacter, defaultCharacter]);
@@ -146,8 +176,17 @@ const MetaverseCharacterSystem = forwardRef(({
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
+              title={`${char.name || char.id} - ${char.areaDescription || '공개 영역'} (${char.lastUpdate ? '동기화됨' : '대기중'})`}
             >
-              {char.name || char.id}
+              {char.name || char.username || char.id}
+              {/* 입실 상태 표시 */}
+              {char.lastUpdate && (
+                <span style={{
+                  marginLeft: '4px',
+                  fontSize: '10px',
+                  color: '#90EE90'
+                }}>●</span>
+              )}
             </div>
             
             {/* 캐릭터 이미지 */}

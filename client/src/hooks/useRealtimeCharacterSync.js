@@ -211,7 +211,7 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
     throttledEmit();
   }, [socket, currentMap, currentCharacter, myPosition, myDirection]);
   
-  // 다른 캐릭터 위치 수신
+  // 다른 캐릭터 위치 수신 및 전체 사용자 업데이트 처리
   useEffect(() => {
     if (!socket) return;
     
@@ -240,13 +240,45 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
         return updated;
       });
     };
+
+    // 전체 사용자 업데이트 처리 (입실 후 그려지지 않은 사용자 감지)
+    const handleAllUsersUpdate = (data) => {
+      console.log('🏠 전체 사용자 업데이트 수신:', data);
+      
+      if (data.users && Array.isArray(data.users)) {
+        const newOtherCharacters = {};
+        
+        data.users.forEach(user => {
+          // 현재 사용자가 아닌 경우만 추가
+          if (user.userId !== currentCharacter?.id && user.username !== currentCharacter?.name) {
+            newOtherCharacters[user.userId] = {
+              id: user.userId,
+              username: user.username,
+              position: user.position || { x: 200, y: 200 },
+              direction: user.direction || 'down',
+              isMoving: false,
+              characterInfo: user.characterInfo,
+              areaType: user.areaType || 'public',
+              currentArea: user.currentArea,
+              areaDescription: user.areaDescription || '공개 영역',
+              lastUpdate: Date.now()
+            };
+          }
+        });
+        
+        console.log('🎨 렌더링할 다른 캐릭터들:', Object.keys(newOtherCharacters));
+        setOtherCharacters(newOtherCharacters);
+      }
+    };
     
     socket.on('character-moved', handleCharacterMove);
     socket.on('character-disconnected', handleCharacterDisconnect);
+    socket.on('all-users-update', handleAllUsersUpdate);
     
     return () => {
       socket.off('character-moved', handleCharacterMove);
       socket.off('character-disconnected', handleCharacterDisconnect);
+      socket.off('all-users-update', handleAllUsersUpdate);
     };
   }, [socket, currentCharacter]);
 
