@@ -74,3 +74,41 @@ Forced re-optimization of dependencies
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
 11:16:24 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:40:32 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:40:39 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:42:33 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:42:41 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:46:07 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:46:16 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:48:42 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:11 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:25 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:34 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:40 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:50 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:50:57 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:54:36 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:54:36 AM [vite] warning: Duplicate key "left" in object literal
+728|                  textOverflow: 'clip',
+729|                  transform: 'translateX(-50%)', // 완전한 중앙 정렬
+730|                  left: `${charSync.myPosition.x}px` // transform과 함께 사용하여 중앙 정렬
+   |                  ^
+731|                }}>
+732|  
+
+  Plugin: vite:esbuild
+  File: /home/wh/working/complete/mini-area/client/src/components/MetaverseScene.jsx
+11:57:27 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:59:24 AM [vite] hmr update /src/components/MetaverseScene.jsx
+11:59:43 AM [vite] hmr update /src/components/MetaverseScene.jsx
+12:00:59 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:01:52 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:02:13 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:03:07 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:04:36 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:05:27 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:06:14 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:07:16 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:08:48 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:10:28 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:10:34 PM [vite] hmr update /src/components/MetaverseScene.jsx

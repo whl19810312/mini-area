@@ -3,7 +3,7 @@ import { useMetaverse } from '../contexts/MetaverseContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useRealtimeCharacterSync } from '../hooks/useRealtimeCharacterSync';
 import { useUserStatus } from '../hooks/useUserStatus';
-import { getAreaTypeAtPoint, getNametagBackgroundColor } from '../utils/privateAreaUtils';
+import { getAreaTypeAtPoint, getNametagBackgroundColor, getPrivateAreaColor, isPointInPrivateArea } from '../utils/privateAreaUtils';
 import ChatWindow from './ChatWindow';
 import SNSBoard from './SNSBoard';
 import NavigationBar from './NavigationBar';
@@ -15,7 +15,7 @@ import MetaverseSocialFeed from './MetaverseSocialFeed';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
-const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, characters, currentCharacter, isEditMode = false, onReturnToLobby }, ref) => {
+const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, currentCharacter, isEditMode = false, onReturnToLobby }, ref) => {
   const { user, socket } = useAuth();
   const { updateCharacterPosition, createEmojiCharacter, createOrUpdateCharacter, selectCharacter } = useMetaverse();
 
@@ -629,18 +629,52 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 }}
               >
                 {currentCharacter?.images?.[charSync.myDirection] ? (
-                  <img
-                    src={currentCharacter.images[charSync.myDirection].startsWith('data:') 
-                      ? currentCharacter.images[charSync.myDirection] 
-                      : `data:image/png;base64,${currentCharacter.images[charSync.myDirection]}`}
-                    alt={currentCharacter.name || "내 캐릭터"}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      imageRendering: 'pixelated',
-                      objectFit: 'contain'
-                    }}
-                  />
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    backgroundColor: (() => {
+                      const areaType = getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas);
+                      if (areaType === 'private') {
+                        // 프라이빗 영역인 경우 영역 번호를 찾아서 색상 결정
+                        const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                          isPointInPrivateArea(charSync.myPosition, area)
+                        ) || 0;
+                        const color = getPrivateAreaColor(areaIndex + 1);
+                        return color.fill.replace('0.3', '0.15'); // 투명도 조정
+                      }
+                      return 'rgba(76, 175, 80, 0.15)'; // 공개 영역 기본 색상 (초록)
+                    })(),
+                    border: (() => {
+                      const areaType = getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas);
+                      if (areaType === 'private') {
+                        const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                          isPointInPrivateArea(charSync.myPosition, area)
+                        ) || 0;
+                        const color = getPrivateAreaColor(areaIndex + 1);
+                        return `3px solid ${color.stroke.replace('0.8', '0.15')}`; // 투명도 조정
+                      }
+                      return '3px solid rgba(76, 175, 80, 0.15)'; // 공개 영역 기본 테두리
+                    })(),
+                    borderRadius: '6px',
+                    padding: '4px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={currentCharacter.images[charSync.myDirection].startsWith('data:') 
+                        ? currentCharacter.images[charSync.myDirection] 
+                        : `data:image/png;base64,${currentCharacter.images[charSync.myDirection]}`}
+                      alt={currentCharacter.name || "내 캐릭터"}
+                      style={{
+                        width: '104%', // 80% × 1.3 = 104% (30% 증가)
+                        height: '104%', // 80% × 1.3 = 104% (30% 증가)
+                        imageRendering: 'pixelated',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
                 ) : currentCharacter?.appearance ? (
                   <div
                     style={{
@@ -661,18 +695,39 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 ) : (
                   <div
                     style={{
-                      width: '32px',
-                      height: '32px',
-                      backgroundColor: '#4CAF50',
-                      borderRadius: '50%',
-                      border: '3px solid #fff',
+                      width: '60px',
+                      height: '60px',
+                        backgroundColor: (() => {
+                        const areaType = getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas);
+                        if (areaType === 'private') {
+                          const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                            isPointInPrivateArea(charSync.myPosition, area)
+                          ) || 0;
+                          const color = getPrivateAreaColor(areaIndex + 1);
+                          return color.fill.replace('0.3', '0.15');
+                        }
+                        return 'rgba(76, 175, 80, 0.15)';
+                      })(),
+                      borderRadius: '6px',
+                      border: (() => {
+                        const areaType = getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas);
+                        if (areaType === 'private') {
+                          const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                            isPointInPrivateArea(charSync.myPosition, area)
+                          ) || 0;
+                          const color = getPrivateAreaColor(areaIndex + 1);
+                          return `3px solid ${color.stroke.replace('0.8', '0.15')}`;
+                        }
+                        return '3px solid rgba(76, 175, 80, 0.15)';
+                      })(),
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '16px'
+                      fontSize: '39px' // 30px × 1.3 = 39px (30% 증가)
                     }}
+                    onClick={() => console.log('🔴 MetaverseScene.jsx - 내 캐릭터 클릭됨!')}
                   >
-                    👤
+                    🔴
                   </div>
                 )}
               </div>
@@ -681,24 +736,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 className="character-name my-character-name"
                 style={{
                   position: 'absolute',
-                  left: `${charSync.myPosition.x - 50}px`, // 캐릭터 너비에 맞게 조정
-                  top: `${charSync.myPosition.y - 55}px`, // 캐릭터 머리 바로 위
-                  fontSize: '12px', // 폰트 크기도 약간 증가
+                  left: `${charSync.myPosition.x}px`, // 캐릭터 박스 중앙에 맞춤
+                  top: `${charSync.myPosition.y - 65}px`, // 캐릭터 박스에 바짝 붙이기 (박스 상단에서 15px 위)
+                  fontSize: '12px',
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
-                  textAlign: 'center',
-                  width: '100px', // 폭을 늘려서 이름이 잘리지 않게
-                  zIndex: 1000, // z-index를 매우 높게 설정
+                  zIndex: 1000,
                   fontWeight: 'bold',
-                  backgroundColor: getNametagBackgroundColor(
-                    getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas),
-                    true
-                  ),
-                  borderRadius: '8px',
-                  padding: '3px 6px', // 패딩도 증가
                   whiteSpace: 'nowrap',
-                  overflow: 'visible', // overflow를 visible로 변경
-                  textOverflow: 'clip'
+                  overflow: 'visible',
+                  textOverflow: 'clip',
+                  transform: 'translateX(-50%)', // 이름의 중앙이 캐릭터 박스 중앙에 오도록
                 }}
               >
                 {currentCharacter?.name || user?.username || '나'}
@@ -724,18 +772,51 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 }}
               >
                 {character.characterInfo?.images?.[character.direction] ? (
-                  <img
-                    src={character.characterInfo.images[character.direction].startsWith('data:') 
-                      ? character.characterInfo.images[character.direction] 
-                      : `data:image/png;base64,${character.characterInfo.images[character.direction]}`}
-                    alt={character.characterInfo.name || character.username}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      imageRendering: 'pixelated',
-                      objectFit: 'contain'
-                    }}
-                  />
+                  <div style={{
+                    width: '55px',
+                    height: '55px',
+                    backgroundColor: (() => {
+                      const areaType = getAreaTypeAtPoint(character.position, currentMap?.privateAreas);
+                      if (areaType === 'private') {
+                        const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                          isPointInPrivateArea(character.position, area)
+                        ) || 0;
+                        const color = getPrivateAreaColor(areaIndex + 1);
+                        return color.fill.replace('0.3', '0.15');
+                      }
+                      return 'rgba(33, 150, 243, 0.15)'; // 다른 사용자 기본 색상 (파랑)
+                    })(),
+                    border: (() => {
+                      const areaType = getAreaTypeAtPoint(character.position, currentMap?.privateAreas);
+                      if (areaType === 'private') {
+                        const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                          isPointInPrivateArea(character.position, area)
+                        ) || 0;
+                        const color = getPrivateAreaColor(areaIndex + 1);
+                        return `3px solid ${color.stroke.replace('0.8', '0.15')}`;
+                      }
+                      return '3px solid rgba(33, 150, 243, 0.15)';
+                    })(),
+                    borderRadius: '6px',
+                    padding: '4px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={character.characterInfo.images[character.direction].startsWith('data:') 
+                        ? character.characterInfo.images[character.direction] 
+                        : `data:image/png;base64,${character.characterInfo.images[character.direction]}`}
+                      alt={character.characterInfo.name || character.username}
+                      style={{
+                        width: '104%', // 80% × 1.3 = 104% (30% 증가)
+                        height: '104%', // 80% × 1.3 = 104% (30% 증가)
+                        imageRendering: 'pixelated',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
                 ) : character.characterInfo?.appearance ? (
                   <div
                     style={{
@@ -756,18 +837,39 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 ) : (
                   <div
                     style={{
-                      width: '32px',
-                      height: '32px',
-                      backgroundColor: '#2196F3',
-                      borderRadius: '50%',
-                      border: '2px solid #fff',
+                      width: '55px',
+                      height: '55px',
+                      backgroundColor: (() => {
+                        const areaType = getAreaTypeAtPoint(character.position, currentMap?.privateAreas);
+                        if (areaType === 'private') {
+                          const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                            isPointInPrivateArea(character.position, area)
+                          ) || 0;
+                          const color = getPrivateAreaColor(areaIndex + 1);
+                          return color.fill.replace('0.3', '0.15');
+                        }
+                        return 'rgba(33, 150, 243, 0.15)';
+                      })(),
+                      borderRadius: '6px',
+                      border: (() => {
+                        const areaType = getAreaTypeAtPoint(character.position, currentMap?.privateAreas);
+                        if (areaType === 'private') {
+                          const areaIndex = currentMap.privateAreas?.findIndex(area => 
+                            isPointInPrivateArea(character.position, area)
+                          ) || 0;
+                          const color = getPrivateAreaColor(areaIndex + 1);
+                          return `3px solid ${color.stroke.replace('0.8', '0.15')}`;
+                        }
+                        return '3px solid rgba(33, 150, 243, 0.15)';
+                      })(),
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '14px'
+                      fontSize: '32px' // 25px × 1.3 = 32px (30% 증가)
                     }}
+                    onClick={() => console.log('🔵 MetaverseScene.jsx - 다른 캐릭터 클릭됨!', character.username)}
                   >
-                    👥
+                    🔵
                   </div>
                 )}
               </div>
@@ -775,24 +877,17 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, charact
                 className="character-name other-character-name"
                 style={{
                   position: 'absolute',
-                  left: `${character.position.x - 50}px`, // 캐릭터 너비에 맞게 조정
-                  top: `${character.position.y - 55}px`, // 캐릭터 머리 바로 위
-                  fontSize: '12px', // 폰트 크기도 약간 증가
+                  left: `${character.position.x}px`, // 캐릭터 박스 중앙에 맞춤
+                  top: `${character.position.y - 65}px`, // 캐릭터 박스에 바짝 붙이기 (박스 상단에서 15px 위)
+                  fontSize: '12px',
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
-                  textAlign: 'center',
-                  width: '100px', // 폭을 늘려서 이름이 잘리지 않게
-                  zIndex: 1000, // z-index를 매우 높게 설정
+                  zIndex: 1000,
                   fontWeight: 'bold',
-                  backgroundColor: getNametagBackgroundColor(
-                    getAreaTypeAtPoint(character.position, currentMap?.privateAreas),
-                    false
-                  ),
-                  borderRadius: '8px',
-                  padding: '3px 6px', // 패딩도 증가
                   whiteSpace: 'nowrap',
-                  overflow: 'visible', // overflow를 visible로 변경
-                  textOverflow: 'clip'
+                  overflow: 'visible',
+                  textOverflow: 'clip',
+                  transform: 'translateX(-50%)', // 이름의 중앙이 캐릭터 박스 중앙에 오도록
                 }}
               >
                 {character.username}
