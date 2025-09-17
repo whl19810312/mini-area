@@ -620,18 +620,18 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                 className="character my-character"
                 style={{
                   position: 'absolute',
-                  left: `${charSync.myPosition.x - 40}px`, // 새로운 크기(80px)의 절반
-                  top: `${charSync.myPosition.y - 50}px`, // 새로운 크기(100px)의 절반
-                  width: '80px', // 캐릭터 컨테이너 크기와 일치
-                  height: '100px', // 캐릭터 컨테이너 크기와 일치
+                  left: `${charSync.myPosition.x - 32}px`, // 64px의 절반 (20% 축소)
+                  top: `${charSync.myPosition.y - 40}px`, // 80px의 절반 (20% 축소)
+                  width: '64px', // 80px × 0.8 = 64px (20% 축소)
+                  height: '80px', // 100px × 0.8 = 80px (20% 축소)
                   zIndex: 100,
                   overflow: 'visible' // 명시적으로 visible 설정
                 }}
               >
                 {currentCharacter?.images?.[charSync.myDirection] ? (
                   <div style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '48px', // 60px × 0.8 = 48px (20% 축소)
+                    height: '48px', // 60px × 0.8 = 48px (20% 축소)
                     backgroundColor: (() => {
                       const areaType = getAreaTypeAtPoint(charSync.myPosition, currentMap?.privateAreas);
                       if (areaType === 'private') {
@@ -723,7 +723,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '39px' // 30px × 1.3 = 39px (30% 증가)
+                      fontSize: '31px' // 39px × 0.8 = 31px (20% 축소)
                     }}
                     onClick={() => console.log('🔴 MetaverseScene.jsx - 내 캐릭터 클릭됨!')}
                   >
@@ -736,8 +736,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                 className="character-name my-character-name"
                 style={{
                   position: 'absolute',
-                  left: `${charSync.myPosition.x}px`, // 캐릭터 박스 중앙에 맞춤
-                  top: `${charSync.myPosition.y - 65}px`, // 캐릭터 박스에 바짝 붙이기 (박스 상단에서 15px 위)
+                  left: `${charSync.myPosition.x - 32}px`, // 캐릭터 박스 상단 왼쪽에서 시작 (64px 박스 기준)
+                  top: `${charSync.myPosition.y - 45}px`, // 캐릭터 박스에 더 가까이 붙이기 (박스 상단에서 5px 위)
                   fontSize: '12px',
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
@@ -746,7 +746,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                   whiteSpace: 'nowrap',
                   overflow: 'visible',
                   textOverflow: 'clip',
-                  transform: 'translateX(-50%)', // 이름의 중앙이 캐릭터 박스 중앙에 오도록
+                  // transform 제거 - 왼쪽에서 시작하도록
                 }}
               >
                 {currentCharacter?.name || user?.username || '나'}
@@ -763,18 +763,18 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                 className="character other-character"
                 style={{
                   position: 'absolute',
-                  left: `${character.position.x - 40}px`, // 새로운 크기(80px)의 절반
-                  top: `${character.position.y - 50}px`, // 새로운 크기(100px)의 절반
-                  width: '80px', // 캐릭터 컨테이너 크기와 일치
-                  height: '100px', // 캐릭터 컨테이너 크기와 일치
+                  left: `${character.position.x - 32}px`, // 64px의 절반 (20% 축소)
+                  top: `${character.position.y - 40}px`, // 80px의 절반 (20% 축소)
+                  width: '64px', // 80px × 0.8 = 64px (20% 축소)
+                  height: '80px', // 100px × 0.8 = 80px (20% 축소)
                   zIndex: 99,
                   overflow: 'visible' // 명시적으로 visible 설정
                 }}
               >
                 {character.characterInfo?.images?.[character.direction] ? (
                   <div style={{
-                    width: '55px',
-                    height: '55px',
+                    width: '44px', // 55px × 0.8 = 44px (20% 축소)
+                    height: '44px', // 55px × 0.8 = 44px (20% 축소)
                     backgroundColor: (() => {
                       const areaType = getAreaTypeAtPoint(character.position, currentMap?.privateAreas);
                       if (areaType === 'private') {
@@ -865,7 +865,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '32px' // 25px × 1.3 = 32px (30% 증가)
+                      fontSize: '26px' // 32px × 0.8 = 26px (20% 축소)
                     }}
                     onClick={() => console.log('🔵 MetaverseScene.jsx - 다른 캐릭터 클릭됨!', character.username)}
                   >
@@ -877,8 +877,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                 className="character-name other-character-name"
                 style={{
                   position: 'absolute',
-                  left: `${character.position.x}px`, // 캐릭터 박스 중앙에 맞춤
-                  top: `${character.position.y - 65}px`, // 캐릭터 박스에 바짝 붙이기 (박스 상단에서 15px 위)
+                  left: `${character.position.x - 32}px`, // 캐릭터 박스 상단 왼쪽에서 시작 (64px 박스 기준)
+                  top: `${character.position.y - 45}px`, // 캐릭터 박스에 더 가까이 붙이기 (박스 상단에서 5px 위)
                   fontSize: '12px',
                   color: 'white',
                   textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
@@ -887,7 +887,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                   whiteSpace: 'nowrap',
                   overflow: 'visible',
                   textOverflow: 'clip',
-                  transform: 'translateX(-50%)', // 이름의 중앙이 캐릭터 박스 중앙에 오도록
+                  // transform 제거 - 왼쪽에서 시작하도록
                 }}
               >
                 {character.username}
@@ -974,7 +974,7 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                   position: 'absolute',
                   left: `${position.x - 60}px`,
                   top: `${position.y - 110}px`,
-                  backgroundColor: 'rgba(144, 238, 144, 0.95)',
+                  backgroundColor: 'rgba(144, 238, 144, 0.25)', // 75% 투명도
                   color: '#000000',
                   padding: '12px 18px',
                   borderRadius: '20px',

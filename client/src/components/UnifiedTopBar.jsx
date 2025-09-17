@@ -34,13 +34,6 @@ const UnifiedTopBar = ({
               🎮 공간
             </button>
             <button 
-              className="menu-btn"
-              onClick={() => window.open('/sns', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes')}
-              title="SNS 게시판 (새 창)"
-            >
-              📱 SNS
-            </button>
-            <button 
               className="menu-btn home-btn"
               onClick={onReturnToLobby}
               title="대기실로 돌아가기"

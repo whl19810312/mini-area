@@ -10,6 +10,8 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
   const myPositionRef = useRef(myPosition);
   const myDirectionRef = useRef(myDirection);
   const clickTargetRef = useRef(null);
+  const keysPressed = useRef(new Set());
+  const keyboardMoveIntervalRef = useRef(null);
   
   // ref 업데이트
   useEffect(() => {
@@ -120,6 +122,96 @@ export const useRealtimeCharacterSync = (socket, currentMap, currentCharacter) =
     }
     return false;
   }, [currentMap]);
+
+  // 키보드 움직임 함수
+  const moveWithKeyboard = useCallback(() => {
+    if (keysPressed.current.size === 0) return;
+
+    const currentPos = myPositionRef.current;
+    const MOVE_SPEED = 5; // 픽셀 단위 이동 속도
+    let newX = currentPos.x;
+    let newY = currentPos.y;
+    let newDirection = myDirectionRef.current;
+
+    // 키 입력에 따른 이동 계산
+    if (keysPressed.current.has('w') || keysPressed.current.has('ArrowUp')) {
+      newY -= MOVE_SPEED;
+      newDirection = 'up';
+    }
+    if (keysPressed.current.has('s') || keysPressed.current.has('ArrowDown')) {
+      newY += MOVE_SPEED;
+      newDirection = 'down';
+    }
+    if (keysPressed.current.has('a') || keysPressed.current.has('ArrowLeft')) {
+      newX -= MOVE_SPEED;
+      newDirection = 'left';
+    }
+    if (keysPressed.current.has('d') || keysPressed.current.has('ArrowRight')) {
+      newX += MOVE_SPEED;
+      newDirection = 'right';
+    }
+
+    const newPos = { x: newX, y: newY };
+
+    // 벽 충돌 검사
+    const shouldMove = !checkWallCollision(currentPos, newPos);
+
+    if (shouldMove) {
+      setMyPosition(newPos);
+      setMyDirection(newDirection);
+      myDirectionRef.current = newDirection;
+    }
+  }, [checkWallCollision]);
+
+  // 키보드 이벤트 핸들러
+  const handleKeyDown = useCallback((event) => {
+    const key = event.key.toLowerCase();
+    const validKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    
+    if (validKeys.includes(key) || validKeys.includes(event.key)) {
+      event.preventDefault();
+      const keyToAdd = validKeys.includes(key) ? key : event.key;
+      keysPressed.current.add(keyToAdd);
+      
+      // 키 입력이 시작되면 클릭 이동 중단
+      clickTargetRef.current = null;
+      
+      // 움직임 시작
+      if (!keyboardMoveIntervalRef.current) {
+        keyboardMoveIntervalRef.current = setInterval(moveWithKeyboard, 16); // 60fps
+      }
+    }
+  }, [moveWithKeyboard]);
+
+  const handleKeyUp = useCallback((event) => {
+    const key = event.key.toLowerCase();
+    const validKeys = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    
+    if (validKeys.includes(key) || validKeys.includes(event.key)) {
+      const keyToRemove = validKeys.includes(key) ? key : event.key;
+      keysPressed.current.delete(keyToRemove);
+      
+      // 모든 키가 떼어지면 움직임 중단
+      if (keysPressed.current.size === 0 && keyboardMoveIntervalRef.current) {
+        clearInterval(keyboardMoveIntervalRef.current);
+        keyboardMoveIntervalRef.current = null;
+      }
+    }
+  }, []);
+
+  // 키보드 이벤트 리스너 등록
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      if (keyboardMoveIntervalRef.current) {
+        clearInterval(keyboardMoveIntervalRef.current);
+      }
+    };
+  }, [handleKeyDown, handleKeyUp]);
   
   // 캐릭터 이동 함수 - 직선 이동
   const moveCharacterTo = useCallback((targetPos) => {
