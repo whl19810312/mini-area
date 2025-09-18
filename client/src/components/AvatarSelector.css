@@ -1,0 +1,348 @@
+/* 아바타 선택기 - 간단한 아이콘 스타일 */
+.avatar-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+}
+
+.avatar-selector-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.avatar-selector-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.avatar-selector-header h2 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-selector-header p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* 아바타 격자 */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.avatar-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-item::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
+
+.avatar-item:hover::before {
+  opacity: 1;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.avatar-item:hover {
+  transform: translateY(-5px) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-item.selected {
+  border-color: #FFD700;
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transform: scale(1.1);
+}
+
+.avatar-item.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #FFD700;
+  color: #333;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.avatar-image {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 15px auto;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon-display {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.avatar-icon-main {
+  font-size: 28px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.avatar-item:hover .avatar-image {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-info {
+  color: white;
+}
+
+.avatar-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-english {
+  font-size: 12px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* 미리보기 영역 */
+.avatar-preview {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-preview h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.preview-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: gentle-glow 2s ease-in-out infinite alternate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image .avatar-icon-main {
+  font-size: 36px;
+}
+
+@keyframes gentle-glow {
+  from { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); }
+  to { box-shadow: 0 8px 35px rgba(255, 215, 0, 0.3); }
+}
+
+.preview-info {
+  text-align: left;
+}
+
+.preview-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.preview-english {
+  font-size: 16px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* 액션 버튼 */
+.avatar-selector-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.cancel-btn, .confirm-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cancel-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #333;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+.confirm-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.confirm-btn:hover::before {
+  left: 100%;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .avatar-selector-modal {
+    margin: 20px;
+    padding: 20px;
+    max-height: 85vh;
+  }
+  
+  .avatar-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  
+  .avatar-item {
+    padding: 10px;
+  }
+  
+  .avatar-image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .preview-item {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .preview-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .avatar-selector-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-btn, .confirm-btn {
+    width: 100%;
+  }
+}
+
+/* 스크롤바 스타일링 */
+.avatar-selector-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.avatar-selector-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.avatar-selector-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.avatar-selector-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

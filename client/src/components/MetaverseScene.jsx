@@ -12,8 +12,7 @@ import UserList from './UserList';
 import IntegratedVideoBar from './IntegratedVideoBar';
 import PersonalShop from './PersonalShop';
 import MetaverseSocialFeed from './MetaverseSocialFeed';
-import ZodiacCharacter from './ZodiacCharacter';
-import ZodiacSelector from './ZodiacSelector';
+import AvatarCharacter from './AvatarCharacter';
 import toast from 'react-hot-toast';
 import '../styles/MetaverseScene.css';
 
@@ -52,32 +51,32 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatInputValue, setChatInputValue] = useState('');
   
-  // 별자리 관련 상태
-  const [currentZodiac, setCurrentZodiac] = useState(() => {
-    // 로컬 스토리지에서 별자리 불러오기 (대기실에서 설정된 것)
-    const savedZodiac = localStorage.getItem('selectedZodiac');
-    return savedZodiac ? JSON.parse(savedZodiac) : { id: 'leo', name: '사자자리' }; // 기본값: 사자자리
+  // 아바타 관련 상태
+  const [currentAvatar, setCurrentAvatar] = useState(() => {
+    // 로컬 스토리지에서 아바타 불러오기 (대기실에서 설정된 것)
+    const savedAvatar = localStorage.getItem('selectedAvatar');
+    return savedAvatar ? JSON.parse(savedAvatar) : { id: 'male_business', name: '비즈니스맨' }; // 기본값: 비즈니스맨
   });
 
-  // 별자리 변경 감지 및 업데이트
+  // 아바타 변경 감지 및 업데이트
   useEffect(() => {
-    const handleZodiacChange = () => {
-      const savedZodiac = localStorage.getItem('selectedZodiac');
-      if (savedZodiac) {
+    const handleAvatarChange = () => {
+      const savedAvatar = localStorage.getItem('selectedAvatar');
+      if (savedAvatar) {
         try {
-          const zodiac = JSON.parse(savedZodiac);
-          setCurrentZodiac(zodiac);
+          const avatar = JSON.parse(savedAvatar);
+          setCurrentAvatar(avatar);
         } catch (error) {
-          console.error('별자리 설정 로드 오류:', error);
+          console.error('아바타 설정 로드 오류:', error);
         }
       }
     };
 
     // 스토리지 변경 감지
-    window.addEventListener('storage', handleZodiacChange);
+    window.addEventListener('storage', handleAvatarChange);
     
     return () => {
-      window.removeEventListener('storage', handleZodiacChange);
+      window.removeEventListener('storage', handleAvatarChange);
     };
   }, []);
 
@@ -599,14 +598,11 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
           onToggleFullscreen={toggleFullscreen}
           onToggleShop={() => setIsShopVisible(!isShopVisible)}
           onToggleSocialFeed={() => setIsSocialFeedVisible(!isSocialFeedVisible)}
-          onToggleZodiac={() => {}}
           isChatVisible={isChatVisible}
           isUsersVisible={isUsersVisible}
           isFullscreen={isFullscreen}
           isSocialFeedVisible={isSocialFeedVisible}
           isShopVisible={isShopVisible}
-          isZodiacSelectorVisible={false}
-          currentZodiac={currentZodiac}
           participantCount={roomParticipants.length}
         />
       </div>
@@ -697,8 +693,8 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                   }}
                   onClick={() => {}}
                 >
-                  <ZodiacCharacter 
-                    zodiacId={currentZodiac.id}
+                  <AvatarCharacter 
+                    avatarId={currentAvatar.id}
                     size="medium"
                     showGlow={true}
                     showBorder={false}
@@ -779,10 +775,10 @@ const MetaverseScene = forwardRef(({ currentMap, mapImage: mapImageProp, current
                     padding: '4px',
                     boxSizing: 'border-box'
                   }}
-                  onClick={() => console.log('✨ 다른 사용자 별자리 캐릭터 클릭됨!', character.username)}
+                  onClick={() => console.log('✨ 다른 사용자 아바타 캐릭터 클릭됨!', character.username)}
                 >
-                  <ZodiacCharacter 
-                    zodiacId={character.zodiacId || 'virgo'} // 기본값: 처녀자리
+                  <AvatarCharacter 
+                    avatarId={character.avatarId || 'male_business'} // 기본값: 비즈니스맨
                     size="medium"
                     showGlow={true}
                     showBorder={false}

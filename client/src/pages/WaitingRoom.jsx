@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useMetaverse } from '../contexts/MetaverseContext'
-import ZodiacSelector from '../components/ZodiacSelector'
-import { zodiacSigns } from '../components/ZodiacSelector'
-import ZodiacCharacter from '../components/ZodiacCharacter'
+import AvatarSelector from '../components/AvatarSelector'
+import { avatarOptions } from '../components/AvatarSelector'
+import AvatarCharacter from '../components/AvatarCharacter'
 import '../styles/WaitingRoom.css'
 
 const WaitingRoom = () => {
@@ -14,8 +14,8 @@ const WaitingRoom = () => {
 
   const [editingMapId, setEditingMapId] = useState(null)
   const [editName, setEditName] = useState('')
-  const [showZodiacSelector, setShowZodiacSelector] = useState(false)
-  const [currentZodiac, setCurrentZodiac] = useState(null)
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false)
+  const [currentAvatar, setCurrentAvatar] = useState(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -24,23 +24,23 @@ const WaitingRoom = () => {
 
   useEffect(() => {
     fetchMaps()
-    // 저장된 별자리 설정 불러오기
-    const savedZodiac = localStorage.getItem('selectedZodiac')
-    if (savedZodiac) {
+    // 저장된 아바타 설정 불러오기
+    const savedAvatar = localStorage.getItem('selectedAvatar')
+    if (savedAvatar) {
       try {
-        setCurrentZodiac(JSON.parse(savedZodiac))
+        setCurrentAvatar(JSON.parse(savedAvatar))
       } catch (error) {
-        console.error('별자리 설정 로드 오류:', error)
-        // 디폴트로 랜덤 별자리 선택
-        const randomZodiac = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
-        setCurrentZodiac(randomZodiac)
-        localStorage.setItem('selectedZodiac', JSON.stringify(randomZodiac))
+        console.error('아바타 설정 로드 오류:', error)
+        // 디폴트로 랜덤 아바타 선택
+        const randomAvatar = avatarOptions[Math.floor(Math.random() * avatarOptions.length)]
+        setCurrentAvatar(randomAvatar)
+        localStorage.setItem('selectedAvatar', JSON.stringify(randomAvatar))
       }
     } else {
-      // 디폴트로 랜덤 별자리 선택
-      const randomZodiac = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
-      setCurrentZodiac(randomZodiac)
-      localStorage.setItem('selectedZodiac', JSON.stringify(randomZodiac))
+      // 디폴트로 랜덤 아바타 선택
+      const randomAvatar = avatarOptions[Math.floor(Math.random() * avatarOptions.length)]
+      setCurrentAvatar(randomAvatar)
+      localStorage.setItem('selectedAvatar', JSON.stringify(randomAvatar))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -220,9 +220,9 @@ const WaitingRoom = () => {
     }
   }
 
-  const handleZodiacSelect = (zodiac) => {
-    setCurrentZodiac(zodiac)
-    localStorage.setItem('selectedZodiac', JSON.stringify(zodiac))
+  const handleAvatarSelect = (avatar) => {
+    setCurrentAvatar(avatar)
+    localStorage.setItem('selectedAvatar', JSON.stringify(avatar))
   }
 
   if (loading) {
@@ -281,9 +281,9 @@ const WaitingRoom = () => {
               🔄
             </button>
             <button
-              className="icon-btn zodiac-btn"
-              title={`별자리 설정 (현재: ${currentZodiac?.name || '로딩중...'})`}
-              onClick={() => setShowZodiacSelector(true)}
+              className="icon-btn avatar-btn"
+              title={`아바타 설정 (현재: ${currentAvatar?.name || '로딩중...'})`}
+              onClick={() => setShowAvatarSelector(true)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -295,17 +295,17 @@ const WaitingRoom = () => {
                 color: '#667eea'
               }}
             >
-              {currentZodiac ? (
-                <ZodiacCharacter 
-                  zodiacId={currentZodiac.id}
+              {currentAvatar ? (
+                <AvatarCharacter 
+                  avatarId={currentAvatar.id}
                   size="small"
                   showGlow={false}
                   showBorder={false}
                 />
               ) : (
-                '✨'
+                '👤'
               )}
-              <span style={{ fontSize: '12px' }}>별자리</span>
+              <span style={{ fontSize: '12px' }}>아바타</span>
             </button>
             <button
               className="create-room-btn"
@@ -517,12 +517,12 @@ const WaitingRoom = () => {
         </div>
       </div>
 
-      {showZodiacSelector && (
-        <ZodiacSelector
-          isOpen={showZodiacSelector}
-          onClose={() => setShowZodiacSelector(false)}
-          onSelect={handleZodiacSelect}
-          currentZodiac={currentZodiac}
+      {showAvatarSelector && (
+        <AvatarSelector
+          isOpen={showAvatarSelector}
+          onClose={() => setShowAvatarSelector(false)}
+          onSelect={handleAvatarSelect}
+          currentAvatar={currentAvatar}
         />
       )}
     </div>
