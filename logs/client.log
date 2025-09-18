@@ -4,12 +4,12 @@
 
 Forced re-optimization of dependencies
 
-  VITE v4.5.14  ready in 171 ms
+  VITE v4.5.14  ready in 161 ms
 
   ➜  Local:   https://localhost:5173/
   ➜  Network: https://192.168.200.106:5173/
   ➜  Network: https://172.17.0.1:5173/
-5:03:37 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+12:09:06 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 151|              mapCreatorId: map.creatorId,
 152|              mapCreatedBy: map.createdBy,
 153|              mapCreatorId: map.creator?.id,
@@ -19,7 +19,7 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-5:03:37 AM [vite] warning: Duplicate key "mapCreatorId" in object literal
+12:09:06 PM [vite] warning: Duplicate key "mapCreatorId" in object literal
 165|                mapCreatorId: map.creatorId,
 166|                mapCreatedBy: map.createdBy,
 167|                mapCreatorId: map.creator?.id,
@@ -29,100 +29,42 @@ Forced re-optimization of dependencies
 
   Plugin: vite:esbuild
   File: /home/wh/working/complete/mini-area/client/src/pages/MetaverseEdit.jsx
-5:04:54 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:05:02 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:02 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:14 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:21 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:28 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:35 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:09:43 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:10:43 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:11:03 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:11:26 AM [vite] hmr update /src/components/PersonalShop.jsx
-5:11:52 AM [vite] .env.example.tmp.25830.1758139912013 changed, restarting server...
-5:11:52 AM [vite] .env.example changed, restarting server...
-Forced re-optimization of dependencies
-Port 5173 is in use, trying another one...
-5:11:52 AM [vite] server restarted.
-
-  ➜  Local:   https://localhost:5174/
-  ➜  Network: https://192.168.200.106:5174/
-  ➜  Network: https://172.17.0.1:5174/
-6:08:47 AM [vite] .env.example.tmp.25830.1758143327178 changed, restarting server...
-6:08:47 AM [vite] .env.example changed, restarting server...
-Forced re-optimization of dependencies
-Port 5173 is in use, trying another one...
-6:08:47 AM [vite] server restarted.
-
-  ➜  Local:   https://localhost:5174/
-  ➜  Network: https://192.168.200.106:5174/
-  ➜  Network: https://172.17.0.1:5174/
-Error:   Failed to scan for dependencies from entries:
-  /home/wh/working/complete/mini-area/client/index.html
-
-  [31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFailed to resolve entry for package "@portone/browser-sdk". The package may have incorrect main/module/exports specified in its package.json: Missing "." specifier in "@portone/browser-sdk" package[0m [1m[35m[plugin vite:dep-scan][0m
-
-    node_modules/esbuild/lib/main.js:1373:21:
-[37m      1373 │         let result = [32m[37mawait callback({
-           ╵                      [32m^[0m
-
-    at packageEntryFailure (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:28726:11)
-    at resolvePackageEntry (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:28721:9)
-    at tryNodeResolve (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:28454:20)
-    at Context.resolveId (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:28213:28)
-    at Object.resolveId (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44280:64)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async resolve (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44585:26)
-    at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44762:34
-    at async requestCallbacks.on-resolve (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1373:22)
-    at async handleRequest (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:729:13)
-
-  This error came from the "onResolve" callback registered here:
-
-    node_modules/esbuild/lib/main.js:1292:20:
-[37m      1292 │       let promise = [32m[37msetup({
-           ╵                     [32m^[0m
-
-    at setup (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44752:19)
-    at handlePlugins (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1292:21)
-    at buildOrContextImpl (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:978:5)
-    at Object.buildOrContext (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:786:5)
-    at /home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:2186:68
-    at new Promise (<anonymous>)
-    at Object.context (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:2186:27)
-    at Object.context (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:2026:58)
-    at prepareEsbuildScanner (file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44535:26)
-    at async file:///home/wh/working/complete/mini-area/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:45191:38
-
-  The plugin "vite:dep-scan" was triggered by this import
-
-    src/services/paymentService.js:2:24:
-[37m      2 │ import { PortOne } from [32m'@portone/browser-sdk'[37m;
-        ╵                         [32m~~~~~~~~~~~~~~~~~~~~~~[0m
-
-
-    at failureErrorWithLog (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1649:15)
-    at /home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1058:25
-    at runOnEndCallbacks (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1484:45)
-    at buildResponseToResult (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1056:7)
-    at /home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1068:9
-    at new Promise (<anonymous>)
-    at requestCallbacks.on-end (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:1067:54)
-    at handleRequest (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:729:19)
-    at handleIncomingPacket (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:755:7)
-    at Socket.readFromStdout (/home/wh/working/complete/mini-area/client/node_modules/esbuild/lib/main.js:679:7)
-    at Socket.emit (node:events:518:28)
-    at addChunk (node:internal/streams/readable:561:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-    at Readable.push (node:internal/streams/readable:392:5)
-    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-8:03:45 AM [vite] .env.tmp.25830.1758150225283 changed, restarting server...
-8:03:45 AM [vite] .env changed, restarting server...
-Forced re-optimization of dependencies
-Port 5173 is in use, trying another one...
-8:03:45 AM [vite] server restarted.
-
-  ➜  Local:   https://localhost:5174/
-  ➜  Network: https://192.168.200.106:5174/
-  ➜  Network: https://172.17.0.1:5174/
+12:10:19 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:10:25 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:10:31 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:11:18 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:11:31 PM [vite] hmr update /src/components/ZodiacSelector.css
+12:11:39 PM [vite] hmr update /src/components/ZodiacSelector.css
+12:11:52 PM [vite] hmr update /src/components/ZodiacCharacter.jsx
+12:12:01 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:12:08 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:12:18 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:12:24 PM [vite] hmr update /src/components/ZodiacCharacter.css
+(node:310129) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+12:43:39 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:43:39 PM [vite] hmr invalidate /src/components/ZodiacSelector.jsx Could not Fast Refresh ("zodiacSigns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+12:43:39 PM [vite] hmr update /src/components/MetaverseScene.jsx, /src/components/ZodiacCharacter.jsx
+12:43:45 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:43:45 PM [vite] hmr invalidate /src/components/ZodiacSelector.jsx Could not Fast Refresh ("zodiacSigns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+12:43:45 PM [vite] hmr update /src/components/MetaverseScene.jsx, /src/components/ZodiacCharacter.jsx
+12:43:53 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:43:53 PM [vite] hmr invalidate /src/components/ZodiacSelector.jsx Could not Fast Refresh ("zodiacSigns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+12:43:53 PM [vite] hmr update /src/components/MetaverseScene.jsx, /src/components/ZodiacCharacter.jsx
+12:43:59 PM [vite] hmr update /src/components/ZodiacSelector.jsx
+12:43:59 PM [vite] hmr invalidate /src/components/ZodiacSelector.jsx Could not Fast Refresh ("zodiacSigns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+12:43:59 PM [vite] hmr update /src/components/MetaverseScene.jsx, /src/components/ZodiacCharacter.jsx
+12:44:06 PM [vite] hmr update /src/components/ZodiacCharacter.jsx
+12:44:14 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:44:20 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:44:28 PM [vite] hmr update /src/components/ZodiacCharacter.css
+12:46:18 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:46:23 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:46:30 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:46:39 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:46:48 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:46:53 PM [vite] hmr update /src/pages/WaitingRoom.jsx
+12:47:28 PM [vite] hmr update /src/components/MetaverseScene.jsx
+12:47:36 PM [vite] hmr update /src/components/UnifiedTopBar.jsx
+3:48:06 PM [vite] hmr update /src/components/MetaverseScene.jsx
+3:48:32 PM [vite] hmr update /src/components/MetaverseScene.jsx

@@ -12,11 +12,14 @@ const UnifiedTopBar = ({
   onToggleFullscreen,
   onToggleShop,
   onToggleSocialFeed,
+  onToggleZodiac,
   isChatVisible,
   isUsersVisible,
   isFullscreen,
   isShopVisible,
   isSocialFeedVisible,
+  isZodiacSelectorVisible,
+  currentZodiac,
   participantCount = 0
 }) => {
   return (

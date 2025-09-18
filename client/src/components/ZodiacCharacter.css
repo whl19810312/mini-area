@@ -1,0 +1,340 @@
+/* 별자리 캐릭터 스타일 - 보석 귀걸이 느낌 */
+.zodiac-character {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.zodiac-character-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.zodiac-character-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.zodiac-character-content .zodiac-symbol-main {
+  font-size: 24px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+  font-weight: bold;
+}
+
+/* 크기별 스타일 */
+.zodiac-character.small {
+  border-radius: 8px;
+}
+
+.zodiac-character.small .zodiac-character-inner {
+  border-radius: 8px;
+}
+
+.zodiac-character.small .zodiac-symbol-main {
+  font-size: 16px !important;
+}
+
+.zodiac-character.large,
+.zodiac-character.xlarge {
+  border-radius: 16px;
+}
+
+.zodiac-character.large .zodiac-character-inner,
+.zodiac-character.xlarge .zodiac-character-inner {
+  border-radius: 16px;
+}
+
+.zodiac-character.large .zodiac-symbol-main,
+.zodiac-character.xlarge .zodiac-symbol-main {
+  font-size: 32px !important;
+}
+
+/* 보석 같은 광택 효과 */
+.zodiac-character.show-glow::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, 
+    rgba(255, 215, 0, 0.8), 
+    rgba(255, 255, 255, 0.6), 
+    rgba(255, 215, 0, 0.8), 
+    rgba(255, 255, 255, 0.6)
+  );
+  background-size: 200% 200%;
+  animation: gem-glow 3s ease-in-out infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes gem-glow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.zodiac-character:hover.show-glow::before {
+  opacity: 1;
+}
+
+/* 보더 스타일 */
+.zodiac-character.show-border .zodiac-character-inner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.zodiac-character:hover.show-border .zodiac-character-inner {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 
+    0 8px 25px rgba(255, 215, 0, 0.3),
+    0 0 20px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* 호버 효과 */
+.zodiac-character:hover {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.zodiac-character:hover .zodiac-character-content {
+  transform: scale(1.1);
+}
+
+/* 반짝이는 효과 */
+.zodiac-character-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 12px;
+  opacity: 0;
+  animation: sparkle-float 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.sparkle-1 {
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 20%;
+  right: 20%;
+  animation-delay: 1.5s;
+}
+
+.sparkle-3 {
+  bottom: 15%;
+  left: 20%;
+  animation-delay: 3s;
+}
+
+@keyframes sparkle-float {
+  0%, 100% { 
+    opacity: 0; 
+    transform: translateY(0) scale(0.8); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: translateY(-5px) scale(1.2); 
+  }
+}
+
+.zodiac-character:hover .sparkle {
+  animation-duration: 2s;
+}
+
+/* 툴팁 스타일 */
+.zodiac-character-tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.zodiac-character-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.zodiac-character:hover .zodiac-character-tooltip {
+  opacity: 1;
+  visibility: visible;
+  bottom: 120%;
+}
+
+.tooltip-name {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.tooltip-symbol {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.tooltip-constellation {
+  font-size: 10px;
+  opacity: 0.8;
+  letter-spacing: 1px;
+}
+
+/* 크기별 툴팁 조정 */
+.zodiac-character.small .zodiac-character-tooltip {
+  font-size: 10px;
+  padding: 6px 8px;
+}
+
+.zodiac-character.large .zodiac-character-tooltip,
+.zodiac-character.xlarge .zodiac-character-tooltip {
+  font-size: 14px;
+  padding: 10px 15px;
+}
+
+.zodiac-character.large .tooltip-symbol,
+.zodiac-character.xlarge .tooltip-symbol {
+  font-size: 16px;
+}
+
+/* 액티브 상태 */
+.zodiac-character.active {
+  transform: scale(1.1);
+}
+
+.zodiac-character.active.show-glow::before {
+  opacity: 1;
+  animation-duration: 1.5s;
+}
+
+.zodiac-character.active .zodiac-character-inner {
+  border-color: rgba(255, 215, 0, 0.8);
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.5),
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* 클릭 애니메이션 */
+.zodiac-character:active {
+  transform: translateY(-1px) scale(1.05);
+  transition: all 0.1s ease;
+}
+
+/* 키 애니메이션 */
+@keyframes zodiac-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(180deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.zodiac-character.animate-entrance {
+  animation: zodiac-entrance 0.6s ease-out;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .zodiac-character-tooltip {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  
+  .zodiac-character:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+  
+  .sparkle {
+    font-size: 10px;
+  }
+}
+
+/* 접근성 향상 */
+.zodiac-character:focus {
+  outline: 2px solid rgba(255, 215, 0, 0.8);
+  outline-offset: 2px;
+}
+
+.zodiac-character:focus .zodiac-character-tooltip {
+  opacity: 1;
+  visibility: visible;
+  bottom: 120%;
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .zodiac-character.show-border .zodiac-character-inner {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .zodiac-character-tooltip {
+    background: rgba(20, 20, 20, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .zodiac-character-tooltip::after {
+    border-top-color: rgba(20, 20, 20, 0.95);
+  }
+}
+
+/* 성능 최적화 */
+.zodiac-character {
+  will-change: transform;
+}
+
+.zodiac-character-image {
+  will-change: filter;
+}

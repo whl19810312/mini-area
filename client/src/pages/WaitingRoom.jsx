@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useMetaverse } from '../contexts/MetaverseContext'
-import CharacterCustomizer from '../components/CharacterCustomizer'
+import ZodiacSelector from '../components/ZodiacSelector'
+import { zodiacSigns } from '../components/ZodiacSelector'
+import ZodiacCharacter from '../components/ZodiacCharacter'
 import '../styles/WaitingRoom.css'
 
 const WaitingRoom = () => {
@@ -12,7 +14,8 @@ const WaitingRoom = () => {
 
   const [editingMapId, setEditingMapId] = useState(null)
   const [editName, setEditName] = useState('')
-  const [showCustomizer, setShowCustomizer] = useState(false)
+  const [showZodiacSelector, setShowZodiacSelector] = useState(false)
+  const [currentZodiac, setCurrentZodiac] = useState(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -21,6 +24,24 @@ const WaitingRoom = () => {
 
   useEffect(() => {
     fetchMaps()
+    // 저장된 별자리 설정 불러오기
+    const savedZodiac = localStorage.getItem('selectedZodiac')
+    if (savedZodiac) {
+      try {
+        setCurrentZodiac(JSON.parse(savedZodiac))
+      } catch (error) {
+        console.error('별자리 설정 로드 오류:', error)
+        // 디폴트로 랜덤 별자리 선택
+        const randomZodiac = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
+        setCurrentZodiac(randomZodiac)
+        localStorage.setItem('selectedZodiac', JSON.stringify(randomZodiac))
+      }
+    } else {
+      // 디폴트로 랜덤 별자리 선택
+      const randomZodiac = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
+      setCurrentZodiac(randomZodiac)
+      localStorage.setItem('selectedZodiac', JSON.stringify(randomZodiac))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
@@ -199,6 +220,11 @@ const WaitingRoom = () => {
     }
   }
 
+  const handleZodiacSelect = (zodiac) => {
+    setCurrentZodiac(zodiac)
+    localStorage.setItem('selectedZodiac', JSON.stringify(zodiac))
+  }
+
   if (loading) {
     return (
       <div className="waiting-room">
@@ -255,11 +281,31 @@ const WaitingRoom = () => {
               🔄
             </button>
             <button
-              className="icon-btn character-btn"
-              title="캐릭터 설정"
-              onClick={() => setShowCustomizer(true)}
+              className="icon-btn zodiac-btn"
+              title={`별자리 설정 (현재: ${currentZodiac?.name || '로딩중...'})`}
+              onClick={() => setShowZodiacSelector(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '16px',
+                background: 'rgba(102, 126, 234, 0.2)',
+                border: '1px solid rgba(102, 126, 234, 0.5)',
+                color: '#667eea'
+              }}
             >
-              👤
+              {currentZodiac ? (
+                <ZodiacCharacter 
+                  zodiacId={currentZodiac.id}
+                  size="small"
+                  showGlow={false}
+                  showBorder={false}
+                />
+              ) : (
+                '✨'
+              )}
+              <span style={{ fontSize: '12px' }}>별자리</span>
             </button>
             <button
               className="create-room-btn"
@@ -471,10 +517,12 @@ const WaitingRoom = () => {
         </div>
       </div>
 
-      {showCustomizer && (
-        <CharacterCustomizer
-          isOpen={showCustomizer}
-          onClose={() => setShowCustomizer(false)}
+      {showZodiacSelector && (
+        <ZodiacSelector
+          isOpen={showZodiacSelector}
+          onClose={() => setShowZodiacSelector(false)}
+          onSelect={handleZodiacSelect}
+          currentZodiac={currentZodiac}
         />
       )}
     </div>
