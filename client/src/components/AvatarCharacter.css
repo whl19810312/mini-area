@@ -28,8 +28,16 @@
   z-index: 2;
 }
 
-.avatar-character-content .avatar-icon-main {
-  color: white;
+.avatar-character .avatar-single-display {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.avatar-character .avatar-fullbody-icon {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
   font-weight: normal;
@@ -205,9 +213,12 @@
   margin-bottom: 2px;
 }
 
-.tooltip-icon {
-  font-size: 14px;
+.tooltip-parts {
+  font-size: 12px;
   margin-bottom: 2px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
 }
 
 .tooltip-english {
@@ -228,9 +239,9 @@
   padding: 10px 15px;
 }
 
-.avatar-character.large .tooltip-icon,
-.avatar-character.xlarge .tooltip-icon {
-  font-size: 16px;
+.avatar-character.large .tooltip-parts,
+.avatar-character.xlarge .tooltip-parts {
+  font-size: 14px;
 }
 
 /* 액티브 상태 */

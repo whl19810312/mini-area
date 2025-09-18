@@ -82,3 +82,36 @@ Forced re-optimization of dependencies
 3:56:46 PM [vite] hmr update /src/components/MetaverseScene.jsx
 3:57:05 PM [vite] hmr update /src/components/UnifiedTopBar.jsx
 3:57:30 PM [vite] hmr update /src/components/MetaverseScene.jsx
+4:16:52 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:16:52 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:16:52 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:17:00 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:17:00 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:17:00 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:17:08 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:17:08 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:17:08 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:17:18 PM [vite] hmr update /src/components/AvatarSelector.css
+4:17:43 PM [vite] hmr update /src/components/AvatarSelector.css
+4:17:52 PM [vite] hmr update /src/components/AvatarCharacter.jsx
+4:17:59 PM [vite] hmr update /src/components/AvatarCharacter.jsx
+4:18:07 PM [vite] hmr update /src/components/AvatarCharacter.css
+4:18:13 PM [vite] hmr update /src/components/AvatarCharacter.css
+4:18:18 PM [vite] hmr update /src/components/AvatarCharacter.css
+4:21:48 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:21:48 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:21:48 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:21:57 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:21:57 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:21:57 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:22:07 PM [vite] hmr update /src/components/AvatarSelector.jsx
+4:22:07 PM [vite] hmr invalidate /src/components/AvatarSelector.jsx Could not Fast Refresh ("avatarOptions" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+4:22:07 PM [vite] hmr update /src/pages/WaitingRoom.jsx, /src/components/AvatarCharacter.jsx
+4:22:17 PM [vite] hmr update /src/components/AvatarSelector.css
+4:22:31 PM [vite] hmr update /src/components/AvatarSelector.css
+4:23:23 PM [vite] hmr update /src/components/AvatarCharacter.jsx
+4:23:30 PM [vite] hmr update /src/components/AvatarCharacter.jsx
+4:23:38 PM [vite] hmr update /src/components/AvatarCharacter.css
+4:24:49 PM [vite] hmr update /src/components/AvatarCharacter.jsx
+4:24:56 PM [vite] hmr update /src/components/AvatarCharacter.css
+4:25:06 PM [vite] hmr update /src/components/AvatarCharacter.css

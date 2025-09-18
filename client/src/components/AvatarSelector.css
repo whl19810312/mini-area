@@ -131,7 +131,7 @@
   justify-content: center;
 }
 
-.avatar-icon-display {
+.avatar-single-display {
   width: 100%;
   height: 100%;
   display: flex;
@@ -140,7 +140,7 @@
   position: relative;
 }
 
-.avatar-icon-main {
+.avatar-fullbody-icon {
   font-size: 28px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
@@ -204,7 +204,7 @@
   justify-content: center;
 }
 
-.preview-image .avatar-icon-main {
+.avatar-fullbody-icon.preview-large {
   font-size: 36px;
 }
 

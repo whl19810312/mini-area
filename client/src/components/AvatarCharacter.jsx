@@ -32,34 +32,28 @@ const AvatarCharacter = ({
 
   return (
     <div 
-      className={`avatar-character ${className} ${size} ${showGlow ? 'show-glow' : ''} ${showBorder ? 'show-border' : ''}`}
+      className={`avatar-character ${className} ${size} ${showGlow ? 'show-glow' : ''}`}
       style={characterStyle}
       onClick={onClick}
       title={`${avatar.name} (${avatar.englishName})`}
     >
-      <div 
-        className="avatar-character-inner"
-        style={{ background: avatar.color }}
-      >
-        <div className="avatar-character-content">
-          <span 
-            className="avatar-icon-main"
-            style={{ fontSize: `${sizeStyle.fontSize}px` }}
-          >
-            {avatar.icon}
-          </span>
-        </div>
-        <div className="avatar-character-sparkles">
-          <span className="sparkle sparkle-1">✨</span>
-          <span className="sparkle sparkle-2">⭐</span>
-          <span className="sparkle sparkle-3">🌟</span>
-        </div>
+      <div className="avatar-single-display">
+        <span className="avatar-fullbody-icon" style={{ fontSize: `${sizeStyle.fontSize}px` }}>
+          {avatar.fullBody}
+        </span>
+      </div>
+      <div className="avatar-character-sparkles">
+        <span className="sparkle sparkle-1">✨</span>
+        <span className="sparkle sparkle-2">⭐</span>
+        <span className="sparkle sparkle-3">🌟</span>
       </div>
       
       {/* 호버 시 정보 표시 */}
       <div className="avatar-character-tooltip">
         <div className="tooltip-name">{avatar.name}</div>
-        <div className="tooltip-icon">{avatar.icon}</div>
+        <div className="tooltip-parts">
+          <span>{avatar.fullBody}</span>
+        </div>
         <div className="tooltip-english">{avatar.englishName}</div>
       </div>
     </div>
